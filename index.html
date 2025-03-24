@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound-Responsive Fireworks</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Sound-Responsive Fireworks</h1>
+    </header>
+    
+    <main>
+        <div class="control-panel">
+            <button id="startMicrophone">Start Microphone</button>
+            <button id="stopMicrophone" disabled>Stop Microphone</button>
+            <button id="testFireworks">Test Fireworks</button>
+            
+            <div class="settings-toggle">
+                <button id="toggleSettings">Settings</button>
+            </div>
+        </div>
+        
+        <div class="visualization-container">
+            <div class="audio-visualizer">
+                <div id="volumeLevel" class="volume-meter">
+                    <div class="level-bar"></div>
+                </div>
+                <div id="audioStatus">Audio status: inactive</div>
+                <div class="mic-test">
+                    <p>Try making a loud sound or clap your hands 👏</p>
+                    <div id="micDetection" class="mic-detection">No sound detected</div>
+                </div>
+            </div>
+            
+            <canvas id="animationCanvas"></canvas>
+        </div>
+        
+        <div id="settingsPanel" class="settings-panel hidden">
+            <h2>Settings</h2>
+            
+            <section class="settings-section">
+                <h3>Audio Settings</h3>
+                <div class="setting">
+                    <label for="sensitivitySlider">Microphone Sensitivity:</label>
+                    <input type="range" id="sensitivitySlider" min="0" max="2" step="0.1" value="1.5">
+                </div>
+                
+                <div class="setting">
+                    <label for="thresholdLow">Quiet Threshold:</label>
+                    <input type="range" id="thresholdLow" min="0" max="0.5" step="0.01" value="0.05">
+                </div>
+                
+                <div class="setting">
+                    <label for="thresholdHigh">Loud Threshold:</label>
+                    <input type="range" id="thresholdHigh" min="0.2" max="1" step="0.01" value="0.4">
+                </div>
+                
+                <div class="setting">
+                    <label for="suddenThreshold">Sudden Sound Threshold:</label>
+                    <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.15">
+                </div>
+            </section>
+            
+            <button id="closeSettings">Close Settings</button>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="reference-guide">
+            <h3>Firework Sound Mapping Guide</h3>
+            <ul>
+                <li><strong>Clap or Sudden Sounds:</strong> Launch multiple fireworks</li>
+                <li><strong>Loud Sounds:</strong> Occasional fireworks</li>
+                <li><strong>Sustained Sounds:</strong> Continuous fireworks launch</li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="js/audioManager.js"></script>
+    <script src="js/animationController.js"></script>
+    <script src="js/uiController.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
