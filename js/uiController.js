@@ -28,6 +28,10 @@ class UIController {
         this.suddenIndicatorTimer = null;
         this.sustainedIndicatorTimer = null;
         
+        // Animation state tracking
+        this.fireworksActive = false;
+        this.activeSustainedSounds = 0;
+        
         // Initialize UI
         this.initializeEventListeners();
     }
@@ -61,59 +65,106 @@ class UIController {
             this.animationController.start();
         }
         
-        // Launch multiple fireworks
-        this.animationController.launchMultipleFireworks(5);
-        console.log('Test fireworks launched');
+        // Launch a single test firework
+        this.animationController.launchFirework();
+        console.log('Test firework launched');
     }
-    
+
+
     /**
-     * Start microphone and animation
-     */
-    async startMicrophone() {
-        // Initialize audio manager
-        const success = await this.audioManager.initialize();
-        
-        if (success) {
-            // Set up audio callbacks
-            this.audioManager.onVolumeChange((volume, category) => {
-                this.updateVolumeUI(volume);
-                this.animationController.applyVolume(volume, category);
-                
-                // Update mic test indicator for loud sounds
-                if (category === 'loud') {
-                    this.showLoudDetection();
-                }
-            });
-            
-            this.audioManager.onSuddenSound((volume) => {
-                this.animationController.applySuddenSound(volume);
-                this.showSuddenDetection();
-            });
-            
-            this.audioManager.onSustainedSound((volume, duration) => {
-                this.animationController.applySustainedSound(volume, duration);
-                this.showSustainedDetection();
-            });
-            
-            // Start audio and animation
-            this.audioManager.start();
-            this.animationController.start();
-            
-            // Update UI
-            this.startButton.disabled = true;
-            this.stopButton.disabled = false;
-            this.audioStatus.textContent = 'Audio status: active';
-        } else {
-            this.audioStatus.textContent = 'Error: Microphone access denied';
-        }
-    }
+ * Start microphone and animation
+ */
+async startMicrophone() {
+    // Initialize audio manager
+    const success = await this.audioManager.initialize();
     
+    if (success) {
+        // Set up audio callbacks
+        this.audioManager.onVolumeChange((volume, category) => {
+            this.updateVolumeUI(volume);
+            
+            // Only process audio for meaningful volume levels
+            if (volume < this.audioManager.noiseFloor) {
+                // Volume too low, don't process audio events
+                return;
+            }
+            
+            // For loud sounds, burst all fireworks if any exist
+            if (category === 'loud') {
+                if (this.animationController.fireworks.length > 0) {
+                    this.showLoudDetection(`LOUD sound detected, level: ${volume.toFixed(4)} - BURSTING ALL fireworks!`);
+                } else {
+                    this.showLoudDetection(`LOUD sound detected, level: ${volume.toFixed(4)} - No fireworks to burst`);
+                }
+                this.animationController.applyVolume(volume, category);
+            }
+        });
+        
+        // We're no longer using sudden sounds to trigger animations
+        this.audioManager.onSuddenSound((volume) => {
+            // Log but don't trigger animation
+            if (volume > 0.1) {
+                console.log(`Sudden sound detected (${volume.toFixed(4)}) - animation disabled`);
+            }
+        });
+        
+        this.audioManager.onSustainedSound((volume, duration) => {
+            // Only respond to significant volume (greater than 0.1) and duration over 500ms
+            if (volume < 0.1) return null;
+            
+            // Debug logging to help diagnose issues
+            console.log('UIController: Sustained sound detected', {volume, duration});
+            
+            this.showSustainedDetection(`SUSTAINED sound detected, duration: ${duration} level: ${volume.toFixed(4)}`);
+            
+            // Launch a new firework and get its ID
+            const fireworkId = this.animationController.applySustainedSound(volume, duration);
+            
+            // Only increment active count if we actually created a firework
+            if (fireworkId) {
+                this.activeSustainedSounds++;
+                this.fireworksActive = true;
+                console.log('UIController: New firework launched, ID:', fireworkId);
+            }
+            
+            return fireworkId;
+        });
+        
+        this.audioManager.onSustainedSoundEnd((id) => {
+            // Handle the end of a sustained sound
+            console.log('UIController: Sustained sound ended, ID:', id);
+            this.showSustainedDetection(`Sustained sound ended - firework falling`);
+            
+            // Deactivate the firework but don't make it fall
+            this.animationController.deactivateFirework(id);
+            this.activeSustainedSounds--;
+            
+            if (this.activeSustainedSounds <= 0) {
+                this.activeSustainedSounds = 0;
+                this.fireworksActive = false;
+            }
+        });
+        
+        // Start audio and animation
+        this.audioManager.start();
+        this.animationController.start();
+        
+        // Update UI
+        this.startButton.disabled = true;
+        this.stopButton.disabled = false;
+        this.audioStatus.textContent = 'Audio status: active';
+    } else {
+        this.audioStatus.textContent = 'Error: Microphone access denied';
+    }
+}
     /**
      * Stop microphone and animation
      */
     stopMicrophone() {
         this.audioManager.stop();
         this.animationController.stop();
+        this.fireworksActive = false;
+        this.activeSustainedSounds = 0;
         
         // Update UI
         this.startButton.disabled = false;
@@ -143,48 +194,54 @@ class UIController {
     }
     
     /**
+     * Show sustained sound detection in the mic test indicator
+     */
+    showSustainedDetection(message = "SUSTAINED sound detected!") {
+        clearTimeout(this.sustainedIndicatorTimer);
+        
+        this.micDetection.textContent = message;
+        this.micDetection.className = 'mic-detection detected-sustained';
+        
+        this.sustainedIndicatorTimer = setTimeout(() => {
+            this.micDetection.textContent = this.fireworksActive ? 
+                'Continue making sounds to launch more fireworks. LOUD sound will burst all.' : 
+                'Make SUSTAINED sound to launch fireworks';
+            this.micDetection.className = 'mic-detection';
+        }, 2000);
+    }
+    
+    /**
      * Show loud sound detection in the mic test indicator
      */
-    showLoudDetection() {
+    showLoudDetection(message = "LOUD sound detected!") {
         clearTimeout(this.loudIndicatorTimer);
         
-        this.micDetection.textContent = 'LOUD sound detected!';
+        this.micDetection.textContent = message;
         this.micDetection.className = 'mic-detection detected-loud';
         
         this.loudIndicatorTimer = setTimeout(() => {
-            this.micDetection.textContent = 'No sound detected';
+            this.micDetection.textContent = this.fireworksActive ? 
+                'Continue making sounds to launch more fireworks. LOUD sound will burst all.' : 
+                'Make SUSTAINED sound to launch fireworks';
             this.micDetection.className = 'mic-detection';
-        }, 1500);
+        }, 2000);
     }
     
     /**
      * Show sudden sound detection in the mic test indicator
      */
-    showSuddenDetection() {
+    showSuddenDetection(message = "SUDDEN sound detected!") {
         clearTimeout(this.suddenIndicatorTimer);
         
-        this.micDetection.textContent = 'SUDDEN sound detected!';
+        this.micDetection.textContent = message;
         this.micDetection.className = 'mic-detection detected-sudden';
         
         this.suddenIndicatorTimer = setTimeout(() => {
-            this.micDetection.textContent = 'No sound detected';
+            this.micDetection.textContent = this.fireworksActive ? 
+                'Continue making sounds to launch more fireworks. LOUD sound will burst all.' : 
+                'Make SUSTAINED sound to launch fireworks';
             this.micDetection.className = 'mic-detection';
-        }, 1500);
-    }
-    
-    /**
-     * Show sustained sound detection in the mic test indicator
-     */
-    showSustainedDetection() {
-        clearTimeout(this.sustainedIndicatorTimer);
-        
-        this.micDetection.textContent = 'SUSTAINED sound detected!';
-        this.micDetection.className = 'mic-detection detected-sustained';
-        
-        this.sustainedIndicatorTimer = setTimeout(() => {
-            this.micDetection.textContent = 'No sound detected';
-            this.micDetection.className = 'mic-detection';
-        }, 1500);
+        }, 2000);
     }
     
     /**
@@ -217,4 +274,4 @@ class UIController {
             suddenSoundThreshold: suddenThreshold
         });
     }
-} 
+}

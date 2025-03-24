@@ -29,8 +29,8 @@
                 </div>
                 <div id="audioStatus">Audio status: inactive</div>
                 <div class="mic-test">
-                    <p>Try making a loud sound or clap your hands 👏</p>
-                    <div id="micDetection" class="mic-detection">No sound detected</div>
+                    <p>Try making SUSTAINED sounds to launch fireworks. Keep making sound to keep them rising. LOUD sounds will BURST all active fireworks! 🔊</p>
+                    <div id="micDetection" class="mic-detection">Make SUSTAINED sound to start fireworks</div>
                 </div>
             </div>
             
@@ -44,22 +44,22 @@
                 <h3>Audio Settings</h3>
                 <div class="setting">
                     <label for="sensitivitySlider">Microphone Sensitivity:</label>
-                    <input type="range" id="sensitivitySlider" min="0" max="2" step="0.1" value="1.5">
+                    <input type="range" id="sensitivitySlider" min="0" max="3" step="0.1" value="2.0">
                 </div>
                 
                 <div class="setting">
                     <label for="thresholdLow">Quiet Threshold:</label>
-                    <input type="range" id="thresholdLow" min="0" max="0.5" step="0.01" value="0.05">
+                    <input type="range" id="thresholdLow" min="0" max="0.5" step="0.01" value="0.03">
                 </div>
                 
                 <div class="setting">
                     <label for="thresholdHigh">Loud Threshold:</label>
-                    <input type="range" id="thresholdHigh" min="0.2" max="1" step="0.01" value="0.4">
+                    <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.01" value="0.3">
                 </div>
                 
                 <div class="setting">
                     <label for="suddenThreshold">Sudden Sound Threshold:</label>
-                    <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.15">
+                    <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.1">
                 </div>
             </section>
             
@@ -71,9 +71,10 @@
         <div class="reference-guide">
             <h3>Firework Sound Mapping Guide</h3>
             <ul>
-                <li><strong>Clap or Sudden Sounds:</strong> Launch multiple fireworks</li>
-                <li><strong>Loud Sounds:</strong> Occasional fireworks</li>
-                <li><strong>Sustained Sounds:</strong> Continuous fireworks launch</li>
+                <li><strong>Sustained Sounds:</strong> Launch fireworks that rise as long as sound continues and fall when sound stops</li>
+                <li><strong>Multiple Sounds:</strong> Launch additional fireworks while maintaining existing ones</li>
+                <li><strong>Loud Sounds:</strong> BURST ALL active fireworks immediately</li>
+                <!-- Removed sudden sound reference -->
             </ul>
         </div>
     </footer>

@@ -8,41 +8,48 @@ class AudioManager {
         this.analyser = null;
         this.dataArray = null;
         this.isActive = false;
+        
+        // Callbacks
         this.volumeCallback = null;
         this.suddenSoundCallback = null;
         this.sustainedSoundCallback = null;
+        this.sustainedSoundEndCallback = null;
         
-        // Configuration - Adjusted for better sensitivity
-        this.sensitivity = 1.5;         // Increased from 1 to 1.5
-        this.quietThreshold = 0.05;     // Lowered from 0.1 to 0.05
-        this.loudThreshold = 0.4;       // Lowered from 0.7 to 0.4
-        this.suddenSoundThreshold = 0.15; // Lowered from 0.3 to 0.15
-        this.sustainedSoundDuration = 300; // Decreased from 500 to 300 ms
+        // Configuration
+        this.sensitivity = 2.0;
+        this.quietThreshold = 0.04;
+        this.loudThreshold = 0.3;
+        this.suddenSoundThreshold = 0.1;
+        this.sustainedSoundDuration = 500;
+        this.noiseFloor = 0.02;
         
-        // State variables
+        // State tracking
         this.volumeLevel = 0;
         this.lastVolume = 0;
         this.sustainedSoundStart = 0;
         this.isSustained = false;
+        this.activeSustainedSounds = new Map();
+        
+        // Prevent multiple sustained sounds
+        this.currentSustainedId = null;
+        this.isProcessingSustained = false;
         
         // Debug mode
         this.debug = true;
     }
     
     /**
-     * Initializes Web Audio API and requests microphone access
+     * Initialize audio context and request microphone
      */
     async initialize() {
         try {
             // Create audio context
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             this.audioContext = new AudioContext();
-            console.log('AudioContext created successfully');
             
-            // Resume audio context (needed in modern browsers)
+            // Resume audio context if suspended
             if (this.audioContext.state === 'suspended') {
                 await this.audioContext.resume();
-                console.log('AudioContext resumed from suspended state');
             }
             
             // Get microphone access
@@ -53,20 +60,15 @@ class AudioManager {
                     autoGainControl: true
                 }
             });
-            console.log('Microphone access granted');
             
-            // Create microphone source
+            // Create audio processing chain
             this.microphone = this.audioContext.createMediaStreamSource(stream);
-            
-            // Create analyser node
             this.analyser = this.audioContext.createAnalyser();
             this.analyser.fftSize = 1024;
             this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-            
-            // Connect microphone to analyser
             this.microphone.connect(this.analyser);
-            console.log('Audio analyzer setup complete');
             
+            console.log('Audio analyzer setup complete');
             return true;
         } catch (error) {
             console.error('Error initializing audio:', error);
@@ -75,7 +77,7 @@ class AudioManager {
     }
     
     /**
-     * Starts audio analysis
+     * Start audio analysis
      */
     start() {
         if (!this.audioContext || !this.analyser) {
@@ -83,25 +85,21 @@ class AudioManager {
             return false;
         }
         
-        // Make sure the audio context is running
+        // Ensure audio context is running
         if (this.audioContext.state !== 'running') {
-            this.audioContext.resume().then(() => {
-                console.log('AudioContext resumed on start');
-            });
+            this.audioContext.resume();
         }
         
         this.isActive = true;
-        console.log('Audio analysis started');
         this.analyzeAudio();
         return true;
     }
     
     /**
-     * Stops audio analysis
+     * Stop audio analysis
      */
     stop() {
         this.isActive = false;
-        console.log('Audio analysis stopped');
         return true;
     }
     
@@ -114,22 +112,24 @@ class AudioManager {
         // Get audio data
         this.analyser.getByteFrequencyData(this.dataArray);
         
-        // Calculate volume level (average amplitude)
+        // Calculate volume level
         let sum = 0;
         for (let i = 0; i < this.dataArray.length; i++) {
             sum += this.dataArray[i];
         }
         
-        // Normalize to 0-1 range
-        this.volumeLevel = sum / (this.dataArray.length * 255);
+        // Normalize and apply sensitivity
+        let rawVolumeLevel = sum / (this.dataArray.length * 255);
+        this.volumeLevel = Math.min(1, rawVolumeLevel * this.sensitivity);
         
-        // Apply sensitivity
-        this.volumeLevel *= this.sensitivity;
-        if (this.volumeLevel > 1) this.volumeLevel = 1;
+        // Apply noise floor
+        if (this.volumeLevel < this.noiseFloor) {
+            this.volumeLevel = 0;
+        }
         
-        // Log volume level occasionally for debugging
+        // Log volume occasionally
         if (this.debug && Math.random() < 0.01) {
-            console.log('Current volume level:', this.volumeLevel);
+            console.log(`Raw volume: ${rawVolumeLevel.toFixed(4)} Adjusted volume: ${this.volumeLevel.toFixed(4)} Noise floor: ${this.noiseFloor}`);
         }
         
         // Determine volume category
@@ -138,50 +138,137 @@ class AudioManager {
             volumeCategory = 'quiet';
         } else if (this.volumeLevel >= this.loudThreshold) {
             volumeCategory = 'loud';
-            if (this.debug) {
-                console.log('LOUD sound detected, level:', this.volumeLevel);
+            
+            // Reset sustained state for loud sounds
+            if (this.isSustained) {
+                this.endAllSustainedSounds();
+                this.isSustained = false;
+            }
+            
+            // Call volume callback for loud sounds immediately
+            if (this.volumeCallback) {
+                this.volumeCallback(this.volumeLevel, volumeCategory);
             }
         }
         
-        // Detect sudden sounds (significant jump in volume)
-        const volumeDelta = this.volumeLevel - this.lastVolume;
-        if (volumeDelta > this.suddenSoundThreshold) {
-            if (this.debug) {
-                console.log('SUDDEN sound detected, delta:', volumeDelta, 'level:', this.volumeLevel);
-            }
-            if (this.suddenSoundCallback) {
-                this.suddenSoundCallback(this.volumeLevel);
-            }
-        }
-        
-        // Detect sustained sounds
-        if (this.volumeLevel > this.quietThreshold) {
-            if (!this.isSustained) {
-                this.sustainedSoundStart = Date.now();
-                this.isSustained = true;
-            } else if (Date.now() - this.sustainedSoundStart > this.sustainedSoundDuration) {
-                const duration = Date.now() - this.sustainedSoundStart;
+        // Process other sound events if not a loud sound
+        if (this.volumeLevel > this.noiseFloor && volumeCategory !== 'loud') {
+            // Detect sudden sounds
+            const volumeDelta = this.volumeLevel - this.lastVolume;
+            if (this.volumeLevel > this.quietThreshold && volumeDelta > this.suddenSoundThreshold) {
                 if (this.debug) {
-                    console.log('SUSTAINED sound detected, duration:', duration, 'level:', this.volumeLevel);
+                    console.log(`SUDDEN sound detected, delta: ${volumeDelta.toFixed(4)} level: ${this.volumeLevel.toFixed(4)}`);
                 }
-                if (this.sustainedSoundCallback) {
-                    this.sustainedSoundCallback(this.volumeLevel, duration);
+                
+                if (this.suddenSoundCallback) {
+                    this.suddenSoundCallback(this.volumeLevel);
                 }
             }
-        } else {
-            this.isSustained = false;
+            
+            // Process sustained sounds
+            this.processSustainedSound();
+        } else if (volumeCategory !== 'loud') {
+            // Volume too low or loud sound detected
+            if (this.isSustained) {
+                this.endAllSustainedSounds();
+                this.isSustained = false;
+            }
+            
+            // Call volume callback for non-loud categories
+            if (this.volumeCallback) {
+                this.volumeCallback(this.volumeLevel, volumeCategory);
+            }
         }
         
-        // Call volume callback
-        if (this.volumeCallback) {
-            this.volumeCallback(this.volumeLevel, volumeCategory);
-        }
-        
-        // Save current volume for next iteration
+        // Save current volume
         this.lastVolume = this.volumeLevel;
         
-        // Continue analysis loop
+        // Continue loop
         requestAnimationFrame(() => this.analyzeAudio());
+    }
+    
+    /**
+     * Process sustained sound detection
+     */
+    processSustainedSound() {
+        // Only process if volume is in the sustained range
+        if (this.volumeLevel < 0.1 || this.volumeLevel >= this.loudThreshold) {
+            if (this.isSustained) {
+                this.endAllSustainedSounds();
+                this.isSustained = false;
+            }
+            return;
+        }
+        
+        // Prevent multiple sustained events in quick succession
+        if (this.isProcessingSustained) return;
+        
+        // Start tracking a new sustained sound
+        if (!this.isSustained) {
+            this.sustainedSoundStart = Date.now();
+            this.isSustained = true;
+        } 
+        // Check if we've reached the duration threshold
+        else if (this.currentSustainedId === null && 
+                Date.now() - this.sustainedSoundStart > this.sustainedSoundDuration) {
+            
+            const duration = Date.now() - this.sustainedSoundStart;
+            
+            if (this.debug) {
+                console.log(`SUSTAINED sound detected, duration: ${duration} level: ${this.volumeLevel.toFixed(4)}`);
+            }
+            
+            // Prevent race conditions
+            this.isProcessingSustained = true;
+            
+            // Call callback if defined
+            if (this.sustainedSoundCallback) {
+                const sustainedId = this.sustainedSoundCallback(this.volumeLevel, duration);
+                
+                // Track this sustained sound if we got a valid ID
+                if (sustainedId) {
+                    this.currentSustainedId = sustainedId;
+                    this.activeSustainedSounds.set(sustainedId, {
+                        startTime: Date.now(),
+                        lastUpdateTime: Date.now(),
+                        volume: this.volumeLevel
+                    });
+                    
+                    if (this.debug) {
+                        console.log(`New sustained sound tracked with ID: ${sustainedId}`);
+                    }
+                }
+            }
+            
+            // Reset processing flag
+            setTimeout(() => {
+                this.isProcessingSustained = false;
+            }, 100);
+        } 
+        // Update existing sustained sound
+        else if (this.currentSustainedId && this.activeSustainedSounds.has(this.currentSustainedId)) {
+            const soundData = this.activeSustainedSounds.get(this.currentSustainedId);
+            soundData.lastUpdateTime = Date.now();
+            soundData.volume = this.volumeLevel;
+        }
+    }
+    
+    /**
+     * End all active sustained sounds
+     */
+    endAllSustainedSounds() {
+        this.activeSustainedSounds.forEach((soundData, id) => {
+            if (this.debug) {
+                console.log(`Sustained sound ended, id: ${id}`);
+            }
+            
+            if (this.sustainedSoundEndCallback) {
+                this.sustainedSoundEndCallback(id);
+            }
+        });
+        
+        this.activeSustainedSounds.clear();
+        this.currentSustainedId = null;
     }
     
     /**
@@ -206,27 +293,30 @@ class AudioManager {
     }
     
     /**
+     * Set callback for when sustained sounds end
+     */
+    onSustainedSoundEnd(callback) {
+        this.sustainedSoundEndCallback = callback;
+    }
+    
+    /**
      * Update audio settings
      */
     updateSettings(settings) {
         if (settings.sensitivity !== undefined) {
             this.sensitivity = settings.sensitivity;
-            console.log('Sensitivity updated to:', this.sensitivity);
         }
         
         if (settings.quietThreshold !== undefined) {
             this.quietThreshold = settings.quietThreshold;
-            console.log('Quiet threshold updated to:', this.quietThreshold);
         }
         
         if (settings.loudThreshold !== undefined) {
             this.loudThreshold = settings.loudThreshold;
-            console.log('Loud threshold updated to:', this.loudThreshold);
         }
         
         if (settings.suddenSoundThreshold !== undefined) {
             this.suddenSoundThreshold = settings.suddenSoundThreshold;
-            console.log('Sudden sound threshold updated to:', this.suddenSoundThreshold);
         }
     }
-} 
+}

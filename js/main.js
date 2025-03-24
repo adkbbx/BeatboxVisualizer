@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create animation controller
     const animationController = new AnimationController('animationCanvas');
     
+    // Apply canvas sizing to utilize more space
+    const canvas = document.getElementById('animationCanvas');
+    canvas.style.height = '500px'; // Make canvas taller
+    
     // Create UI controller and connect components
     const uiController = new UIController(audioManager, animationController);
     
@@ -54,4 +58,4 @@ function checkBrowserCompatibility() {
         
         document.body.insertBefore(warningElement, document.body.firstChild);
     }
-} 
+}

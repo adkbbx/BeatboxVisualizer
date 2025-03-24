@@ -1,15 +1,16 @@
-/* General Styles */
+/* Modern Dark Mode Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: all 0.2s ease;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
-    color: #333;
-    background-color: #f5f5f5;
+    color: #e0e0e0;
+    background-color: #121212;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -17,117 +18,171 @@ body {
 
 header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 header h1 {
-    font-size: 2rem;
-    color: #2c3e50;
+    font-size: 1.8rem;
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 /* Browser Compatibility Warning */
 .browser-warning {
-    background-color: #f39c12;
-    color: #fff;
+    background-color: rgba(243, 156, 18, 0.15);
+    color: #f39c12;
     padding: 15px;
     margin-bottom: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(243, 156, 18, 0.3);
 }
 
 .browser-warning h3 {
     margin-bottom: 10px;
+    color: #f39c12;
 }
 
 .browser-warning ul {
     margin-left: 20px;
     margin-bottom: 10px;
+    color: #e0e0e0;
 }
 
 /* Control Panel */
 .control-panel {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 button {
-    padding: 8px 16px;
-    background-color: #3498db;
+    padding: 10px 16px;
+    background-color: #2c2c2c;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.3s ease;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #3a3a3a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
 }
 
 button:disabled {
-    background-color: #95a5a6;
+    background-color: #2a2a2a;
+    color: #555555;
     cursor: not-allowed;
+    box-shadow: none;
+}
+
+#startMicrophone {
+    background-color: #2ecc71;
+    color: #ffffff;
+}
+
+#startMicrophone:hover {
+    background-color: #27ae60;
+}
+
+#stopMicrophone {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+#stopMicrophone:hover {
+    background-color: #c0392b;
+}
+
+#testFireworks {
+    background-color: #9b59b6;
+    color: #ffffff;
+}
+
+#testFireworks:hover {
+    background-color: #8e44ad;
+}
+
+#toggleSettings {
+    background-color: #3498db;
+    color: #ffffff;
+}
+
+#toggleSettings:hover {
+    background-color: #2980b9;
 }
 
 /* Visualization Container */
 .visualization-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
+    margin-bottom: 30px;
 }
 
 /* Audio Visualizer */
 .audio-visualizer {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .volume-meter {
-    height: 20px;
-    background-color: #ecf0f1;
-    border-radius: 10px;
+    height: 8px;
+    background-color: #2c2c2c;
+    border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
 }
 
 .level-bar {
     height: 100%;
     width: 0%;
-    background-color: #2ecc71;
+    background: linear-gradient(90deg, #2ecc71, #3498db);
     transition: width 0.1s ease-out;
 }
 
 #audioStatus {
     font-size: 14px;
-    color: #7f8c8d;
+    color: #a0a0a0;
+    margin-bottom: 12px;
 }
 
 /* Animation Canvas */
 #animationCanvas {
     width: 100%;
-    height: 400px;
-    background-color: #000; /* Dark background for fireworks */
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: block; /* Ensure the canvas is displayed as a block element */
+    height: 500px;
+    background-color: #000000;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    display: block;
 }
 
 /* Settings Panel */
 .settings-panel {
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin: 20px 0;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    padding: 24px;
+    margin: 24px 0;
+    border: 1px solid #2c2c2c;
 }
 
 .hidden {
@@ -135,55 +190,91 @@ button:disabled {
 }
 
 .settings-section {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .settings-section h3 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    color: #2c3e50;
-    border-bottom: 1px solid #ecf0f1;
-    padding-bottom: 5px;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: #ffffff;
+    border-bottom: 1px solid #2c2c2c;
+    padding-bottom: 8px;
 }
 
 .setting {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .setting label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #e0e0e0;
 }
 
-.setting input[type="range"],
-.setting select {
+.setting input[type="range"] {
     width: 100%;
     padding: 5px;
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.setting input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3498db;
+    cursor: pointer;
+}
+
+.setting input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3498db;
+    cursor: pointer;
+    border: none;
+}
+
+.setting select {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #2c2c2c;
+    color: #e0e0e0;
+    border: none;
+    border-radius: 8px;
 }
 
 #closeSettings {
     display: block;
     margin: 0 auto;
+    background-color: #2c2c2c;
+    color: #e0e0e0;
 }
 
 /* Footer */
 footer {
-    margin-top: 30px;
+    margin-top: 40px;
     text-align: center;
 }
 
 .reference-guide {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
+    border: 1px solid #2c2c2c;
 }
 
 .reference-guide h3 {
-    margin-bottom: 10px;
-    color: #2c3e50;
+    margin-bottom: 16px;
+    color: #ffffff;
 }
 
 .reference-guide ul {
@@ -194,12 +285,57 @@ footer {
 }
 
 .reference-guide li {
-    padding: 5px 0;
-    border-bottom: 1px solid #ecf0f1;
+    padding: 10px 0;
+    border-bottom: 1px solid #2c2c2c;
 }
 
 .reference-guide li:last-child {
     border-bottom: none;
+}
+
+.reference-guide strong {
+    color: #3498db;
+}
+
+/* Microphone Test */
+.mic-test {
+    margin-top: 18px;
+    padding-top: 12px;
+    border-top: 1px solid #2c2c2c;
+}
+
+.mic-test p {
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: #a0a0a0;
+}
+
+.mic-detection {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: #2c2c2c;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.mic-detection.detected-loud {
+    background-color: #e74c3c;
+    color: white;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+}
+
+.mic-detection.detected-sudden {
+    background-color: #f39c12;
+    color: white;
+    box-shadow: 0 0 15px rgba(243, 156, 18, 0.5);
+}
+
+.mic-detection.detected-sustained {
+    background-color: #2ecc71;
+    color: white;
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
 }
 
 /* Responsive Design */
@@ -214,61 +350,34 @@ footer {
     
     #animationCanvas {
         flex: 2;
-        height: 350px;
+        height: 500px;
+    }
+    
+    .control-panel {
+        justify-content: space-evenly;
     }
 }
 
 @media (max-width: 767px) {
     .control-panel {
-        flex-direction: column;
-        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    button {
+        min-width: 45%;
     }
     
     #animationCanvas {
-        height: 300px;
+        height: 350px;
     }
 }
 
-#testFireworks {
-    background-color: #e74c3c;
-    font-weight: bold;
+/* Add a subtle animation to the entire app */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-#testFireworks:hover {
-    background-color: #c0392b;
+body {
+    animation: fadeIn 0.4s ease-in;
 }
-
-/* Microphone Test */
-.mic-test {
-    margin-top: 15px;
-    padding-top: 10px;
-    border-top: 1px dashed #ccc;
-}
-
-.mic-test p {
-    margin-bottom: 8px;
-}
-
-.mic-detection {
-    padding: 6px 10px;
-    border-radius: 4px;
-    background-color: #ecf0f1;
-    display: inline-block;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
-.mic-detection.detected-loud {
-    background-color: #e74c3c;
-    color: white;
-}
-
-.mic-detection.detected-sudden {
-    background-color: #f39c12;
-    color: white;
-}
-
-.mic-detection.detected-sustained {
-    background-color: #2ecc71;
-    color: white;
-} 
