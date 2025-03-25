@@ -92,7 +92,7 @@ class UIController {
             });
             
             this.audioManager.onSustainedSound((volume, duration) => {
-                // Only respond to significant volume (greater than 0.1) and duration over 500ms
+                // Only respond to significant volume (greater than 0.1) and duration over 250ms
                 if (volume < 0.1) return null;
                 
                 // Debug logging to help diagnose issues

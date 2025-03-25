@@ -8,15 +8,26 @@ class FireworkManager {
     this.particleManager = particleManager;
     this.fireworks = [];
     this.launchingFirework = false;
-    this.gravity = 0.08;
+    this.gravity = 0.02;
   }
 
   /**
    * Create a new firework
    */
   createFirework(startX, startY, targetX, targetY, color) {
+    // Calculate angle between start and target
     const angle = Math.atan2(targetY - startY, targetX - startX);
-    const velocity = 8;
+    
+    // Limit the angle to be more vertical (between -45 and 45 degrees for straighter paths)
+    const maxAngle = Math.PI / 2; // reduced from
+    const clampedAngle = Math.max(-maxAngle, Math.min(maxAngle, angle));
+    
+    // Calculate distance to target
+    const distance = Math.hypot(targetX - startX, targetY - startY);
+    
+    // Increase base velocity and adjust scaling for higher launches
+    const baseVelocity = 3; 
+    const velocity = baseVelocity * Math.sqrt(distance / 300); // Use square root for better scaling
     
     return {
       id: Date.now(),
@@ -26,8 +37,8 @@ class FireworkManager {
       targetY,
       color: color || this.colorManager.getRandomColor(),
       velocity: {
-        x: Math.cos(angle) * velocity,
-        y: Math.sin(angle) * velocity
+        x: Math.cos(clampedAngle) * velocity,
+        y: Math.sin(clampedAngle) * velocity
       },
       exploded: false,
       alpha: 1
@@ -36,16 +47,33 @@ class FireworkManager {
 
   /**
    * Launch a new firework
+   * @param {number} duration - Duration of the sustained sound in milliseconds
    */
-  launchFirework() {
+  launchFirework(duration = 250) {
     if (this.launchingFirework) return;
     
     this.launchingFirework = true;
     
-    const startX = Math.random() * this.ctx.canvas.width;
+    // Calculate target height based on duration
+    // Use more extreme height values
+    const minHeight = this.ctx.canvas.height * 0.2; // Lower starting point
+    const maxHeight = this.ctx.canvas.height * 0.05; // Target closer to top (5% from top)
+    const heightRange = minHeight - maxHeight; // Note: minHeight is now larger than maxHeight
+    
+    // Normalize duration to a value between 0 and 1
+    // Reduce max duration for faster height scaling
+    const normalizedDuration = Math.min(duration / 1500, 1);
+    
+    // Calculate target height based on normalized duration
+    const targetY = minHeight - (heightRange * normalizedDuration);
+    
+    // Randomize start and target X positions
+    // Keep more centered for straighter paths
+    const centerX = this.ctx.canvas.width / 2;
+    const spread = this.ctx.canvas.width * 0.2; // Reduced spread to 20%
+    const startX = centerX + (Math.random() - 0.5) * spread;
+    const targetX = centerX + (Math.random() - 0.5) * spread;
     const startY = this.ctx.canvas.height;
-    const targetX = Math.random() * this.ctx.canvas.width;
-    const targetY = this.ctx.canvas.height * 0.3 + Math.random() * this.ctx.canvas.height * 0.2;
     
     const firework = this.createFirework(startX, startY, targetX, targetY);
     this.fireworks.push(firework);

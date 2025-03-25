@@ -20,7 +20,7 @@ class AudioManager {
         this.quietThreshold = 0.04;
         this.loudThreshold = 0.3;
         this.suddenSoundThreshold = 0.1;
-        this.sustainedSoundDuration = 500;
+        this.sustainedSoundDuration = 250;
         this.noiseFloor = 0.02;
         
         // State tracking

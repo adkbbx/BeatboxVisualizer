@@ -108,8 +108,8 @@ class AnimationController {
    * @returns {string} - A unique ID for the firework
    */
   applySustainedSound(volume, duration) {
-    // Launch a new firework
-    this.fireworkManager.launchFirework();
+    // Launch a new firework with duration
+    this.fireworkManager.launchFirework(duration);
     
     // Generate a unique ID for this firework
     const fireworkId = `firework_${Date.now()}`;
