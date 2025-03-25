@@ -1,3 +1,7 @@
+import AudioManager from './audioManager.js';
+import AnimationController from './animationController.js';
+import UIController from './uiController.js';
+
 /**
  * Main application entry point
  */
