@@ -14,14 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create animation controller
     const animationController = new AnimationController('animationCanvas');
     
-    // Apply canvas sizing to utilize more space
+    // Set canvas to full window size
     const canvas = document.getElementById('animationCanvas');
-    canvas.style.height = '500px'; // Make canvas taller
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Handle window resizing
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        console.log('Canvas resized:', { width: canvas.width, height: canvas.height });
+    });
     
     // Create UI controller and connect components
     const uiController = new UIController(audioManager, animationController);
     
     console.log('Application initialized successfully');
+    console.log('Canvas dimensions:', { width: canvas.width, height: canvas.height });
     
     // Display browser compatibility warning if necessary
     checkBrowserCompatibility();

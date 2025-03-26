@@ -3,79 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sound-Responsive Fireworks</title>
+    <title>Sound-Responsive Fireworks with Flowers</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/flower-uploader.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        #animationCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        #flowerUploader {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+        .visualization-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+        .audio-visualizer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px;
+            text-align: center;
+        }
+        .volume-meter {
+            width: 200px;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px auto;
+        }
+        .level-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.1s ease;
+        }
+        .mic-test {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .mic-detection {
+            margin-top: 5px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        #audioStatus {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Sound-Responsive Fireworks</h1>
-    </header>
+    <div class="control-panel">
+        <button id="startMicrophone">Start Microphone</button>
+        <button id="stopMicrophone" disabled>Stop Microphone</button>
+        <div class="settings-toggle">
+            <button id="toggleSettings">Settings</button>
+        </div>
+    </div>
     
-    <main>
-        <div class="control-panel">
-            <button id="startMicrophone">Start Microphone</button>
-            <button id="stopMicrophone" disabled>Stop Microphone</button>
-            <div class="settings-toggle">
-                <button id="toggleSettings">Settings</button>
-            </div>
-        </div>
-        
-        <div class="visualization-container">
-            <div class="audio-visualizer">
-                <div id="volumeLevel" class="volume-meter">
-                    <div class="level-bar"></div>
-                </div>
-                <div id="audioStatus">Audio status: inactive</div>
-                <div class="mic-test">
-                    <p>Try making SUSTAINED sounds to launch fireworks. Keep making sound to keep them rising. LOUD sounds will BURST all active fireworks! 🔊</p>
-                    <div id="micDetection" class="mic-detection">Make SUSTAINED sound to start fireworks</div>
-                </div>
-            </div>
-            
-            <canvas id="animationCanvas"></canvas>
-        </div>
-        
-        <div id="settingsPanel" class="settings-panel hidden">
-            <h2>Settings</h2>
-            
-            <section class="settings-section">
-                <h3>Audio Settings</h3>
-                <div class="setting">
-                    <label for="sensitivitySlider">Microphone Sensitivity:</label>
-                    <input type="range" id="sensitivitySlider" min="0" max="3" step="0.1" value="2.0">
-                </div>
-                
-                <div class="setting">
-                    <label for="thresholdLow">Quiet Threshold:</label>
-                    <input type="range" id="thresholdLow" min="0" max="0.5" step="0.01" value="0.03">
-                </div>
-                
-                <div class="setting">
-                    <label for="thresholdHigh">Loud Threshold:</label>
-                    <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.01" value="0.3">
-                </div>
-                
-                <div class="setting">
-                    <label for="suddenThreshold">Sudden Sound Threshold:</label>
-                    <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.1">
-                </div>
-            </section>
-            
-            <button id="closeSettings">Close Settings</button>
-        </div>
-    </main>
+    <div class="visualization-container">
+        <canvas id="animationCanvas"></canvas>
+    </div>
     
-    <footer>
-        <div class="reference-guide">
-            <h3>Firework Sound Mapping Guide</h3>
-            <ul>
-                <li><strong>Sustained Sounds:</strong> Launch fireworks that rise as long as sound continues and fall when sound stops</li>
-                <li><strong>Multiple Sounds:</strong> Launch additional fireworks while maintaining existing ones</li>
-                <li><strong>Loud Sounds:</strong> BURST ALL active fireworks immediately</li>
-            </ul>
+    <div id="flowerUploader"></div>
+    
+    <div class="audio-visualizer">
+        <div id="volumeLevel" class="volume-meter">
+            <div class="level-bar"></div>
         </div>
-    </footer>
+        <div id="audioStatus">Audio status: inactive</div>
+        <div class="mic-test">
+            <p>Try making SUSTAINED sounds to launch fireworks. Keep making sound to keep them rising. LOUD sounds will BURST all active fireworks! 🔊</p>
+            <div id="micDetection" class="mic-detection">Make SUSTAINED sound to start fireworks</div>
+        </div>
+    </div>
+    
+    <div id="settingsPanel" class="settings-panel hidden">
+        <h2>Settings</h2>
+        
+        <section class="settings-section">
+            <h3>Audio Settings</h3>
+            <div class="setting">
+                <label for="sensitivitySlider">Microphone Sensitivity:</label>
+                <input type="range" id="sensitivitySlider" min="0" max="3" step="0.1" value="2.0">
+            </div>
+            
+            <div class="setting">
+                <label for="thresholdLow">Quiet Threshold:</label>
+                <input type="range" id="thresholdLow" min="0" max="0.5" step="0.01" value="0.03">
+            </div>
+            
+            <div class="setting">
+                <label for="thresholdHigh">Loud Threshold:</label>
+                <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.01" value="0.3">
+            </div>
+
+            <div class="setting">
+                <label for="suddenThreshold">Sudden Sound Threshold:</label>
+                <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.1">
+            </div>
+        </section>
+        
+        <button id="closeSettings">Close Settings</button>
+    </div>
 
     <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/flower-animation.js"></script>
 </body>
 </html> 

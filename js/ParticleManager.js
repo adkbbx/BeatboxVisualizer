@@ -41,12 +41,22 @@ class ParticleManager {
     const particles = [];
     const baseColor = color || this.colorManager.getRandomColor();
     
+    // Log color information for debugging
+    console.debug('Creating particle explosion:', {
+      position: { x, y },
+      providedColor: color,
+      baseColor,
+      useMultiColor: this.settings.useMultiColor && !color, // Only use multicolor if no specific color provided
+      particleCount: this.settings.particleCount
+    });
+    
     for (let i = 0; i < this.settings.particleCount; i++) {
       const angle = (Math.PI * 2 * i) / this.settings.particleCount;
       const velocity = Math.random() * 2 + 3;
-      const particleColor = this.settings.useMultiColor 
-        ? this.colorManager.getRandomColor()
-        : baseColor;
+      
+      // If a color is provided, always use it. Otherwise, use multicolor if enabled
+      const particleColor = color || (this.settings.useMultiColor ? 
+        this.colorManager.getRandomColor() : baseColor);
       
       particles.push(this.createParticle(x, y, particleColor, velocity, angle));
     }

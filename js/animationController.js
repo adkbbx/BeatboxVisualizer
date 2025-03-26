@@ -28,22 +28,31 @@ class AnimationController {
   }
 
   /**
-   * Starts the animation loop
+   * Handle window resize
    */
-  start() {
-    this.isActive = true;
-    console.log("Animation started");
-    this.animate(0);
-    return true;
+  handleResize() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
   }
 
   /**
-   * Stops the animation loop
+   * Start the animation
+   */
+  start() {
+    if (!this.isActive) {
+      this.isActive = true;
+      this.lastTime = performance.now();
+      requestAnimationFrame(this.animate.bind(this));
+      console.log("Animation started");
+    }
+  }
+
+  /**
+   * Stop the animation
    */
   stop() {
     this.isActive = false;
     console.log("Animation stopped");
-    return true;
   }
 
   /**
@@ -67,6 +76,11 @@ class AnimationController {
     this.fireworkManager.drawFireworks();
     this.particleManager.drawParticles();
 
+    // Update and render flowers if the system exists
+    if (window.flowerSystem) {
+      window.flowerSystem.update();
+    }
+
     // Continue animation loop
     requestAnimationFrame(this.animate.bind(this));
   }
@@ -83,14 +97,6 @@ class AnimationController {
    */
   explodeAllFireworks() {
     this.fireworkManager.explodeAllFireworks();
-  }
-
-  /**
-   * Handle canvas resize
-   */
-  handleResize() {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
   }
 
   /**

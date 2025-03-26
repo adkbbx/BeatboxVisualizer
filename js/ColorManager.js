@@ -45,11 +45,45 @@ class ColorManager {
    * Get a color with alpha transparency
    */
   getColorWithAlpha(color, alpha) {
-    const hex = color.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
+    let r, g, b;
+
+    if (typeof color === 'object') {
+      if (color.rgb) {
+        // Handle new color object format
+        r = color.rgb.r;
+        g = color.rgb.g;
+        b = color.rgb.b;
+      } else if (color.r !== undefined) {
+        // Handle legacy RGB object format
+        r = color.r;
+        g = color.g;
+        b = color.b;
+      }
+    } else if (typeof color === 'string') {
+      // Handle hex color string
+      const hex = color.replace('#', '');
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+    }
+
+    // Log color conversion for debugging
+    console.debug('Color conversion:', {
+      input: color,
+      output: `rgba(${r}, ${g}, ${b}, ${alpha})`
+    });
+
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  /**
+   * Convert RGB values to hex color string
+   */
+  rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(x => {
+      const hex = x.toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    }).join('');
   }
 }
 

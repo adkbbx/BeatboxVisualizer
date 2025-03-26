@@ -121,7 +121,43 @@ class FireworkManager {
    * Explode a firework
    */
   explodeFirework(firework) {
-    this.particleManager.createExplosion(firework.x, firework.y, firework.color);
+    // Get flower system reference when needed
+    const flowerSystem = window.flowerSystem;
+    let explosionColor = firework.color;
+    
+    if (flowerSystem) {
+      console.log('Spawning flowers at firework explosion:', {
+        position: { x: firework.x, y: firework.y },
+        initialColor: firework.color
+      });
+      
+      const flowerColor = flowerSystem.handleFireworkExplosion(firework.x, firework.y, firework.color);
+      
+      if (flowerColor) {
+        // Use the flower's hex color directly
+        explosionColor = flowerColor;
+        console.debug('Using flower color for explosion:', {
+          flowerColor,
+          originalColor: firework.color
+        });
+      } else {
+        // No flower images available, use default color
+        console.debug('No flower color available, using default color:', {
+          defaultColor: firework.color
+        });
+      }
+    } else {
+      console.warn('Flower system not available for firework explosion');
+    }
+    
+    // Create the explosion with the selected color
+    console.debug('Creating firework explosion:', {
+      position: { x: firework.x, y: firework.y },
+      finalColor: explosionColor,
+      usedFlowerColor: explosionColor !== firework.color
+    });
+    
+    this.particleManager.createExplosion(firework.x, firework.y, explosionColor);
   }
 
   /**
