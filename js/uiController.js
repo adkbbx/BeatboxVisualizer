@@ -232,13 +232,17 @@ class UIController {
      * Toggle settings panel
      */
     toggleSettings() {
+        console.log('toggleSettings called');
+        console.log('settingsPanel before toggle:', this.settingsPanel.classList.contains('hidden'));
         this.settingsPanel.classList.toggle('hidden');
+        console.log('settingsPanel after toggle:', this.settingsPanel.classList.contains('hidden'));
     }
     
     /**
      * Close settings panel
      */
     closeSettings() {
+        console.log('closeSettings called');
         this.settingsPanel.classList.add('hidden');
     }
     
