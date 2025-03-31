@@ -12,7 +12,9 @@
             padding: 0;
             overflow: hidden;
             background-color: #000;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
+        
         #animationCanvas {
             position: fixed;
             top: 0;
@@ -21,97 +23,211 @@
             height: 100%;
             z-index: 1;
         }
+        
+        .app-container {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 250px;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+            height: 100vh;
+            pointer-events: none;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        
+        .control-panel {
+            grid-column: 1;
+            grid-row: 1;
+            background-color: rgba(30, 30, 30, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: flex-start;
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: fit-content;
+            margin-left: 20px;
+        }
+        
         #flowerUploader {
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 2;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 15px;
+            background-color: rgba(30, 30, 30, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 250px;
+            height: calc(100vh - 40px);
+            overflow-y: auto;
+            z-index: 3;
         }
-        .control-panel {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 2;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 15px;
-        }
-        .visualization-container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-        }
+        
         .audio-visualizer {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 15px;
-            text-align: center;
+            grid-column: 1;
+            grid-row: 3;
+            background-color: rgba(30, 30, 30, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 400px;
+            margin-left: 20px;
+            align-self: end;
         }
+        
         .volume-meter {
-            width: 200px;
-            height: 20px;
-            background-color: #ddd;
-            border-radius: 10px;
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
             overflow: hidden;
-            margin: 10px auto;
+            margin: 15px 0;
         }
+        
         .level-bar {
             width: 0%;
             height: 100%;
-            background-color: #4CAF50;
+            background: linear-gradient(90deg, #2ecc71, #3498db);
             transition: width 0.1s ease;
         }
-        .mic-test {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #666;
-        }
-        .mic-detection {
-            margin-top: 5px;
-            font-weight: bold;
-            color: #4CAF50;
-        }
+        
         #audioStatus {
-            margin: 5px 0;
             font-size: 14px;
-            color: #666;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+        }
+        
+        .mic-test {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .mic-detection {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.15);
+            min-width: 140px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+        
+        #startMicrophone {
+            background-color: rgba(46, 204, 113, 0.7);
+        }
+        
+        #stopMicrophone {
+            background-color: rgba(231, 76, 60, 0.7);
+        }
+        
+        #toggleSettings {
+            background-color: rgba(52, 152, 219, 0.7);
+        }
+        
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr 1fr;
+                padding: 16px;
+                gap: 16px;
+            }
+            
+            #flowerUploader {
+                width: 220px;
+            }
+            
+            .audio-visualizer {
+                width: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                padding: 12px;
+                gap: 12px;
+            }
+            
+            .control-panel {
+                grid-column: 1;
+                grid-row: 1;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 16px;
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            #flowerUploader {
+                position: static;
+                width: 100%;
+                height: 300px;
+                margin: 12px 0;
+            }
+            
+            .audio-visualizer {
+                grid-column: 1;
+                grid-row: 2;
+                width: 100%;
+                margin-left: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="control-panel">
-        <button id="startMicrophone">Start Microphone</button>
-        <button id="stopMicrophone" disabled>Stop Microphone</button>
-        <div class="settings-toggle">
+    <canvas id="animationCanvas"></canvas>
+    
+    <div class="app-container">
+        <div class="control-panel">
+            <button id="startMicrophone">Start Microphone</button>
+            <button id="stopMicrophone" disabled>Stop Microphone</button>
             <button id="toggleSettings">Settings</button>
         </div>
-    </div>
-    
-    <div class="visualization-container">
-        <canvas id="animationCanvas"></canvas>
-    </div>
-    
-    <div id="flowerUploader"></div>
-    
-    <div class="audio-visualizer">
-        <div id="volumeLevel" class="volume-meter">
-            <div class="level-bar"></div>
-        </div>
-        <div id="audioStatus">Audio status: inactive</div>
-        <div class="mic-test">
-            <p>Try making SUSTAINED sounds to launch fireworks. Keep making sound to keep them rising. LOUD sounds will BURST all active fireworks! 🔊</p>
-            <div id="micDetection" class="mic-detection">Make SUSTAINED sound to start fireworks</div>
+        
+        <div id="flowerUploader"></div>
+        
+        <div class="audio-visualizer">
+            <div id="volumeLevel" class="volume-meter">
+                <div class="level-bar"></div>
+            </div>
+            <div id="audioStatus">Audio status: inactive</div>
+            <div class="mic-test">
+                <p>Try making SUSTAINED sounds to launch fireworks. Keep making sound to keep them rising. LOUD sounds will BURST all active fireworks! 🔊</p>
+                <div id="micDetection" class="mic-detection">Make SUSTAINED sound to start fireworks</div>
+            </div>
         </div>
     </div>
     
