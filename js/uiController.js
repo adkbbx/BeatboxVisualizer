@@ -39,9 +39,19 @@ class UIController {
      * Initialize all event listeners
      */
     initializeEventListeners() {
-        // Microphone control buttons
-        this.startButton.addEventListener('click', () => this.startMicrophone());
-        this.stopButton.addEventListener('click', () => this.stopMicrophone());
+        this.startButton.addEventListener('click', () => {
+            if (!this.startButton.classList.contains('active')) {
+                // Start microphone
+                this.startButton.classList.add('active');
+                this.startButton.querySelector('.text').textContent = 'Stop';
+                this.startMicrophone();
+            } else {
+                // Stop microphone
+                this.startButton.classList.remove('active');
+                this.startButton.querySelector('.text').textContent = 'Start';
+                this.stopMicrophone();
+            }
+        });
         
         // Settings panel toggle
         this.toggleSettingsButton.addEventListener('click', () => this.toggleSettings());
@@ -133,11 +143,15 @@ class UIController {
             this.animationController.start();
             
             // Update UI
-            this.startButton.disabled = true;
+            this.startButton.disabled = false;
             this.stopButton.disabled = false;
-            this.audioStatus.textContent = 'Audio status: active';
+            this.audioStatus.textContent = 'Microphone Active';
+            this.audioStatus.className = 'active';
+            this.audioStatus.parentElement.classList.add('active');
         } else {
-            this.audioStatus.textContent = 'Error: Microphone access denied';
+            this.audioStatus.textContent = 'Microphone Access Denied';
+            this.audioStatus.className = 'inactive';
+            this.audioStatus.parentElement.classList.add('inactive');
         }
     }
     
@@ -153,7 +167,9 @@ class UIController {
         // Update UI
         this.startButton.disabled = false;
         this.stopButton.disabled = true;
-        this.audioStatus.textContent = 'Audio status: inactive';
+        this.audioStatus.textContent = 'Microphone Inactive';
+        this.audioStatus.className = 'inactive';
+        this.audioStatus.parentElement.classList.add('inactive');
         this.updateVolumeUI(0);
         this.micDetection.textContent = 'No sound detected';
         this.micDetection.className = 'mic-detection';
@@ -165,15 +181,39 @@ class UIController {
     updateVolumeUI(volume) {
         // Update volume meter
         const levelBar = this.volumeLevel.querySelector('.level-bar');
-        levelBar.style.width = `${volume * 100}%`;
+        
+        // Ensure volume is within bounds
+        const boundedVolume = Math.max(0, Math.min(1, volume));
+        
+        // Reset any existing transitions and styles
+        levelBar.style.transition = 'none';
+        void levelBar.offsetHeight; // Force reflow
+        
+        // Set the width with transition
+        levelBar.style.transition = 'all 0.1s ease-out';
+        levelBar.style.width = `${boundedVolume * 100}%`;
         
         // Change color based on volume level
         if (volume <= this.audioManager.quietThreshold) {
-            levelBar.style.backgroundColor = '#2ecc71'; // Green
+            levelBar.style.background = 'linear-gradient(90deg, #2ecc71 0%, #3498db 100%)';
+            levelBar.style.opacity = '0.7';
         } else if (volume >= this.audioManager.loudThreshold) {
-            levelBar.style.backgroundColor = '#e74c3c'; // Red
+            levelBar.style.background = 'linear-gradient(90deg, #e74c3c 0%, #f39c12 100%)';
+            levelBar.style.opacity = '1';
+            
+            // Schedule a reset of the level bar
+            requestAnimationFrame(() => {
+                levelBar.style.transition = 'all 0.3s ease-out';
+                levelBar.style.width = '0%';
+                levelBar.style.opacity = '0.7';
+                levelBar.style.background = 'linear-gradient(90deg, #2ecc71 0%, #3498db 100%)';
+            });
         } else {
-            levelBar.style.backgroundColor = '#3498db'; // Blue
+            // For medium volumes, interpolate between quiet and loud colors
+            const normalizedVolume = (volume - this.audioManager.quietThreshold) / 
+                (this.audioManager.loudThreshold - this.audioManager.quietThreshold);
+            levelBar.style.background = 'linear-gradient(90deg, #3498db 0%, #f39c12 100%)';
+            levelBar.style.opacity = 0.7 + (normalizedVolume * 0.3);
         }
     }
     
@@ -202,6 +242,9 @@ class UIController {
         
         this.micDetection.textContent = message;
         this.micDetection.className = 'mic-detection detected-loud';
+        
+        // Reset the volume meter immediately for loud sounds
+        this.updateVolumeUI(0);
         
         this.loudIndicatorTimer = setTimeout(() => {
             this.micDetection.textContent = this.fireworksActive ? 
