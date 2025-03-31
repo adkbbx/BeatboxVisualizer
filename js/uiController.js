@@ -39,16 +39,22 @@ class UIController {
      * Initialize all event listeners
      */
     initializeEventListeners() {
+        const audioStatus = document.getElementById('audioStatus');
+
         this.startButton.addEventListener('click', () => {
             if (!this.startButton.classList.contains('active')) {
                 // Start microphone
                 this.startButton.classList.add('active');
                 this.startButton.querySelector('.text').textContent = 'Stop';
+                audioStatus.textContent = 'Audio status: active';
+                audioStatus.className = 'active';
                 this.startMicrophone();
             } else {
                 // Stop microphone
                 this.startButton.classList.remove('active');
                 this.startButton.querySelector('.text').textContent = 'Start';
+                audioStatus.textContent = 'Audio status: inactive';
+                audioStatus.className = 'inactive';
                 this.stopMicrophone();
             }
         });
