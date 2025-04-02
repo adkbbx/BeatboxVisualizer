@@ -68,20 +68,34 @@ export class FlowerAnimationSystem {
     }
 
     // Handle firework explosion by creating flower effect
-    handleFireworkExplosion(x, y, color) {
+    // Always return the flower's color for the firework to use
+    handleFireworkExplosion(x, y, color, useFireworkColor = false) {
         this.explosionCount++;
         console.log(`Creating flower explosion #${this.explosionCount} at (${x}, ${y})`);
         
-        // Create flower explosion with random image selection and get its color
-        const flowerColor = this.flowerManager.createFlowerExplosion(x, y);
+        // If we're not forcing the firework color, let the flower image determine the color
+        let flowerColor;
+        
+        if (useFireworkColor) {
+            // Use the firework's color for the flower
+            flowerColor = this.flowerManager.createFlowerExplosion(x, y, null, color);
+            console.log(`Using firework color for explosion: ${color}`);
+        } else {
+            // Let the flower's natural color be used
+            flowerColor = this.flowerManager.createFlowerExplosion(x, y, null, null);
+            console.log(`Using flower's natural color for explosion: ${flowerColor}`);
+            
+            // Important: Return the flower's color for the firework to use
+            // This ensures the firework explosion matches the flower color
+            color = flowerColor;
+        }
         
         // Log explosion stats with color information
         console.debug('Explosion stats:', {
             totalExplosions: this.explosionCount,
             position: {x: x.toFixed(1), y: y.toFixed(1)},
-            requestedColor: color,
-            flowerColor: flowerColor,
-            usingFlowerColor: !!flowerColor,
+            finalColor: color,
+            colorSource: useFireworkColor ? 'firework' : 'flower',
             canvasSize: {
                 width: this.canvas.width,
                 height: this.canvas.height
@@ -89,8 +103,8 @@ export class FlowerAnimationSystem {
             activeFragments: this.flowerManager.flowers.length
         });
 
-        // Return the flower color to be used for the firework, or null to use default color
-        return flowerColor;
+        // Return the color that should be used for the firework particles
+        return color;
     }
 
     // Clear all flowers

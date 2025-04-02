@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
     <title>Sound-Responsive Fireworks with Flowers</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/flower-uploader.css">
@@ -282,6 +283,21 @@
         #startMicrophone.active {
             background-color: rgba(231, 76, 60, 0.7); /* Brighter red for stop */
         }
+        
+        /* Visual indicator for settings open state */
+        body.settings-open .audio-visualizer {
+            border: 2px solid rgba(52, 152, 219, 0.7);
+        }
+        
+        /* Fade effect for settings panel */
+        #settingsPanel {
+            transition: opacity 0.3s ease;
+        }
+        
+        #settingsPanel.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
 
         /* Hover states */
         #startMicrophone:hover {
@@ -290,6 +306,77 @@
 
         #startMicrophone.active:hover {
             background-color: rgba(231, 76, 60, 0.9); /* Even brighter red on hover */
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.7); /* Add blue glow */
+            border: 2px solid rgba(52, 152, 219, 0.7); /* Add blue border */
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            color: white;
+            min-width: 300px;
+        }
+
+        /* Settings panel styling */
+        .settings-panel {
+            transition: opacity 0.3s ease;
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 2000 !important;
+        }
+        
+        .settings-panel.hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            /* Don't use display: none here as it prevents transition */
+        }
+
+        .settings-panel h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .settings-section {
+            margin-bottom: 20px;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .setting {
+            margin-bottom: 15px;
+        }
+
+        .setting label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .setting input[type="range"] {
+            width: 100%;
+        }
+
+        #closeSettings {
+            background-color: rgba(231, 76, 60, 0.7);
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        #closeSettings:hover {
+            background-color: rgba(231, 76, 60, 0.9);
         }
     </style>
 </head>
@@ -320,35 +407,100 @@
             </div>
             <div id="audioStatus">Audio status: inactive</div>
             <div class="mic-test">
-                <p>Try making SUSTAINED sounds to launch fireworks. Keep making sound to keep them rising. LOUD sounds will BURST all active fireworks! 🔊</p>
-                <div id="micDetection" class="mic-detection">Make SUSTAINED sound to start fireworks</div>
+                <p>Make LOUDER, SUSTAINED sounds to launch fireworks. Keep making sound to keep them rising. VERY LOUD sounds will BURST all active fireworks! 🔊</p>
+                <div id="micDetection" class="mic-detection">Make LOUDER, SUSTAINED sound to start fireworks</div>
             </div>
         </div>
     </div>
     
-    <div id="settingsPanel" class="settings-panel hidden">
+    <!-- Completely redesigned settings panel with fixed positioning -->
+    <div id="newSettingsPanel" style="
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(30, 30, 30, 0.95);
+        color: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(52, 152, 219, 0.9);
+        border: 3px solid rgba(52, 152, 219, 0.9);
+        z-index: 9999;
+        min-width: 350px;
+        text-align: center;
+        display: none;
+    ">
+        <h2 style="margin-top: 0; color: white; font-size: 24px; margin-bottom: 20px;">Sound Settings</h2>
+        <p style="color: #bbb; margin-bottom: 15px; font-size: 14px; line-height: 1.4;">
+            Adjust these settings to change how sound affects the animations. Try different values to get the best effect with your microphone.
+        </p>
+        
+        <div style="text-align: left; margin-bottom: 25px;">
+            <div style="margin-bottom: 15px;">
+                <label for="newSensitivitySlider" style="display: block; margin-bottom: 8px; color: #3498db;">Microphone Sensitivity:</label>
+                <span style="display: block; color: #999; font-size: 12px; margin-bottom: 5px;">Higher values amplify sounds. Increase if animations aren't triggering.</span>
+                <input type="range" id="newSensitivitySlider" min="0" max="3" step="0.1" value="1.5" style="width: 100%;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="newThresholdLow" style="display: block; margin-bottom: 8px; color: #3498db;">Quiet Threshold:</label>
+                <span style="display: block; color: #999; font-size: 12px; margin-bottom: 5px;">Sound level below this is considered quiet. Lower to detect softer sounds.</span>
+                <input type="range" id="newThresholdLow" min="0" max="0.5" step="0.01" value="0.06" style="width: 100%;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="newThresholdHigh" style="display: block; margin-bottom: 8px; color: #3498db;">Loud Threshold:</label>
+                <span style="display: block; color: #999; font-size: 12px; margin-bottom: 5px;">Sound level above this triggers explosions. Lower for easier bursting.</span>
+                <input type="range" id="newThresholdHigh" min="0.1" max="1" step="0.01" value="0.4" style="width: 100%;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="newSuddenThreshold" style="display: block; margin-bottom: 8px; color: #3498db;">Sudden Sound Threshold:</label>
+                <span style="display: block; color: #999; font-size: 12px; margin-bottom: 5px;">How quickly sound must increase to be detected as "sudden." Lower for more sensitivity.</span>
+                <input type="range" id="newSuddenThreshold" min="0.05" max="0.5" step="0.01" value="0.15" style="width: 100%;">
+            </div>
+        </div>
+        
+        <button id="newCloseSettings" style="
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: auto;
+            margin: 0 auto;
+            display: block;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        ">Close Settings</button>
+    </div>
+    
+    <!-- Keep original settings panel but hidden - don't delete it -->
+    <div id="settingsPanel" class="settings-panel hidden" style="display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;">
         <h2>Settings</h2>
         
         <section class="settings-section">
             <h3>Audio Settings</h3>
             <div class="setting">
                 <label for="sensitivitySlider">Microphone Sensitivity:</label>
-                <input type="range" id="sensitivitySlider" min="0" max="3" step="0.1" value="2.0">
+                <input type="range" id="sensitivitySlider" min="0" max="3" step="0.1" value="1.5">
             </div>
             
             <div class="setting">
                 <label for="thresholdLow">Quiet Threshold:</label>
-                <input type="range" id="thresholdLow" min="0" max="0.5" step="0.01" value="0.03">
+                <input type="range" id="thresholdLow" min="0" max="0.5" step="0.01" value="0.06">
             </div>
             
             <div class="setting">
                 <label for="thresholdHigh">Loud Threshold:</label>
-                <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.01" value="0.3">
+                <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.01" value="0.4">
             </div>
 
             <div class="setting">
                 <label for="suddenThreshold">Sudden Sound Threshold:</label>
-                <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.1">
+                <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.15">
             </div>
         </section>
         

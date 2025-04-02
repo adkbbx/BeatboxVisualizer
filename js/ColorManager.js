@@ -67,11 +67,7 @@ class ColorManager {
       b = parseInt(hex.substring(4, 6), 16);
     }
 
-    // Log color conversion for debugging
-    console.debug('Color conversion:', {
-      input: color,
-      output: `rgba(${r}, ${g}, ${b}, ${alpha})`
-    });
+    // Color conversion debugging removed to reduce console noise
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }

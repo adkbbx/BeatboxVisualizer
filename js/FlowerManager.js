@@ -24,10 +24,23 @@ export class FlowerManager {
     // Store processed flower images
     addProcessedImage(id, image) {
         console.log(`Adding processed image with ID: ${id}`);
-        this.processedImages.set(id, image);
-        console.debug('Available flower images:', {
-            count: this.processedImages.size,
-            ids: Array.from(this.processedImages.keys())
+        
+        // Extract and store the dominant color if available on the image
+        let dominantColor = null;
+        if (image.dominantColor) {
+            dominantColor = image.dominantColor;
+            console.log(`Stored dominant color for image ${id}: ${dominantColor.hex}`);
+        }
+        
+        // Store both the image and its dominant color
+        this.processedImages.set(id, {
+            image: image,
+            dominantColor: dominantColor
+        });
+        
+        console.debug('Current flower images:', {
+            totalImages: this.processedImages.size,
+            imageIDs: Array.from(this.processedImages.keys())
         });
     }
 
@@ -35,12 +48,7 @@ export class FlowerManager {
     removeProcessedImage(id) {
         console.log(`Removing processed image with ID: ${id}`);
         const removed = this.processedImages.delete(id);
-        console.debug('Image removal result:', {
-            imageId: id,
-            success: removed,
-            remainingCount: this.processedImages.size,
-            remainingIds: Array.from(this.processedImages.keys())
-        });
+        // Debug log for image removal removed to reduce console noise
         return removed;
     }
 
@@ -53,71 +61,81 @@ export class FlowerManager {
         }
         const randomIndex = Math.floor(Math.random() * imageIds.length);
         const randomId = imageIds[randomIndex];
+        const imageData = this.processedImages.get(randomId);
+        
         console.debug('Selected random flower image:', {
-            selectedId: randomId,
-            totalImages: imageIds.length
+            id: randomId,
+            hasDominantColor: !!imageData.dominantColor,
+            dominantColor: imageData.dominantColor ? imageData.dominantColor.hex : 'none'
         });
+        
         return {
             id: randomId,
-            image: this.processedImages.get(randomId)
+            image: imageData.image,
+            dominantColor: imageData.dominantColor
         };
     }
 
     // Create a blooming flower effect
-    createFlowerExplosion(x, y, imageId = null) {
+    // Added forcedColor parameter to allow forcing a specific color
+    createFlowerExplosion(x, y, imageId = null, forcedColor = null) {
         // If no specific imageId is provided or the image doesn't exist, use a random one
-        let image;
+        let imageData;
         let selectedImageId;
+        let selectedColor = forcedColor;
         
         if (imageId && this.processedImages.has(imageId)) {
-            image = this.processedImages.get(imageId);
+            imageData = this.processedImages.get(imageId);
             selectedImageId = imageId;
-            console.debug('Using specified flower image:', { imageId });
-        } else {
-            const randomImage = this.getRandomImage();
-            if (!randomImage) {
-                console.debug('No flower images available, explosion will use default colors');
-                return null;
+            
+            // If we're not forcing a color but the image has a dominant color, use that
+            if (!forcedColor && imageData.dominantColor) {
+                selectedColor = imageData.dominantColor.hex;
+                console.debug(`Using dominant color from image ${imageId}: ${selectedColor}`);
             }
-            image = randomImage.image;
-            selectedImageId = randomImage.id;
-            console.debug('Using random flower image:', { imageId: selectedImageId });
+        } else {
+            const randomImageData = this.getRandomImage();
+            if (!randomImageData) {
+                console.debug('No flower images available, explosion will use default colors');
+                return forcedColor || null;
+            }
+            
+            imageData = this.processedImages.get(randomImageData.id);
+            selectedImageId = randomImageData.id;
+            
+            // If we're not forcing a color but the random image has a dominant color, use that
+            if (!forcedColor && randomImageData.dominantColor) {
+                selectedColor = randomImageData.dominantColor.hex;
+                console.debug(`Using dominant color from random image: ${selectedColor}`);
+            }
         }
 
         this.explosionCount++;
         const startTime = Date.now();
         console.log(`Creating flower bloom #${this.explosionCount} at (${x}, ${y}) using image: ${selectedImageId}`);
+        
+        // Log color information
+        console.log(`Color for flower #${this.explosionCount}: ${selectedColor || 'extracting from image'}`);
 
         // Remove old flowers if we're at the limit
         if (this.flowers.length >= this.maxFlowers) {
             const removeCount = 1;
             const removedFlower = this.flowers.shift();
             this.stats.total.removed++;
-            console.debug(`Removed old flower to make space:`, {
-                position: {x: removedFlower.x.toFixed(0), y: removedFlower.y.toFixed(0)},
-                age: (Date.now() - removedFlower.startTime) + 'ms'
-            });
         }
 
-        // Create new blooming flower
-        const flower = new Flower(x, y, image);
+        // Create new blooming flower with optional color
+        const flower = new Flower(x, y, imageData.image, selectedColor);
         this.flowers.push(flower);
         this.stats.total.created++;
 
         const createTime = Date.now() - startTime;
-        console.debug('Flower bloom created:', {
-            bloomNumber: this.explosionCount,
-            imageId: selectedImageId,
-            dominantColor: flower.dominantColor,
-            createTime: createTime.toFixed(2) + 'ms',
-            stats: {
-                active: this.flowers.length,
-                total: this.stats.total
-            }
-        });
-
-        // Return just the hex color string instead of the color object
-        return flower.dominantColor.hex;
+        
+        // Return the color that was actually used
+        const usedColor = selectedColor || flower.dominantColor.hex;
+        console.debug(`Flower bloom #${this.explosionCount} using color: ${usedColor}`);
+        
+        return usedColor;
     }
 
     // Update all flowers
@@ -139,16 +157,9 @@ export class FlowerManager {
         this.stats.removed = removedCount;
         this.stats.total.removed += removedCount;
         
-        // Log performance stats every second
+        // Performance stats logging every second removed to reduce console noise
         const now = Date.now();
         if (now - this.lastStatsTime >= 1000) {
-            console.debug('FlowerManager performance:', {
-                fps: Math.round(1000 / (now - this.lastFrameTime)),
-                updateTime: this.stats.updateTime.toFixed(2) + 'ms',
-                activeFlowers: this.stats.flowers,
-                removed: this.stats.removed,
-                total: this.stats.total
-            });
             this.lastStatsTime = now;
             this.stats.removed = 0;
         }
@@ -163,7 +174,7 @@ export class FlowerManager {
         
         ctx.save();
         // Enable blending for glow effects
-        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalCompositeOperation = 'source-over'; // Changed from 'lighter' to prevent brightness accumulation
         
         // Render all flowers
         this.flowers.forEach(flower => flower.render(ctx));

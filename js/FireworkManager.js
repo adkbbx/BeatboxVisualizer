@@ -9,6 +9,18 @@ class FireworkManager {
     this.fireworks = [];
     this.launchingFirework = false;
     this.gravity = 0.02;
+    
+    // Add smoke trail settings
+    this.smokeTrailSettings = {
+      enabled: true,          // Enable/disable smoke trail
+      frequency: 0.5,         // Moderate smoke generation frequency (0-1)
+      minSize: 1.5,           // Smaller minimum smoke particle size
+      maxSize: 4,             // Smaller maximum smoke particle size
+      opacity: 0.25,          // Lower base opacity for smoke
+      fadeSpeed: 0.04,        // Faster fading for subtlety
+      colorDarkening: 0.6,    // Slightly darker smoke
+      brightening: 10         // Minimal color brightening
+    };
   }
 
   /**
@@ -75,12 +87,57 @@ class FireworkManager {
     const targetX = centerX + (Math.random() - 0.5) * spread;
     const startY = this.ctx.canvas.height;
     
+    // Clean up old exploded fireworks
+    this.cleanupOldFireworks();
+    
+    // Create and add the new firework
     const firework = this.createFirework(startX, startY, targetX, targetY);
+    firework.isNewest = true; // Flag this as the newest firework
+    
+    // Remove the newest flag from all other fireworks
+    this.fireworks.forEach(f => f.isNewest = false);
+    
+    // Add to end of array so it's drawn last
     this.fireworks.push(firework);
+    
+    // Log the current array size
+    console.log(`Launched new firework. Total fireworks: ${this.fireworks.length}`);
     
     setTimeout(() => {
       this.launchingFirework = false;
     }, 100);
+  }
+  
+  /**
+   * Clean up old exploded fireworks to prevent array growth
+   */
+  cleanupOldFireworks() {
+    // Keep a maximum number of fireworks to prevent performance issues
+    const maxFireworks = 20;
+    
+    if (this.fireworks.length > maxFireworks) {
+      // First remove any fully faded exploded fireworks
+      const fadedCount = this.fireworks.filter(f => f.exploded && f.alpha <= 0.1).length;
+      
+      if (fadedCount > 0) {
+        // Remove fully faded fireworks
+        this.fireworks = this.fireworks.filter(f => !(f.exploded && f.alpha <= 0.1));
+      } else if (this.fireworks.length > maxFireworks) {
+        // If we still have too many, remove oldest exploded ones first
+        const explodedFireworks = this.fireworks.filter(f => f.exploded);
+        
+        if (explodedFireworks.length > 0) {
+          // Sort exploded fireworks by id (oldest first)
+          explodedFireworks.sort((a, b) => a.id - b.id);
+          
+          // Get ID of oldest one to remove
+          const oldestId = explodedFireworks[0].id;
+          
+          // Remove it
+          this.fireworks = this.fireworks.filter(f => f.id !== oldestId);
+        }
+      }
+    }
   }
 
   /**
@@ -108,8 +165,8 @@ class FireworkManager {
           firework.exploded = true;
         }
       } else {
-        // Fade out exploded fireworks
-        firework.alpha -= deltaTime * 0.001;
+        // Fade out exploded fireworks faster
+        firework.alpha -= deltaTime * 0.003; // 3x faster fading
         if (firework.alpha <= 0) {
           this.fireworks.splice(i, 1);
         }
@@ -123,68 +180,196 @@ class FireworkManager {
   explodeFirework(firework) {
     // Get flower system reference when needed
     const flowerSystem = window.flowerSystem;
+    // Initialize with the firework's color, but we'll prefer the flower's color
     let explosionColor = firework.color;
     
     if (flowerSystem) {
       console.log('Spawning flowers at firework explosion:', {
         position: { x: firework.x, y: firework.y },
-        initialColor: firework.color
+        initialColor: explosionColor
       });
       
-      const flowerColor = flowerSystem.handleFireworkExplosion(firework.x, firework.y, firework.color);
+      // Pass the firework's color but let the flower system return its dominant color
+      // This is important: we're getting back the color from the flower
+      const flowerColor = flowerSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, false);
       
       if (flowerColor) {
-        // Use the flower's hex color directly
+        // Use the flower's color for the explosion instead of the firework's color
         explosionColor = flowerColor;
-        console.debug('Using flower color for explosion:', {
-          flowerColor,
-          originalColor: firework.color
-        });
-      } else {
-        // No flower images available, use default color
-        console.debug('No flower color available, using default color:', {
-          defaultColor: firework.color
-        });
+        console.log(`Updated explosion color to match flower: ${explosionColor}`);
       }
     } else {
       console.warn('Flower system not available for firework explosion');
     }
     
-    // Create the explosion with the selected color
+    // Create the explosion with the (potentially updated) color
     console.debug('Creating firework explosion:', {
       position: { x: firework.x, y: firework.y },
-      finalColor: explosionColor,
-      usedFlowerColor: explosionColor !== firework.color
+      finalColor: explosionColor
     });
     
     this.particleManager.createExplosion(firework.x, firework.y, explosionColor);
   }
 
   /**
-   * Draw all fireworks
+   * Sort fireworks by creation time (newest first)
+   */
+  sortFireworksByAge() {
+    // Sort fireworks so newest ones appear on top
+    this.fireworks.sort((a, b) => {
+      // If one is exploded and the other isn't, put non-exploded on top
+      if (a.exploded !== b.exploded) {
+        return a.exploded ? 1 : -1;
+      }
+      // Otherwise sort by id (which is a timestamp), newest first
+      return b.id - a.id;
+    });
+  }
+
+  /**
+   * Draw all fireworks, starting from the end of the array to draw newest last (on top)
    */
   drawFireworks() {
-    this.fireworks.forEach(firework => {
+    // Force drawing from the end of the array to the beginning
+    // This ensures newest fireworks (added last) are drawn on top
+    for (let i = this.fireworks.length - 1; i >= 0; i--) {
+      const firework = this.fireworks[i];
+      
       if (!firework.exploded) {
+        // Set a higher z-index for newest fireworks with compositeOperation
+        if (i > this.fireworks.length - 4) {
+          // Use a blend mode that ensures visibility for newest fireworks
+          this.ctx.globalCompositeOperation = 'lighter';
+        } else {
+          this.ctx.globalCompositeOperation = 'source-over';
+        }
+        
         const color = this.colorManager.getColorWithAlpha(firework.color, firework.alpha);
         
+        // Draw a proper streak/trail for the firework instead of just a ball
+        this.ctx.save();
+        
+        // Add glow for better visibility
+        this.ctx.shadowColor = color;
+        this.ctx.shadowBlur = 5;
+        
+        // Draw the main firework body
         this.ctx.beginPath();
-        this.ctx.arc(firework.x, firework.y, 2, 0, Math.PI * 2);
+        this.ctx.arc(firework.x, firework.y, 2.5, 0, Math.PI * 2);
         this.ctx.fillStyle = color;
         this.ctx.fill();
         
-        // Draw trail
+        // Draw a more pronounced manual trail for rising fireworks
+        const trailLength = Math.sqrt(
+          firework.velocity.x * firework.velocity.x + 
+          firework.velocity.y * firework.velocity.y
+        ) * 4.0; // Longer trail for better visibility
+        
+        // Start with bright color
+        const gradient = this.ctx.createLinearGradient(
+          firework.x, firework.y,
+          firework.x - firework.velocity.x * trailLength,
+          firework.y - firework.velocity.y * trailLength
+        );
+        
+        // Create a gradient that fades out
+        gradient.addColorStop(0, color); // Full color at the firework position
+        gradient.addColorStop(1, 'rgba(0,0,0,0)'); // Transparent at the trail end
+        
         this.ctx.beginPath();
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = gradient;
         this.ctx.moveTo(firework.x, firework.y);
         this.ctx.lineTo(
-          firework.x - firework.velocity.x * 2,
-          firework.y - firework.velocity.y * 2
+          firework.x - firework.velocity.x * trailLength,
+          firework.y - firework.velocity.y * trailLength
         );
-        this.ctx.strokeStyle = color;
-        this.ctx.lineWidth = 2;
         this.ctx.stroke();
+        
+        this.ctx.restore();
+        
+        // Add smoke trail effect
+        this.createSmokeTrail(firework);
       }
-    });
+    }
+    
+    // Reset composite operation
+    this.ctx.globalCompositeOperation = 'source-over';
+  }
+  
+  /**
+   * Create a smoke trail behind a firework
+   */
+  createSmokeTrail(firework) {
+    // Skip if smoke trails are disabled
+    if (!this.smokeTrailSettings.enabled) return;
+    
+    // Only create smoke based on frequency setting
+    if (Math.random() > this.smokeTrailSettings.frequency) return;
+    
+    // Calculate position behind the firework
+    const trailLength = 2 + Math.random() * 3;
+    const trailX = firework.x - firework.velocity.x * trailLength;
+    const trailY = firework.y - firework.velocity.y * trailLength;
+    
+    // Add randomness to position (based on velocity for more natural effect)
+    const speedFactor = Math.sqrt(
+      firework.velocity.x * firework.velocity.x + 
+      firework.velocity.y * firework.velocity.y
+    ) / 3;
+    const offsetX = (Math.random() - 0.5) * 2 * speedFactor;
+    const offsetY = (Math.random() - 0.5) * 2 * speedFactor;
+    
+    // Get a slightly darker shade of the firework color
+    let r = 0, g = 0, b = 0;
+    if (firework.color.startsWith('#')) {
+      r = parseInt(firework.color.slice(1, 3), 16);
+      g = parseInt(firework.color.slice(3, 5), 16);
+      b = parseInt(firework.color.slice(5, 7), 16);
+    } else {
+      // Default color if we can't parse
+      r = 150;
+      g = 150;
+      b = 150;
+    }
+    
+    // Make the smoke darker than the firework based on settings
+    r = Math.floor(r * this.smokeTrailSettings.colorDarkening);
+    g = Math.floor(g * this.smokeTrailSettings.colorDarkening);
+    b = Math.floor(b * this.smokeTrailSettings.colorDarkening);
+    
+    // Add slight blueish/grayish tint to the smoke
+    b = Math.min(255, b + 20);
+    
+    // Brighten the colors slightly to make smoke more visible
+    r = Math.min(255, r + this.smokeTrailSettings.brightening);
+    g = Math.min(255, g + this.smokeTrailSettings.brightening);
+    b = Math.min(255, b + this.smokeTrailSettings.brightening);
+    
+    // Set the smoke color with higher opacity
+    const smokeOpacity = this.smokeTrailSettings.opacity * (0.8 + Math.random() * 0.2);
+    const smokeColor = `rgba(${r}, ${g}, ${b}, ${smokeOpacity})`;
+    
+    // Calculate smoke particle size - larger for more visibility
+    const radius = this.smokeTrailSettings.minSize + 
+      Math.random() * (this.smokeTrailSettings.maxSize - this.smokeTrailSettings.minSize);
+    
+    // Draw smoother smoke effect with a more pronounced radial gradient
+    const gradient = this.ctx.createRadialGradient(
+      trailX + offsetX, trailY + offsetY, 0,
+      trailX + offsetX, trailY + offsetY, radius
+    );
+    
+    // More subtle gradient
+    gradient.addColorStop(0, `rgba(${Math.min(255, r+10)}, ${Math.min(255, g+10)}, ${Math.min(255, b+10)}, ${smokeOpacity * 0.9})`);
+    gradient.addColorStop(0.3, smokeColor);
+    gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${smokeOpacity * 0.4})`);
+    gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+    
+    this.ctx.beginPath();
+    this.ctx.fillStyle = gradient;
+    this.ctx.arc(trailX + offsetX, trailY + offsetY, radius, 0, Math.PI * 2);
+    this.ctx.fill();
   }
 
   /**

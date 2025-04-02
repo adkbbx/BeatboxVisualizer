@@ -125,6 +125,35 @@
     animation: slideIn 0.3s ease;
 }
 
+/* Color indicator styling */
+.color-indicator-container {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 4px 8px;
+    border-radius: 12px;
+    gap: 8px;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.color-swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.color-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 12px;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+}
+
 @keyframes slideIn {
     from {
         transform: translateY(-10px);
@@ -134,4 +163,4 @@
         transform: translateY(0);
         opacity: 1;
     }
-} 
+}

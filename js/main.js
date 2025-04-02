@@ -38,43 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize panel controls
     initializePanelControls();
-
-    const micToggleBtn = document.getElementById('microphoneToggle');
-    const startMicButton = document.getElementById('startMicrophone');  // Keep reference for existing logic
-    const stopMicButton = document.getElementById('stopMicrophone');    // Keep reference for existing logic
-
-    micToggleBtn.addEventListener('click', () => {
-        const isActive = micToggleBtn.classList.contains('active');
-        
-        if (!isActive) {
-            // Start microphone by triggering the existing start button's click
-            startMicButton.click();
-            micToggleBtn.classList.add('active');
-            micToggleBtn.querySelector('.text').textContent = 'Stop';
-        } else {
-            // Stop microphone by triggering the existing stop button's click
-            stopMicButton.click();
-            micToggleBtn.classList.remove('active');
-            micToggleBtn.querySelector('.text').textContent = 'Start';
-        }
-    });
-
-    // Update your existing microphone start/stop handlers to also update the toggle button
-    startMicButton.addEventListener('click', () => {
-        // Your existing start microphone code
-        micToggleBtn.classList.add('active');
-        micToggleBtn.querySelector('.text').textContent = 'Stop';
-    });
-
-    stopMicButton.addEventListener('click', () => {
-        // Your existing stop microphone code
-        micToggleBtn.classList.remove('active');
-        micToggleBtn.querySelector('.text').textContent = 'Start';
-    });
-
-    // Hide the original buttons from view
-    startMicButton.style.display = 'none';
-    stopMicButton.style.display = 'none';
 });
 
 /**

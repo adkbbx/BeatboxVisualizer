@@ -1,13 +1,18 @@
 // Flower.js
 export class Flower {
-    constructor(x, y, image) {
+    constructor(x, y, image, forcedColor = null) {
         console.log(`Creating blooming flower at (${x}, ${y})`);
         this.x = x;
         this.y = y;
         this.image = image;
         
-        // Extract dominant color from image
-        this.extractDominantColor();
+        // If forced color is provided, use it instead of extracting from image
+        if (forcedColor) {
+            this.setForcedColor(forcedColor);
+        } else {
+            // Extract dominant color from image
+            this.extractDominantColor();
+        }
         
         // Animation properties
         this.startTime = Date.now();
@@ -50,6 +55,16 @@ export class Flower {
     }
 
     extractDominantColor() {
+        // Check if the image has a pre-computed dominant color (from ImageProcessor)
+        if (this.image.dominantColor) {
+            console.log('Using pre-computed dominant color from image:', this.image.dominantColor.hex);
+            this.dominantColor = this.image.dominantColor;
+            return;
+        }
+        
+        // If no pre-computed color, extract it from the image
+        console.log('No pre-computed color found, extracting from image...');
+        
         // Create a temporary canvas to analyze the image
         const tempCanvas = document.createElement('canvas');
         const tempCtx = tempCanvas.getContext('2d');
@@ -103,11 +118,9 @@ export class Flower {
                 hex
             };
             
-            console.debug('Extracted flower color:', {
-                rgb: this.dominantColor.rgb,
-                hex: this.dominantColor.hex,
-                sampleSize,
-                pixelCount: count
+            console.debug('Extracted color from flower center:', {
+                rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+                hex: hex
             });
         } else {
             // Fallback color if no non-transparent pixels found
@@ -174,17 +187,7 @@ export class Flower {
             }
         });
 
-        // Log state periodically
-        if (Math.floor(age / 200) > Math.floor((age - deltaTime) / 200)) {
-            console.debug(`Flower state:`, {
-                age: age.toFixed(0) + 'ms',
-                progress: (lifeProgress * 100).toFixed(0) + '%',
-                scale: this.scale.toFixed(2),
-                opacity: this.opacity.toFixed(2),
-                rotation: (this.rotation * 180 / Math.PI).toFixed(1) + '°',
-                particleCount: this.particles.length
-            });
-        }
+        // Periodic state logging removed to reduce console noise
     }
 
     render(ctx) {
@@ -206,8 +209,8 @@ export class Flower {
             ctx.fill();
         });
 
-        // Draw the flower with no glow
-        ctx.globalAlpha = this.opacity;
+        // Draw the flower with reduced opacity to prevent it from being too bright
+        ctx.globalAlpha = Math.min(0.85, this.opacity); // Cap the opacity at 0.85
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
         ctx.scale(this.scale, this.scale);
@@ -224,19 +227,32 @@ export class Flower {
         ctx.restore();
     }
 
+    // Set a forced color instead of extracting from the image
+    setForcedColor(hexColor) {
+        // Convert hex color to RGB
+        const hex = hexColor.replace('#', '');
+        const rgb = {
+            r: parseInt(hex.substring(0, 2), 16),
+            g: parseInt(hex.substring(2, 4), 16),
+            b: parseInt(hex.substring(4, 6), 16)
+        };
+
+        this.dominantColor = {
+            rgb,
+            hex: hexColor
+        };
+
+        console.debug('Using forced color for flower:', {
+            color: hexColor,
+            rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+        });
+    }
+
     isDead() {
         const age = Date.now() - this.startTime;
         const dead = age >= this.lifeTime || this.opacity < 0.1;
         
-        if (dead) {
-            console.debug(`Flower died:`, {
-                age: age.toFixed(0) + 'ms',
-                lifetime: this.lifeTime.toFixed(0) + 'ms',
-                opacity: this.opacity.toFixed(2),
-                scale: this.scale.toFixed(2),
-                reason: age >= this.lifeTime ? 'lifetime' : 'opacity'
-            });
-        }
+        // Debug log for flower death removed to reduce console noise
         return dead;
     }
 

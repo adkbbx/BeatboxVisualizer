@@ -68,8 +68,16 @@ export class FlowerUploader {
             try {
                 this.imageProcessor.validateImage(file);
                 const processedImage = await this.imageProcessor.processImage(file);
-                this.addPreview(processedImage);
+                
+                // The dominant color is now attached to the canvas by the ImageProcessor
+                const dominantColor = processedImage.dominantColor;
+                
+                this.addPreview(processedImage, dominantColor);
                 this.onImageProcessed(processedImage);
+                
+                console.log(`File processed successfully: ${file.name}`, {
+                    dominantColor: dominantColor ? dominantColor.hex : 'none'
+                });
             } catch (error) {
                 console.error(`Error handling file ${file.name}:`, error);
                 this.showError(error.message);
@@ -77,7 +85,7 @@ export class FlowerUploader {
         }
     }
 
-    addPreview(canvas) {
+    addPreview(canvas, dominantColor) {
         console.log('Adding image preview...');
         const previewContainer = document.getElementById('previewContainer');
         const preview = document.createElement('div');
@@ -89,6 +97,21 @@ export class FlowerUploader {
         // Convert canvas to image for preview
         const img = document.createElement('img');
         img.src = canvas.toDataURL('image/png');
+        
+        // Create a color indicator to show the extracted dominant color
+        const colorContainer = document.createElement('div');
+        colorContainer.className = 'color-indicator-container';
+        
+        const colorSwatch = document.createElement('div');
+        colorSwatch.className = 'color-swatch';
+        colorSwatch.style.backgroundColor = dominantColor ? dominantColor.hex : '#cccccc';
+        
+        const colorLabel = document.createElement('span');
+        colorLabel.className = 'color-label';
+        colorLabel.textContent = dominantColor ? dominantColor.hex : 'N/A';
+        
+        colorContainer.appendChild(colorSwatch);
+        colorContainer.appendChild(colorLabel);
         
         const removeButton = document.createElement('button');
         removeButton.textContent = '×';
@@ -103,6 +126,7 @@ export class FlowerUploader {
         };
         
         preview.appendChild(img);
+        preview.appendChild(colorContainer);
         preview.appendChild(removeButton);
         previewContainer.appendChild(preview);
         
@@ -114,7 +138,8 @@ export class FlowerUploader {
             dimensions: {
                 width: canvas.width,
                 height: canvas.height
-            }
+            },
+            dominantColor: dominantColor ? dominantColor.hex : 'none'
         });
     }
 
