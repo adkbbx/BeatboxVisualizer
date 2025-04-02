@@ -1,47 +1,53 @@
-# Sound-Responsive Animation Controller
+# Sound-Responsive Fireworks with Custom Images
 
-A web application that captures audio input through a device's microphone, analyzes sound patterns in real-time, and uses this data to control animations of images on an HTML canvas.
+A web application that captures audio input through a device's microphone, analyzes sound patterns in real-time, and creates dynamic fireworks animations with custom uploaded images on an HTML canvas.
 
 ## Features
 
 - **Real-time audio analysis** using Web Audio API
   - Volume level detection
-  - Sudden sound detection (claps, snaps)
   - Sustained sound detection
+  - Loud sound burst detection
   
-- **Dynamic animations** that respond to sound
-  - Multiple animation presets (bounce, rotate, scale, path follow)
-  - Custom image upload support
-  - Adjustable animation parameters
+- **Dynamic firework animations** that respond to sound
+  - Fireworks rise with sustained sounds
+  - Explosion effects with particle systems
+  - Custom image display during explosions
+  - Support for user-uploaded images
   
 - **Intuitive UI**
   - Real-time volume visualization
+  - Sound detection feedback
   - Easy-to-use settings panel
-  - Sound mapping reference guide
+  - Responsive design for all devices
 
 ## How to Use
 
 1. Open the application in a compatible web browser (Chrome, Firefox, Safari, Edge)
-2. Click the "Start Microphone" button and allow microphone access
-3. Make sounds to see the animation respond
-4. Use the settings panel to customize the experience:
+2. Click the "Start" button and allow microphone access
+3. Make LOUDER, SUSTAINED sounds to launch fireworks
+4. Continue making sound to keep fireworks rising
+5. Make VERY LOUD sounds to burst all active fireworks
+6. Upload custom images through the uploader panel
+7. Use the settings panel to customize the experience:
    - Adjust microphone sensitivity
-   - Set volume thresholds
-   - Change animation presets
-   - Upload custom images
-   - Adjust animation speed
+   - Set quiet and loud thresholds
+   - Adjust sudden sound detection
 
 ## Technical Implementation
 
 This application is built using:
-- HTML5, CSS3, and vanilla JavaScript
+- HTML5, CSS3, and vanilla JavaScript (ES6 modules)
 - Web Audio API for audio capture and analysis
 - Canvas API for rendering animations
-- Responsive design using CSS flexbox and media queries
+- Responsive design using CSS grid and flexbox
 
 The application architecture consists of:
-- **AudioManager**: Handles microphone access and audio analysis
-- **AnimationController**: Manages canvas rendering and animation logic
+- **AudioManager**: Handles microphone access and real-time audio analysis
+- **AnimationController**: Manages canvas rendering and animation loop
+- **FireworkManager**: Controls firework lifecycle and effects
+- **ParticleManager**: Handles particle systems for explosions
+- **FlowerManager**: Manages custom image animations
 - **UIController**: Handles user interface elements and interactions
 
 ## Browser Compatibility
@@ -50,22 +56,23 @@ The application requires modern browser features:
 - Web Audio API
 - Media Devices API (getUserMedia)
 - Canvas API
+- ES6 Module support
 
 Recommended browsers:
-- Chrome (latest 2 versions)
-- Firefox (latest 2 versions)
-- Safari (latest 2 versions)
-- Edge (latest 2 versions)
+- Chrome (latest versions)
+- Firefox (latest versions)
+- Safari (latest versions)
+- Edge (latest versions)
 
 ## Development and Future Enhancements
 
 Potential future enhancements include:
-- Multiple simultaneous animations
+- Enhanced image processing for uploaded images
+- Multiple animation patterns for image display
 - Advanced audio analysis (frequency/pitch detection)
-- Custom animation sequence creation
-- Audio filtering options
-- Social features for sharing configurations
+- Performance optimizations for particle systems
+- Custom formation designs for image animations
 
 ## License
 
-This project is open source and available under the MIT License. 
+This project is open source and available under the MIT License.
