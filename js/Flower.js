@@ -6,12 +6,18 @@ export class Flower {
         this.y = y;
         this.image = image;
         
-        // If forced color is provided, use it instead of extracting from image
+        // If forced color is provided, always use it
         if (forcedColor) {
             this.setForcedColor(forcedColor);
+            console.log(`Using forced color for flower: ${forcedColor}`);
+        } else if (image.dominantColor) {
+            // If image has pre-computed dominant color, use that
+            this.dominantColor = image.dominantColor;
+            console.log(`Using pre-computed image color: ${image.dominantColor.hex}`);
         } else {
-            // Extract dominant color from image
+            // Extract dominant color from image as last resort
             this.extractDominantColor();
+            console.log(`Extracted color from image: ${this.dominantColor.hex}`);
         }
         
         // Animation properties
@@ -229,8 +235,22 @@ export class Flower {
 
     // Set a forced color instead of extracting from the image
     setForcedColor(hexColor) {
+        // Validate and normalize the hex color
+        let normalizedHex = hexColor;
+        
+        // Make sure it has a # prefix
+        if (!normalizedHex.startsWith('#')) {
+            normalizedHex = '#' + normalizedHex;
+        }
+        
+        // Validate it's a valid hex color
+        if (!/^#[0-9A-F]{6}$/i.test(normalizedHex)) {
+            console.warn(`Invalid hex color format provided: ${hexColor}, using fallback color`);
+            normalizedHex = '#FF6A00'; // Fallback to orange
+        }
+        
         // Convert hex color to RGB
-        const hex = hexColor.replace('#', '');
+        const hex = normalizedHex.replace('#', '');
         const rgb = {
             r: parseInt(hex.substring(0, 2), 16),
             g: parseInt(hex.substring(2, 4), 16),
@@ -239,11 +259,11 @@ export class Flower {
 
         this.dominantColor = {
             rgb,
-            hex: hexColor
+            hex: normalizedHex
         };
 
-        console.debug('Using forced color for flower:', {
-            color: hexColor,
+        console.log('Using forced color for flower:', {
+            color: normalizedHex,
             rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
         });
     }

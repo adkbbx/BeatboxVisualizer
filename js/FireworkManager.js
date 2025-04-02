@@ -90,9 +90,46 @@ class FireworkManager {
     // Clean up old exploded fireworks
     this.cleanupOldFireworks();
     
-    // Create and add the new firework
-    const firework = this.createFirework(startX, startY, targetX, targetY);
+    // Select a color from the flower system if available
+    let fireworkColor = null;
+    let selectedFlowerImageId = null;
+    
+    // Try to get a color from the flower system
+    if (window.flowerSystem && window.flowerSystem.flowerManager) {
+      try {
+        // Get a random flower's color
+        const randomImage = window.flowerSystem.flowerManager.getRandomImage();
+        
+        if (randomImage && randomImage.dominantColor && randomImage.dominantColor.hex) {
+          fireworkColor = randomImage.dominantColor.hex;
+          selectedFlowerImageId = randomImage.id;
+          
+          // Validate hex color format (should be #RRGGBB)
+          if (!/^#[0-9A-F]{6}$/i.test(fireworkColor)) {
+            console.warn(`Invalid hex color format: ${fireworkColor}, using random color instead`);
+            fireworkColor = this.colorManager.getRandomColor();
+            selectedFlowerImageId = null;
+          } else {
+            console.log(`Using flower #${selectedFlowerImageId} color for launch: ${fireworkColor}`);
+          }
+        } else {
+          console.log('No flower color available, using random color');
+          fireworkColor = this.colorManager.getRandomColor();
+        }
+      } catch (error) {
+        console.error('Error selecting flower color:', error);
+        fireworkColor = this.colorManager.getRandomColor();
+      }
+    } else {
+      // Fallback to color manager if flower system is not available
+      fireworkColor = this.colorManager.getRandomColor();
+    }
+    
+    // Create and add the new firework with the selected color
+    const firework = this.createFirework(startX, startY, targetX, targetY, fireworkColor);
     firework.isNewest = true; // Flag this as the newest firework
+    firework.selectedFlowerColor = fireworkColor; // Store the color for later use
+    firework.selectedFlowerImageId = selectedFlowerImageId; // Store the flower image ID
     
     // Remove the newest flag from all other fireworks
     this.fireworks.forEach(f => f.isNewest = false);
@@ -100,8 +137,8 @@ class FireworkManager {
     // Add to end of array so it's drawn last
     this.fireworks.push(firework);
     
-    // Log the current array size
-    console.log(`Launched new firework. Total fireworks: ${this.fireworks.length}`);
+    // Log the current array size and color info
+    console.log(`Launched new firework. Total fireworks: ${this.fireworks.length}, Color: ${fireworkColor}`);
     
     setTimeout(() => {
       this.launchingFirework = false;
@@ -180,32 +217,53 @@ class FireworkManager {
   explodeFirework(firework) {
     // Get flower system reference when needed
     const flowerSystem = window.flowerSystem;
-    // Initialize with the firework's color, but we'll prefer the flower's color
-    let explosionColor = firework.color;
+    
+    // If the firework has a stored selectedFlowerColor, use that
+    // Otherwise, fall back to the firework's color
+    let explosionColor = firework.selectedFlowerColor || firework.color;
+    
+    // Log the exact color being used and its source
+    console.log('Firework explosion color info:', {
+      color: explosionColor,
+      source: firework.selectedFlowerColor ? 'flower' : 'random',
+      originalFireworkColor: firework.color,
+      selectedFlowerImageId: firework.selectedFlowerImageId || 'none'
+    });
     
     if (flowerSystem) {
       console.log('Spawning flowers at firework explosion:', {
         position: { x: firework.x, y: firework.y },
-        initialColor: explosionColor
+        fireworkColor: explosionColor,
+        flowerImageId: firework.selectedFlowerImageId || 'random'
       });
       
-      // Pass the firework's color but let the flower system return its dominant color
-      // This is important: we're getting back the color from the flower
-      const flowerColor = flowerSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, false);
-      
-      if (flowerColor) {
-        // Use the flower's color for the explosion instead of the firework's color
-        explosionColor = flowerColor;
-        console.log(`Updated explosion color to match flower: ${explosionColor}`);
+      try {
+        // Always force the same color across all components
+        if (firework.selectedFlowerImageId) {
+          // Pass the exact flower image ID and color
+          flowerSystem.handleFireworkExplosion(
+            firework.x, 
+            firework.y, 
+            explosionColor, 
+            true, // Always force color
+            firework.selectedFlowerImageId
+          );
+        } else {
+          // No specific flower ID, just use the color
+          flowerSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, true);
+        }
+      } catch (error) {
+        console.error('Error creating flower explosion:', error);
       }
     } else {
       console.warn('Flower system not available for firework explosion');
     }
     
-    // Create the explosion with the (potentially updated) color
+    // Create the explosion with the same color as the launch
     console.debug('Creating firework explosion:', {
       position: { x: firework.x, y: firework.y },
-      finalColor: explosionColor
+      explosionColor: explosionColor,
+      flowerImageId: firework.selectedFlowerImageId || 'none'
     });
     
     this.particleManager.createExplosion(firework.x, firework.y, explosionColor);

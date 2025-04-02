@@ -23,6 +23,12 @@ export class FlowerManager {
 
     // Store processed flower images
     addProcessedImage(id, image) {
+        // Validate id to prevent undefined
+        if (!id) {
+            console.error('Attempted to add image with invalid ID');
+            return;
+        }
+        
         console.log(`Adding processed image with ID: ${id}`);
         
         // Extract and store the dominant color if available on the image
@@ -30,12 +36,20 @@ export class FlowerManager {
         if (image.dominantColor) {
             dominantColor = image.dominantColor;
             console.log(`Stored dominant color for image ${id}: ${dominantColor.hex}`);
+        } else {
+            console.warn(`No dominant color found for image ${id}`);
         }
+        
+        // Deep clone the dominant color to prevent reference issues
+        const storedColor = dominantColor ? {
+            rgb: { ...dominantColor.rgb },
+            hex: dominantColor.hex
+        } : null;
         
         // Store both the image and its dominant color
         this.processedImages.set(id, {
             image: image,
-            dominantColor: dominantColor
+            dominantColor: storedColor
         });
         
         console.debug('Current flower images:', {
@@ -59,15 +73,24 @@ export class FlowerManager {
             console.warn('No processed images available for flower effect');
             return null;
         }
+        
+        // Get a random image ID
         const randomIndex = Math.floor(Math.random() * imageIds.length);
         const randomId = imageIds[randomIndex];
         const imageData = this.processedImages.get(randomId);
         
-        console.debug('Selected random flower image:', {
-            id: randomId,
-            hasDominantColor: !!imageData.dominantColor,
-            dominantColor: imageData.dominantColor ? imageData.dominantColor.hex : 'none'
-        });
+        // Verify we have valid image data
+        if (!imageData || !imageData.image) {
+            console.error('Invalid image data found in flower manager:', { imageId: randomId });
+            return null;
+        }
+        
+        // Log image selection and color info
+        const colorInfo = imageData.dominantColor 
+            ? `${imageData.dominantColor.hex} - RGB(${imageData.dominantColor.rgb.r},${imageData.dominantColor.rgb.g},${imageData.dominantColor.rgb.b})`
+            : 'None';
+            
+        console.log(`Selected flower image: ${randomId} with color: ${colorInfo}`);
         
         return {
             id: randomId,

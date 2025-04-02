@@ -72,10 +72,17 @@ export class FlowerUploader {
                 // The dominant color is now attached to the canvas by the ImageProcessor
                 const dominantColor = processedImage.dominantColor;
                 
-                this.addPreview(processedImage, dominantColor);
-                this.onImageProcessed(processedImage);
+                // Generate a unique ID for this image
+                const imageId = `flower_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+                
+                // Add preview with the ID and dominant color
+                this.addPreview(processedImage, dominantColor, imageId);
+                
+                // Process the image with the same ID
+                this.onImageProcessed(processedImage, imageId);
                 
                 console.log(`File processed successfully: ${file.name}`, {
+                    imageId,
                     dominantColor: dominantColor ? dominantColor.hex : 'none'
                 });
             } catch (error) {
@@ -85,14 +92,14 @@ export class FlowerUploader {
         }
     }
 
-    addPreview(canvas, dominantColor) {
+    addPreview(canvas, dominantColor, imageId) {
         console.log('Adding image preview...');
         const previewContainer = document.getElementById('previewContainer');
         const preview = document.createElement('div');
         preview.className = 'image-preview';
         
-        // Generate unique ID for this image
-        const imageId = `flower_${Date.now()}`;
+        // Store the imageId as a data attribute for reference
+        preview.dataset.imageId = imageId;
         
         // Convert canvas to image for preview
         const img = document.createElement('img');
@@ -129,9 +136,6 @@ export class FlowerUploader {
         preview.appendChild(colorContainer);
         preview.appendChild(removeButton);
         previewContainer.appendChild(preview);
-        
-        // Add to FlowerManager with the same ID
-        this.onImageProcessed(canvas, imageId);
         
         console.debug('Preview added:', {
             imageId,

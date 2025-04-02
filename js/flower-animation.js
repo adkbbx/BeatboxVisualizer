@@ -67,35 +67,30 @@ export class FlowerAnimationSystem {
         this.flowerManager.render(this.ctx);
     }
 
-    // Handle firework explosion by creating flower effect
-    // Always return the flower's color for the firework to use
-    handleFireworkExplosion(x, y, color, useFireworkColor = false) {
+    // Handle firework explosion by creating flower effect with consistent color
+    // Added flowerImageId parameter to use a specific flower image
+    handleFireworkExplosion(x, y, color, useFireworkColor = true, flowerImageId = null) {
         this.explosionCount++;
-        console.log(`Creating flower explosion #${this.explosionCount} at (${x}, ${y})`);
+        console.log(`Creating flower explosion #${this.explosionCount} at (${x}, ${y}) with color: ${color}`);
         
-        // If we're not forcing the firework color, let the flower image determine the color
+        // Use the specific flower image ID if provided
         let flowerColor;
-        
-        if (useFireworkColor) {
-            // Use the firework's color for the flower
-            flowerColor = this.flowerManager.createFlowerExplosion(x, y, null, color);
-            console.log(`Using firework color for explosion: ${color}`);
+        if (flowerImageId) {
+            console.log(`Using specific flower image: ${flowerImageId}`);
+            flowerColor = this.flowerManager.createFlowerExplosion(x, y, flowerImageId, color);
         } else {
-            // Let the flower's natural color be used
-            flowerColor = this.flowerManager.createFlowerExplosion(x, y, null, null);
-            console.log(`Using flower's natural color for explosion: ${flowerColor}`);
-            
-            // Important: Return the flower's color for the firework to use
-            // This ensures the firework explosion matches the flower color
-            color = flowerColor;
+            // Otherwise use a random image with the provided color
+            flowerColor = this.flowerManager.createFlowerExplosion(x, y, null, color);
         }
         
         // Log explosion stats with color information
         console.debug('Explosion stats:', {
             totalExplosions: this.explosionCount,
             position: {x: x.toFixed(1), y: y.toFixed(1)},
-            finalColor: color,
-            colorSource: useFireworkColor ? 'firework' : 'flower',
+            requestedColor: color,
+            appliedColor: flowerColor,
+            specificFlower: flowerImageId ? true : false,
+            flowerImageId: flowerImageId || 'random',
             canvasSize: {
                 width: this.canvas.width,
                 height: this.canvas.height
@@ -103,8 +98,8 @@ export class FlowerAnimationSystem {
             activeFragments: this.flowerManager.flowers.length
         });
 
-        // Return the color that should be used for the firework particles
-        return color;
+        // Return the color that was actually used
+        return flowerColor;
     }
 
     // Clear all flowers
