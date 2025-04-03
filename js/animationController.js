@@ -196,8 +196,11 @@ class AnimationController {
       // Then draw active fireworks on top
       this.fireworkManager.drawFireworks();
 
-      // Update and render flowers if the system exists
-      if (window.flowerSystem) {
+      // Update and render custom images if the system exists
+      if (window.imageSystem) {
+        window.imageSystem.update();
+      } else if (window.flowerSystem) {
+        // Backward compatibility for older versions
         window.flowerSystem.update();
       }
 

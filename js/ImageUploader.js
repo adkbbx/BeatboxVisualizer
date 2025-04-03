@@ -1,9 +1,9 @@
-// FlowerUploader.js
+// ImageUploader.js
 import { ImageProcessor } from './ImageProcessor.js';
 
-export class FlowerUploader {
+export class ImageUploader {
     constructor(containerId, onImageProcessed) {
-        console.log('Initializing FlowerUploader...');
+        console.log('Initializing ImageUploader...');
         this.container = document.getElementById(containerId);
         this.onImageProcessed = onImageProcessed;
         this.imageProcessor = new ImageProcessor();
@@ -13,11 +13,11 @@ export class FlowerUploader {
     setupUI() {
         console.log('Setting up upload UI...');
         this.container.innerHTML = `
-            <div class="flower-upload-container">
+            <div class="image-upload-container">
                 <div class="upload-area" id="dropZone">
                     <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
                     <div class="upload-content">
-                        <p>Drag and drop flower images here</p>
+                        <p>Drag and drop custom images here</p>
                         <p>or</p>
                         <button id="selectFiles">Select Files</button>
                         <p class="file-types">Supported: JPG, PNG, GIF (max 5MB)</p>
@@ -73,7 +73,7 @@ export class FlowerUploader {
                 const dominantColor = processedImage.dominantColor;
                 
                 // Generate a unique ID for this image
-                const imageId = `flower_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+                const imageId = `image_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
                 
                 // Add preview with the ID and dominant color
                 this.addPreview(processedImage, dominantColor, imageId);
@@ -125,9 +125,9 @@ export class FlowerUploader {
         removeButton.className = 'remove-preview';
         removeButton.onclick = () => {
             preview.remove();
-            // Remove from FlowerManager when image is removed
-            if (window.flowerSystem) {
-                window.flowerSystem.flowerManager.removeProcessedImage(imageId);
+            // Remove from ImageManager when image is removed
+            if (window.imageSystem) {
+                window.imageSystem.imageManager.removeProcessedImage(imageId);
                 console.log('Removed image and cleaned up resources:', { imageId });
             }
         };

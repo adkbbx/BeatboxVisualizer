@@ -90,30 +90,31 @@ class FireworkManager {
     // Clean up old exploded fireworks
     this.cleanupOldFireworks();
     
-    // Select a color from the flower system if available
+    // Select a color from the image system if available
     let fireworkColor = null;
-    let selectedFlowerImageId = null;
+    let selectedCustomImageId = null;
     
-    // Try to get a color from the flower system
-    if (window.flowerSystem && window.flowerSystem.flowerManager) {
+    // Try to get a color from the image system
+    if (window.imageSystem && window.imageSystem.imageManager) {
+      // Use the new image system
       try {
-        // Get a random flower's color
-        const randomImage = window.flowerSystem.flowerManager.getRandomImage();
+        // Get a random image's color
+        const randomImage = window.imageSystem.imageManager.getRandomImage();
         
         if (randomImage && randomImage.dominantColor && randomImage.dominantColor.hex) {
           fireworkColor = randomImage.dominantColor.hex;
-          selectedFlowerImageId = randomImage.id;
+          selectedCustomImageId = randomImage.id;
           
           // Validate hex color format (should be #RRGGBB)
           if (!/^#[0-9A-F]{6}$/i.test(fireworkColor)) {
             console.warn(`Invalid hex color format: ${fireworkColor}, using random color instead`);
             fireworkColor = this.colorManager.getRandomColor();
-            selectedFlowerImageId = null;
+            selectedCustomImageId = null;
           } else {
-            console.log(`Using flower #${selectedFlowerImageId} color for launch: ${fireworkColor}`);
+            console.log(`Using image #${selectedCustomImageId} color for launch: ${fireworkColor}`);
           }
         } else {
-          console.log('No flower color available, using random color');
+          console.log('No image color available, using random color');
           fireworkColor = this.colorManager.getRandomColor();
         }
       } catch (error) {
@@ -128,8 +129,8 @@ class FireworkManager {
     // Create and add the new firework with the selected color
     const firework = this.createFirework(startX, startY, targetX, targetY, fireworkColor);
     firework.isNewest = true; // Flag this as the newest firework
-    firework.selectedFlowerColor = fireworkColor; // Store the color for later use
-    firework.selectedFlowerImageId = selectedFlowerImageId; // Store the flower image ID
+    firework.selectedImageColor = fireworkColor; // Store the color for later use
+    firework.selectedCustomImageId = selectedCustomImageId; // Store the custom image ID
     
     // Remove the newest flag from all other fireworks
     this.fireworks.forEach(f => f.isNewest = false);
@@ -215,55 +216,73 @@ class FireworkManager {
    * Explode a firework
    */
   explodeFirework(firework) {
-    // Get flower system reference when needed
-    const flowerSystem = window.flowerSystem;
+    // Get image system reference when needed
+    const imageSystem = window.imageSystem;
     
-    // If the firework has a stored selectedFlowerColor, use that
+    // If the firework has a stored selectedImageColor, use that
     // Otherwise, fall back to the firework's color
-    let explosionColor = firework.selectedFlowerColor || firework.color;
+    let explosionColor = firework.selectedImageColor || firework.color;
     
     // Log the exact color being used and its source
     console.log('Firework explosion color info:', {
       color: explosionColor,
-      source: firework.selectedFlowerColor ? 'flower' : 'random',
+      source: firework.selectedImageColor ? 'custom image' : 'random',
       originalFireworkColor: firework.color,
-      selectedFlowerImageId: firework.selectedFlowerImageId || 'none'
+      selectedCustomImageId: firework.selectedCustomImageId || 'none'
     });
     
-    if (flowerSystem) {
-      console.log('Spawning flowers at firework explosion:', {
+    if (imageSystem) {
+      console.log('Spawning images at firework explosion:', {
         position: { x: firework.x, y: firework.y },
         fireworkColor: explosionColor,
-        flowerImageId: firework.selectedFlowerImageId || 'random'
+        customImageId: firework.selectedCustomImageId || 'random'
       });
       
       try {
         // Always force the same color across all components
-        if (firework.selectedFlowerImageId) {
-          // Pass the exact flower image ID and color
-          flowerSystem.handleFireworkExplosion(
+        if (firework.selectedCustomImageId) {
+          // Pass the exact custom image ID and color
+          imageSystem.handleFireworkExplosion(
             firework.x, 
             firework.y, 
             explosionColor, 
             true, // Always force color
-            firework.selectedFlowerImageId
+            firework.selectedCustomImageId
           );
         } else {
-          // No specific flower ID, just use the color
-          flowerSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, true);
+          // No specific image ID, just use the color
+          imageSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, true);
+        }
+      } catch (error) {
+        console.error('Error creating image explosion:', error);
+      }
+    } else if (window.flowerSystem && window.flowerSystem.flowerManager) {
+      // Fallback to legacy flower system if needed
+      console.log('Using legacy flower system for firework explosion');
+      try {
+        if (firework.selectedCustomImageId) {
+          window.flowerSystem.handleFireworkExplosion(
+            firework.x, 
+            firework.y, 
+            explosionColor, 
+            true, 
+            firework.selectedCustomImageId
+          );
+        } else {
+          window.flowerSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, true);
         }
       } catch (error) {
         console.error('Error creating flower explosion:', error);
       }
     } else {
-      console.warn('Flower system not available for firework explosion');
+      console.warn('No image or flower system available for firework explosion');
     }
     
     // Create the explosion with the same color as the launch
     console.debug('Creating firework explosion:', {
       position: { x: firework.x, y: firework.y },
       explosionColor: explosionColor,
-      flowerImageId: firework.selectedFlowerImageId || 'none'
+      customImageId: firework.selectedCustomImageId || 'none'
     });
     
     this.particleManager.createExplosion(firework.x, firework.y, explosionColor);

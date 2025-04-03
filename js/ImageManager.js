@@ -1,18 +1,18 @@
-// FlowerManager.js
-import { Flower } from './Flower.js';
+// ImageManager.js
+import { CustomImage } from './CustomImage.js';
 
-export class FlowerManager {
+export class ImageManager {
     constructor() {
-        console.log('Initializing FlowerManager...');
-        this.flowers = [];
+        console.log('Initializing ImageManager...');
+        this.images = [];
         this.processedImages = new Map();
-        this.maxFlowers = 50; // Reduced since we're using single flowers
+        this.maxImages = 50; // Reduced since we're using single images
         this.explosionCount = 0;
         this.lastStatsTime = Date.now();
         this.lastFrameTime = Date.now();
         this.stats = {
             updateTime: 0,
-            flowers: 0,
+            images: 0,
             removed: 0,
             total: {
                 created: 0,
@@ -21,7 +21,7 @@ export class FlowerManager {
         };
     }
 
-    // Store processed flower images
+    // Store processed custom images
     addProcessedImage(id, image) {
         // Validate id to prevent undefined
         if (!id) {
@@ -52,7 +52,7 @@ export class FlowerManager {
             dominantColor: storedColor
         });
         
-        console.debug('Current flower images:', {
+        console.debug('Current custom images:', {
             totalImages: this.processedImages.size,
             imageIDs: Array.from(this.processedImages.keys())
         });
@@ -70,7 +70,7 @@ export class FlowerManager {
     getRandomImage() {
         const imageIds = Array.from(this.processedImages.keys());
         if (imageIds.length === 0) {
-            console.warn('No processed images available for flower effect');
+            console.warn('No processed images available for explosion effect');
             return null;
         }
         
@@ -81,7 +81,7 @@ export class FlowerManager {
         
         // Verify we have valid image data
         if (!imageData || !imageData.image) {
-            console.error('Invalid image data found in flower manager:', { imageId: randomId });
+            console.error('Invalid image data found in image manager:', { imageId: randomId });
             return null;
         }
         
@@ -90,7 +90,7 @@ export class FlowerManager {
             ? `${imageData.dominantColor.hex} - RGB(${imageData.dominantColor.rgb.r},${imageData.dominantColor.rgb.g},${imageData.dominantColor.rgb.b})`
             : 'None';
             
-        console.log(`Selected flower image: ${randomId} with color: ${colorInfo}`);
+        console.log(`Selected custom image: ${randomId} with color: ${colorInfo}`);
         
         return {
             id: randomId,
@@ -99,9 +99,9 @@ export class FlowerManager {
         };
     }
 
-    // Create a blooming flower effect
+    // Create an image explosion effect
     // Added forcedColor parameter to allow forcing a specific color
-    createFlowerExplosion(x, y, imageId = null, forcedColor = null) {
+    createImageExplosion(x, y, imageId = null, forcedColor = null) {
         // If no specific imageId is provided or the image doesn't exist, use a random one
         let imageData;
         let selectedImageId;
@@ -119,7 +119,7 @@ export class FlowerManager {
         } else {
             const randomImageData = this.getRandomImage();
             if (!randomImageData) {
-                console.debug('No flower images available, explosion will use default colors');
+                console.debug('No custom images available, explosion will use default colors');
                 return forcedColor || null;
             }
             
@@ -135,48 +135,48 @@ export class FlowerManager {
 
         this.explosionCount++;
         const startTime = Date.now();
-        console.log(`Creating flower bloom #${this.explosionCount} at (${x}, ${y}) using image: ${selectedImageId}`);
+        console.log(`Creating image explosion #${this.explosionCount} at (${x}, ${y}) using image: ${selectedImageId}`);
         
         // Log color information
-        console.log(`Color for flower #${this.explosionCount}: ${selectedColor || 'extracting from image'}`);
+        console.log(`Color for image #${this.explosionCount}: ${selectedColor || 'extracting from image'}`);
 
-        // Remove old flowers if we're at the limit
-        if (this.flowers.length >= this.maxFlowers) {
+        // Remove old images if we're at the limit
+        if (this.images.length >= this.maxImages) {
             const removeCount = 1;
-            const removedFlower = this.flowers.shift();
+            const removedImage = this.images.shift();
             this.stats.total.removed++;
         }
 
-        // Create new blooming flower with optional color
-        const flower = new Flower(x, y, imageData.image, selectedColor);
-        this.flowers.push(flower);
+        // Create new custom image explosion with optional color
+        const customImage = new CustomImage(x, y, imageData.image, selectedColor);
+        this.images.push(customImage);
         this.stats.total.created++;
 
         const createTime = Date.now() - startTime;
         
         // Return the color that was actually used
-        const usedColor = selectedColor || flower.dominantColor.hex;
-        console.debug(`Flower bloom #${this.explosionCount} using color: ${usedColor}`);
+        const usedColor = selectedColor || customImage.dominantColor.hex;
+        console.debug(`Image explosion #${this.explosionCount} using color: ${usedColor}`);
         
         return usedColor;
     }
 
-    // Update all flowers
+    // Update all images
     update(currentTime) {
         const startTime = Date.now();
         
-        // Update all flowers
-        this.flowers.forEach(flower => flower.update());
+        // Update all images
+        this.images.forEach(image => image.update());
         
-        // Remove dead flowers
-        const initialCount = this.flowers.length;
-        this.flowers = this.flowers.filter(flower => !flower.isDead());
-        const removedCount = initialCount - this.flowers.length;
+        // Remove dead images
+        const initialCount = this.images.length;
+        this.images = this.images.filter(image => !image.isDead());
+        const removedCount = initialCount - this.images.length;
         
         // Update performance stats
         const endTime = Date.now();
         this.stats.updateTime = endTime - startTime;
-        this.stats.flowers = this.flowers.length;
+        this.stats.images = this.images.length;
         this.stats.removed = removedCount;
         this.stats.total.removed += removedCount;
         
@@ -189,9 +189,9 @@ export class FlowerManager {
         this.lastFrameTime = now;
     }
 
-    // Render all flowers
+    // Render all images
     render(ctx) {
-        if (this.flowers.length === 0) return;
+        if (this.images.length === 0) return;
 
         const startTime = Date.now();
         
@@ -199,25 +199,25 @@ export class FlowerManager {
         // Enable blending for glow effects
         ctx.globalCompositeOperation = 'source-over'; // Changed from 'lighter' to prevent brightness accumulation
         
-        // Render all flowers
-        this.flowers.forEach(flower => flower.render(ctx));
+        // Render all images
+        this.images.forEach(image => image.render(ctx));
         
         ctx.restore();
 
         const renderTime = Date.now() - startTime;
         if (renderTime > 16) {
-            console.warn('Slow flower render:', {
+            console.warn('Slow image render:', {
                 time: renderTime.toFixed(2) + 'ms',
-                flowerCount: this.flowers.length
+                imageCount: this.images.length
             });
         }
     }
 
-    // Clear all flowers
+    // Clear all images
     clear() {
-        const clearedCount = this.flowers.length;
+        const clearedCount = this.images.length;
         this.stats.total.removed += clearedCount;
-        console.log('Clearing flowers:', {
+        console.log('Clearing images:', {
             clearedCount,
             totalStats: {
                 blooms: this.explosionCount,
@@ -225,6 +225,6 @@ export class FlowerManager {
                 removed: this.stats.total.removed
             }
         });
-        this.flowers = [];
+        this.images = [];
     }
 } 

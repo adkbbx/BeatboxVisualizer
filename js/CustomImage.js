@@ -1,7 +1,7 @@
-// Flower.js
-export class Flower {
+// CustomImage.js
+export class CustomImage {
     constructor(x, y, image, forcedColor = null) {
-        console.log(`Creating blooming flower at (${x}, ${y})`);
+        console.log(`Creating custom image explosion at (${x}, ${y})`);
         this.x = x;
         this.y = y;
         this.image = image;
@@ -9,7 +9,7 @@ export class Flower {
         // If forced color is provided, always use it
         if (forcedColor) {
             this.setForcedColor(forcedColor);
-            console.log(`Using forced color for flower: ${forcedColor}`);
+            console.log(`Using forced color for image: ${forcedColor}`);
         } else if (image.dominantColor) {
             // If image has pre-computed dominant color, use that
             this.dominantColor = image.dominantColor;
@@ -49,7 +49,7 @@ export class Flower {
             });
         }
         
-        console.debug('Flower initialized:', {
+        console.debug('Custom image initialized:', {
             position: {x: this.x.toFixed(0), y: this.y.toFixed(0)},
             dominantColor: this.dominantColor,
             targetScale: this.targetScale.toFixed(2),
@@ -80,7 +80,7 @@ export class Flower {
         // Draw the image
         tempCtx.drawImage(this.image, 0, 0);
         
-        // Get image data from the center of the flower
+        // Get image data from the center of the image
         const centerX = Math.floor(this.image.width / 2);
         const centerY = Math.floor(this.image.height / 2);
         const sampleSize = 20; // Sample a 20x20 area from center
@@ -124,7 +124,7 @@ export class Flower {
                 hex
             };
             
-            console.debug('Extracted color from flower center:', {
+            console.debug('Extracted color from image center:', {
                 rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
                 hex: hex
             });
@@ -262,7 +262,7 @@ export class Flower {
             hex: normalizedHex
         };
 
-        console.log('Using forced color for flower:', {
+        console.log('Using forced color for image:', {
             color: normalizedHex,
             rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
         });
