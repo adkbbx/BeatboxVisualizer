@@ -6,11 +6,15 @@ export function initializePanelControls() {
     function togglePanels() {
         panelsVisible = !panelsVisible;
         appContainer.classList.toggle('hidden-panels', !panelsVisible);
-        // Update both icon and text
+        
+        // Update both icon and text with consistent HTML structure
         toggleButton.innerHTML = panelsVisible ? 
             '<span class="icon">👁️</span><span class="text">Hide</span>' : 
             '<span class="icon">👁️‍🗨️</span><span class="text">Show</span>';
     }
+
+    // Set initial button structure to ensure consistency
+    toggleButton.innerHTML = '<span class="icon">👁️</span><span class="text">Hide</span>';
 
     // Button click handler
     toggleButton.addEventListener('click', togglePanels);
@@ -25,4 +29,4 @@ export function initializePanelControls() {
             togglePanels();
         }
     });
-} 
+}

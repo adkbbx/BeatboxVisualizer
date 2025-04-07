@@ -1,0 +1,7 @@
+/* Main components stylesheet - imports all component styles */
+@import 'components/layout.css';
+@import 'components/controls.css';
+@import 'components/audio-visualizer.css';
+@import 'components/settings-panel.css';
+@import 'components/panel-visibility.css';
+@import 'components/image-uploader.css';

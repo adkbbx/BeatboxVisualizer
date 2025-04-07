@@ -43,41 +43,25 @@ class AudioManager {
      */
     async initialize() {
         try {
-            console.log('[AudioManager] Starting initialization...');
-            console.log('[AudioManager] Current state:', {
-                contextExists: !!this.audioContext,
-                microphoneExists: !!this.microphone,
-                analyserExists: !!this.analyser,
-                isActive: this.isActive
-            });
-            
             // Create audio context
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             
             // Check if we already have an audio context
             if (this.audioContext) {
-                console.log('[AudioManager] Audio context already exists, state:', this.audioContext.state);
                 if (this.audioContext.state === 'suspended') {
-                    console.log('[AudioManager] Resuming existing audio context...');
                     await this.audioContext.resume();
-                    console.log('[AudioManager] Audio context resumed, new state:', this.audioContext.state);
                 }
             } else {
-                console.log('[AudioManager] Creating new AudioContext...');
                 this.audioContext = new AudioContext();
-                console.log('[AudioManager] New AudioContext created, state:', this.audioContext.state);
                 
                 // Resume audio context if suspended
                 if (this.audioContext.state === 'suspended') {
-                    console.log('[AudioManager] Resuming new audio context...');
                     await this.audioContext.resume();
-                    console.log('[AudioManager] Audio context resumed, new state:', this.audioContext.state);
                 }
             }
             
             // Only request microphone access if we don't already have it
             if (!this.microphone) {
-                console.log('[AudioManager] Requesting microphone access...');
                 const stream = await navigator.mediaDevices.getUserMedia({
                     audio: {
                         echoCancellation: true,
@@ -85,25 +69,18 @@ class AudioManager {
                         autoGainControl: true
                     }
                 });
-                console.log('[AudioManager] Microphone access granted');
                 
                 // Create audio processing chain
-                console.log('[AudioManager] Creating audio processing chain...');
                 this.microphone = this.audioContext.createMediaStreamSource(stream);
                 this.analyser = this.audioContext.createAnalyser();
                 this.analyser.fftSize = 1024;
                 this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
                 this.microphone.connect(this.analyser);
-                console.log('[AudioManager] Audio processing chain created, analyzer bin count:', this.analyser.frequencyBinCount);
-            } else {
-                console.log('[AudioManager] Reusing existing microphone and analyzer');
             }
             
-            console.log('[AudioManager] Initialization complete, resources ready');
             return true;
         } catch (error) {
             console.error('[AudioManager] Error initializing audio:', error);
-            console.error('[AudioManager] Stack trace:', error.stack);
             return false;
         }
     }
@@ -112,26 +89,18 @@ class AudioManager {
      * Start audio analysis
      */
     start() {
-        console.log('[AudioManager] Starting audio analysis...');
-        
         if (!this.audioContext || !this.analyser) {
-            console.error('[AudioManager] Cannot start - not initialized', {
-                contextExists: !!this.audioContext,
-                analyserExists: !!this.analyser
-            });
+            console.error('[AudioManager] Cannot start - not initialized');
             return false;
         }
         
         // Ensure audio context is running
         if (this.audioContext.state !== 'running') {
-            console.log('[AudioManager] Audio context not running, resuming...');
             this.audioContext.resume()
-                .then(() => console.log('[AudioManager] Audio context resumed successfully'))
                 .catch(err => console.error('[AudioManager] Error resuming audio context:', err));
         }
         
         this.isActive = true;
-        console.log('[AudioManager] Audio processing active, starting analyze loop');
         this.analyzeAudio();
         return true;
     }
@@ -140,74 +109,35 @@ class AudioManager {
      * Stop audio analysis completely
      */
     stop() {
-        console.log('[AudioManager] Stopping audio analysis completely');
-        console.log('[AudioManager] Current state before stopping:', {
-            contextExists: !!this.audioContext,
-            contextState: this.audioContext ? this.audioContext.state : 'none',
-            microphoneExists: !!this.microphone,
-            analyserExists: !!this.analyser,
-            isActive: this.isActive
-        });
-        
         this.isActive = false;
-        
-        // Log that we've stopped but retained resources
-        console.log('[AudioManager] Audio analysis stopped, resources retained for future use');
         return true;
     }
     
     /**
      * Pause audio analysis without clearing resources
-     * This is used for temporary pauses like when opening settings
      */
     pause() {
-        console.log('[AudioManager] Pausing audio analysis temporarily');
-        console.log('[AudioManager] Current state before pausing:', {
-            contextExists: !!this.audioContext,
-            contextState: this.audioContext ? this.audioContext.state : 'none',
-            microphoneExists: !!this.microphone,
-            analyserExists: !!this.analyser,
-            isActive: this.isActive
-        });
-        
         this.isActive = false;
-        console.log('[AudioManager] Audio analysis paused, resources maintained');
         return true;
     }
     
     /**
      * Resume audio analysis after pause
-     * This is used to resume after temporary pauses
      */
     resume() {
-        console.log('[AudioManager] Attempting to resume audio analysis');
-        console.log('[AudioManager] Current state before resuming:', {
-            contextExists: !!this.audioContext,
-            contextState: this.audioContext ? this.audioContext.state : 'none',
-            microphoneExists: !!this.microphone,
-            analyserExists: !!this.analyser,
-            isActive: this.isActive
-        });
-        
         // Only resume if we have an initialized context
         if (this.audioContext && this.analyser) {
             // Make sure audio context is running
             if (this.audioContext.state !== 'running') {
-                console.log('[AudioManager] Audio context not running, resuming...');
                 this.audioContext.resume()
-                    .then(() => console.log('[AudioManager] Audio context resumed successfully'))
                     .catch(err => console.error('[AudioManager] Error resuming audio context:', err));
             }
             
             this.isActive = true;
-            console.log('[AudioManager] Audio analysis resumed, restarting analyze loop');
             this.analyzeAudio();
             return true;
         } else {
-            console.error('[AudioManager] Cannot resume - missing required resources', {
-                contextExists: !!this.audioContext,
-                analyserExists: !!this.analyser
-            });
+            console.error('[AudioManager] Cannot resume - missing required resources');
             return false;
         }
     }
@@ -217,17 +147,12 @@ class AudioManager {
      */
     analyzeAudio() {
         if (!this.isActive) {
-            console.log('[AudioManager] Analyze loop exiting - audio processing not active');
             return;
         }
         
         // Check if we still have all required resources
         if (!this.audioContext || !this.analyser || !this.dataArray) {
-            console.error('[AudioManager] Analyze loop error - missing required resources', {
-                contextExists: !!this.audioContext,
-                analyserExists: !!this.analyser,
-                dataArrayExists: !!this.dataArray
-            });
+            console.error('[AudioManager] Missing required resources');
             this.isActive = false;
             return;
         }
@@ -248,11 +173,6 @@ class AudioManager {
         // Apply noise floor
         if (this.volumeLevel < this.noiseFloor) {
             this.volumeLevel = 0;
-        }
-        
-        // Log volume occasionally
-        if (this.debug && Math.random() < 0.01) {
-            console.log(`Raw volume: ${rawVolumeLevel.toFixed(4)} Adjusted volume: ${this.volumeLevel.toFixed(4)} Noise floor: ${this.noiseFloor}`);
         }
         
         // Determine volume category
@@ -279,10 +199,6 @@ class AudioManager {
             // Detect sudden sounds
             const volumeDelta = this.volumeLevel - this.lastVolume;
             if (this.volumeLevel > this.quietThreshold && volumeDelta > this.suddenSoundThreshold) {
-                if (this.debug) {
-                    console.log(`SUDDEN sound detected, delta: ${volumeDelta.toFixed(4)} level: ${this.volumeLevel.toFixed(4)}`);
-                }
-                
                 if (this.suddenSoundCallback) {
                     this.suddenSoundCallback(this.volumeLevel);
                 }
@@ -315,7 +231,6 @@ class AudioManager {
      */
     processSustainedSound() {
         // Only process if volume is in the sustained range
-        // Increased minimum volume to require more intentional sounds
         if (this.volumeLevel < 0.12 || this.volumeLevel >= this.loudThreshold) {
             if (this.isSustained) {
                 this.endAllSustainedSounds();
@@ -338,10 +253,6 @@ class AudioManager {
             
             const duration = Date.now() - this.sustainedSoundStart;
             
-            if (this.debug) {
-                console.log(`SUSTAINED sound detected, duration: ${duration} level: ${this.volumeLevel.toFixed(4)}`);
-            }
-            
             // Prevent race conditions
             this.isProcessingSustained = true;
             
@@ -357,10 +268,6 @@ class AudioManager {
                         lastUpdateTime: Date.now(),
                         volume: this.volumeLevel
                     });
-                    
-                    if (this.debug) {
-                        console.log(`New sustained sound tracked with ID: ${sustainedId}`);
-                    }
                 }
             }
             
@@ -382,10 +289,6 @@ class AudioManager {
      */
     endAllSustainedSounds() {
         this.activeSustainedSounds.forEach((soundData, id) => {
-            if (this.debug) {
-                console.log(`Sustained sound ended, id: ${id}`);
-            }
-            
             if (this.sustainedSoundEndCallback) {
                 this.sustainedSoundEndCallback(id);
             }
@@ -427,91 +330,31 @@ class AudioManager {
      * Update audio settings
      */
     updateSettings(settings) {
-        // Log the settings we're updating
-        console.log('[AudioManager] Updating settings:', settings);
-        
-        const oldSettings = {
-            sensitivity: this.sensitivity,
-            quietThreshold: this.quietThreshold,
-            loudThreshold: this.loudThreshold,
-            suddenSoundThreshold: this.suddenSoundThreshold
-        };
-        
         // Update individual settings if provided
         if (settings.sensitivity !== undefined) {
             // Validate sensible range
-            if (settings.sensitivity >= 0 && settings.sensitivity <= 3) {
-                this.sensitivity = settings.sensitivity;
-            } else {
-                console.warn('[AudioManager] Sensitivity out of range, clamping:', settings.sensitivity);
-                this.sensitivity = Math.max(0, Math.min(3, settings.sensitivity));
-            }
+            this.sensitivity = Math.max(0, Math.min(3, settings.sensitivity));
         }
         
         if (settings.quietThreshold !== undefined) {
             // Validate sensible range and ensure it's less than loud threshold
-            const validatedQuietThreshold = Math.max(0, Math.min(
+            this.quietThreshold = Math.max(0, Math.min(
                 settings.quietThreshold, 
                 this.loudThreshold * 0.9 // Keep it below loud threshold
             ));
-            
-            if (validatedQuietThreshold !== settings.quietThreshold) {
-                console.warn('[AudioManager] Quiet threshold adjusted to remain below loud threshold');
-            }
-            
-            this.quietThreshold = validatedQuietThreshold;
         }
         
         if (settings.loudThreshold !== undefined) {
             // Validate sensible range and ensure it's greater than quiet threshold
-            const validatedLoudThreshold = Math.max(
+            this.loudThreshold = Math.max(
                 this.quietThreshold * 1.1, // Keep it above quiet threshold
                 Math.min(1, settings.loudThreshold)
             );
-            
-            if (validatedLoudThreshold !== settings.loudThreshold) {
-                console.warn('[AudioManager] Loud threshold adjusted to remain above quiet threshold');
-            }
-            
-            this.loudThreshold = validatedLoudThreshold;
         }
         
         if (settings.suddenSoundThreshold !== undefined) {
             // Validate sensible range
-            if (settings.suddenSoundThreshold >= 0.05 && settings.suddenSoundThreshold <= 0.5) {
-                this.suddenSoundThreshold = settings.suddenSoundThreshold;
-            } else {
-                console.warn('[AudioManager] Sudden sound threshold out of range, clamping:', settings.suddenSoundThreshold);
-                this.suddenSoundThreshold = Math.max(0.05, Math.min(0.5, settings.suddenSoundThreshold));
-            }
-        }
-        
-        // Log the changes that were made
-        const newSettings = {
-            sensitivity: this.sensitivity,
-            quietThreshold: this.quietThreshold,
-            loudThreshold: this.loudThreshold,
-            suddenSoundThreshold: this.suddenSoundThreshold
-        };
-        
-        // Log which values actually changed
-        const changedSettings = {};
-        let hasChanges = false;
-        
-        Object.keys(newSettings).forEach(key => {
-            if (newSettings[key] !== oldSettings[key]) {
-                changedSettings[key] = {
-                    from: oldSettings[key],
-                    to: newSettings[key]
-                };
-                hasChanges = true;
-            }
-        });
-        
-        if (hasChanges) {
-            console.log('[AudioManager] Settings updated:', changedSettings);
-        } else {
-            console.log('[AudioManager] No settings were changed');
+            this.suddenSoundThreshold = Math.max(0.05, Math.min(0.5, settings.suddenSoundThreshold));
         }
     }
 }

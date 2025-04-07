@@ -1,4 +1,4 @@
-import AudioManager from './audioManager.js';
+import AudioManager from './audio/AudioManager.js';
 import AnimationController from './animationController.js';
 import UIController from './uiController.js';
 import { initializePanelControls } from './panel-controls.js';

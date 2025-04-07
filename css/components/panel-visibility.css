@@ -1,0 +1,42 @@
+/* Panel visibility controls */
+/* Update the hidden panels class to exclude the toggle button */
+.hidden-panels .control-panel > *,
+.hidden-panels .audio-visualizer,
+.hidden-panels #imageUploader {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Keep the toggle button visible */
+.hidden-panels .control-panel #togglePanels {
+    opacity: 1;
+    pointer-events: auto;
+    min-width: 90px; /* Match the min-width from controls.css */
+    justify-content: center; /* Ensure consistent alignment */
+}
+
+/* Position the toggle button absolutely when panels are hidden */
+.hidden-panels .control-panel {
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+.hidden-panels .control-panel #togglePanels {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(30, 30, 30, 0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Normal state transitions */
+.control-panel,
+.audio-visualizer,
+#flowerUploader {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}

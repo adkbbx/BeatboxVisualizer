@@ -1,6 +1,5 @@
 /**
  * UIController coordinates all UI components and interactions
- * Fixed version with proper separation of concerns
  */
 import UIEventHandlers from './UIEventHandlers.js';
 import SoundVisualization from './SoundVisualization.js';

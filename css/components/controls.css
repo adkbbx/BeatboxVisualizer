@@ -1,0 +1,99 @@
+/* Control panel styling */
+.control-panel {
+    grid-column: 1;
+    grid-row: 1;
+    background-color: rgba(30, 30, 30, 0.75);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+    pointer-events: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: fit-content;
+    margin-left: 20px;
+}
+
+/* Button styles */
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.15);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 90px; /* Fixed width for more consistent buttons */
+    justify-content: center; /* Center text and icon */
+}
+
+button .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px; /* Consistent icon size */
+    width: 20px; /* Fixed width */
+    height: 20px; /* Fixed height */
+}
+
+button .text {
+    flex: 1;
+    text-align: center;
+}
+
+button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* Specific button styles */
+#toggleSettings {
+    background-color: rgba(52, 152, 219, 0.5);
+}
+
+#togglePanels {
+    background-color: rgba(149, 165, 166, 0.5);
+}
+
+.mic-button {
+    background-color: rgba(46, 204, 113, 0.5);
+}
+
+.mic-button.active {
+    background-color: rgba(231, 76, 60, 0.5);
+}
+
+#stopMicrophone {
+    display: none; /* Hide the stop button but keep it in DOM */
+}
+
+/* Microphone button states */
+#startMicrophone {
+    background-color: rgba(46, 204, 113, 0.7); /* Brighter green for start */
+}
+
+#startMicrophone.active {
+    background-color: rgba(231, 76, 60, 0.7); /* Brighter red for stop */
+}
+
+/* Hover states */
+#startMicrophone:hover {
+    background-color: rgba(46, 204, 113, 0.9); /* Even brighter green on hover */
+}
+
+#startMicrophone.active:hover {
+    background-color: rgba(231, 76, 60, 0.9); /* Even brighter red on hover */
+}

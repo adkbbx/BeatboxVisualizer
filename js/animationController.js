@@ -1,6 +1,6 @@
 import ColorManager from './ColorManager.js';
-import ParticleManager from './ParticleManager.js';
-import FireworkManager from './FireworkManager.js';
+import ParticleManager from './particles/ParticleManager.js';
+import FireworkManager from './fireworks/FireworkManager.js';
 
 /**
  * Main animation controller that coordinates all animation components
@@ -10,7 +10,6 @@ class AnimationController {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
     this.isActive = false;
-    this.debug = false;
     this.lastTime = 0;
     this.fireworks = []; // Track active fireworks
     
@@ -31,8 +30,6 @@ class AnimationController {
     // Initial clear of the canvas with plain black
     this.ctx.fillStyle = '#000000';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-    console.log("Enhanced animation controller initialized");
   }
   
   // Removed the full clear function to prevent jarring transitions
@@ -54,22 +51,21 @@ class AnimationController {
       this.copyCtx.fillStyle = 'black';
       this.copyCtx.fillRect(0, 0, this.copyCanvas.width, this.copyCanvas.height);
     }
+    
+    // Update firework manager with new dimensions if available
+    if (this.fireworkManager && this.fireworkManager.updateCanvasDimensions) {
+      this.fireworkManager.updateCanvasDimensions(this.canvas.width, this.canvas.height);
+    }
   }
 
   /**
    * Start the animation
    */
   start() {
-    console.log('[AnimationController] Starting animation...');
-    
     if (!this.isActive) {
-      console.log('[AnimationController] Activating animation loop');
       this.isActive = true;
       this.lastTime = performance.now();
       requestAnimationFrame(this.animate.bind(this));
-      console.log('[AnimationController] Animation started successfully, frame loop initiated');
-    } else {
-      console.log('[AnimationController] Animation already active, no action taken');
     }
   }
 
@@ -77,18 +73,7 @@ class AnimationController {
    * Stop the animation
    */
   stop() {
-    console.log('[AnimationController] Stopping animation...');
-    console.log('[AnimationController] Current state before stopping:', {
-      isActive: this.isActive,
-      fireworkCount: this.fireworks.length,
-      canvasDimensions: {
-        width: this.canvas.width, 
-        height: this.canvas.height
-      }
-    });
-    
     this.isActive = false;
-    console.log('[AnimationController] Animation stopped, frame loop will exit on next frame');
   }
   
   /**
@@ -96,44 +81,17 @@ class AnimationController {
    * Will maintain the current visual state
    */
   pause() {
-    console.log('[AnimationController] Pausing animation...');
-    console.log('[AnimationController] Current state before pausing:', {
-      isActive: this.isActive,
-      fireworkCount: this.fireworks.length,
-      canvasDimensions: {
-        width: this.canvas.width, 
-        height: this.canvas.height
-      }
-    });
-    
-    // Just mark as inactive but don't clear anything
-    // This preserves the current visual state
     this.isActive = false;
-    console.log('[AnimationController] Animation paused - current visual state preserved');
   }
   
   /**
    * Resume the animation after pause
    */
   resume() {
-    console.log('[AnimationController] Resuming animation...');
-    console.log('[AnimationController] Current state before resuming:', {
-      isActive: this.isActive,
-      fireworkCount: this.fireworks.length,
-      canvasDimensions: {
-        width: this.canvas.width, 
-        height: this.canvas.height
-      }
-    });
-    
     if (!this.isActive) {
-      console.log('[AnimationController] Reactivating animation loop');
       this.isActive = true;
       this.lastTime = performance.now();
       requestAnimationFrame(this.animate.bind(this));
-      console.log('[AnimationController] Animation resumed successfully, frame loop restarted');
-    } else {
-      console.log('[AnimationController] Animation already active, no action taken');
     }
   }
 
@@ -142,7 +100,6 @@ class AnimationController {
    */
   animate(timestamp) {
     if (!this.isActive) {
-      console.log('[AnimationController] Animation frame skipped - not active');
       return;
     }
 
@@ -151,17 +108,13 @@ class AnimationController {
       const deltaTime = timestamp - this.lastTime || 16;
       this.lastTime = timestamp;
 
-      // Two-layer approach: Keep a copy of the previous frame and manipulate it
-      
-      // First, check if we have a copy canvas for our two-buffer approach
+      // Initialize copy canvas if needed
       if (!this.copyCanvas) {
-        // Create a copy canvas with same dimensions for the two-buffer technique
         this.copyCanvas = document.createElement('canvas');
         this.copyCanvas.width = this.canvas.width;
         this.copyCanvas.height = this.canvas.height;
         this.copyCtx = this.copyCanvas.getContext('2d');
         
-        // Fill it with black initially
         this.copyCtx.fillStyle = 'black';
         this.copyCtx.fillRect(0, 0, this.copyCanvas.width, this.copyCanvas.height);
       }
@@ -177,30 +130,27 @@ class AnimationController {
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       
       // Step 3: Draw the previous frame back with reduced alpha for trails
-      this.ctx.globalAlpha = 0.80; // Keep 80% of previous frame - adjust for trail length
+      this.ctx.globalAlpha = 0.80; // Keep 80% of previous frame for trails
       this.ctx.drawImage(this.copyCanvas, 0, 0);
       this.ctx.globalAlpha = 1.0; // Reset alpha for drawing new elements
 
-      // Update all components first
+      // Update all components
       this.fireworkManager.updateFireworks(deltaTime);
       this.particleManager.updateParticles(deltaTime);
       
-      // Clear firework-specific context settings to prevent blending issues
+      // Reset context settings
       this.ctx.globalCompositeOperation = 'source-over';
       this.ctx.shadowBlur = 0;
       this.ctx.globalAlpha = 1.0;
       
-      // Draw particles first (explosions appear behind new launches)
+      // Draw scene components
       this.particleManager.drawParticles();
-      
-      // Then draw active fireworks on top
       this.fireworkManager.drawFireworks();
 
-      // Update and render custom images if the system exists
+      // Update and render custom images
       if (window.imageSystem) {
         window.imageSystem.update();
       } else if (window.flowerSystem) {
-        // Backward compatibility for older versions
         window.flowerSystem.update();
       }
 
@@ -208,20 +158,9 @@ class AnimationController {
       requestAnimationFrame(this.animate.bind(this));
     } catch (error) {
       console.error('[AnimationController] Error in animation frame:', error);
-      console.error('[AnimationController] Stack trace:', error.stack);
-      console.error('[AnimationController] State at error:', {
-        isActive: this.isActive,
-        lastTime: this.lastTime,
-        fireworkCount: this.fireworks.length,
-        canvasDimensions: {
-          width: this.canvas.width, 
-          height: this.canvas.height
-        }
-      });
       
-      // Try to recover by continuing the animation loop
+      // Try to recover
       if (this.isActive) {
-        console.log('[AnimationController] Attempting to recover animation loop');
         requestAnimationFrame(this.animate.bind(this));
       }
     }

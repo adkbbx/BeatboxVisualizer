@@ -23,38 +23,25 @@ export class ImageManager {
 
     // Store processed custom images
     addProcessedImage(id, image) {
-        // Validate id to prevent undefined
+        // Validate id
         if (!id) {
             console.error('Attempted to add image with invalid ID');
             return;
         }
         
-        console.log(`Adding processed image with ID: ${id}`);
+        // Extract dominant color
+        let dominantColor = image.dominantColor || null;
         
-        // Extract and store the dominant color if available on the image
-        let dominantColor = null;
-        if (image.dominantColor) {
-            dominantColor = image.dominantColor;
-            console.log(`Stored dominant color for image ${id}: ${dominantColor.hex}`);
-        } else {
-            console.warn(`No dominant color found for image ${id}`);
-        }
-        
-        // Deep clone the dominant color to prevent reference issues
+        // Deep clone the color to prevent reference issues
         const storedColor = dominantColor ? {
             rgb: { ...dominantColor.rgb },
             hex: dominantColor.hex
         } : null;
         
-        // Store both the image and its dominant color
+        // Store image and color
         this.processedImages.set(id, {
             image: image,
             dominantColor: storedColor
-        });
-        
-        console.debug('Current custom images:', {
-            totalImages: this.processedImages.size,
-            imageIDs: Array.from(this.processedImages.keys())
         });
     }
 
@@ -70,7 +57,6 @@ export class ImageManager {
     getRandomImage() {
         const imageIds = Array.from(this.processedImages.keys());
         if (imageIds.length === 0) {
-            console.warn('No processed images available for explosion effect');
             return null;
         }
         
@@ -81,16 +67,8 @@ export class ImageManager {
         
         // Verify we have valid image data
         if (!imageData || !imageData.image) {
-            console.error('Invalid image data found in image manager:', { imageId: randomId });
             return null;
         }
-        
-        // Log image selection and color info
-        const colorInfo = imageData.dominantColor 
-            ? `${imageData.dominantColor.hex} - RGB(${imageData.dominantColor.rgb.r},${imageData.dominantColor.rgb.g},${imageData.dominantColor.rgb.b})`
-            : 'None';
-            
-        console.log(`Selected custom image: ${randomId} with color: ${colorInfo}`);
         
         return {
             id: randomId,
@@ -99,72 +77,57 @@ export class ImageManager {
         };
     }
 
-    // Create an image explosion effect
-    // Added forcedColor parameter to allow forcing a specific color
+    // Create an image explosion effect with optional color
     createImageExplosion(x, y, imageId = null, forcedColor = null) {
-        // If no specific imageId is provided or the image doesn't exist, use a random one
+        // Determine which image to use
         let imageData;
         let selectedImageId;
         let selectedColor = forcedColor;
         
         if (imageId && this.processedImages.has(imageId)) {
+            // Use the specified image
             imageData = this.processedImages.get(imageId);
             selectedImageId = imageId;
             
-            // If we're not forcing a color but the image has a dominant color, use that
+            // Use image's color if no forced color
             if (!forcedColor && imageData.dominantColor) {
                 selectedColor = imageData.dominantColor.hex;
-                console.debug(`Using dominant color from image ${imageId}: ${selectedColor}`);
             }
         } else {
+            // Use a random image
             const randomImageData = this.getRandomImage();
             if (!randomImageData) {
-                console.debug('No custom images available, explosion will use default colors');
                 return forcedColor || null;
             }
             
             imageData = this.processedImages.get(randomImageData.id);
             selectedImageId = randomImageData.id;
             
-            // If we're not forcing a color but the random image has a dominant color, use that
+            // Use random image's color if no forced color
             if (!forcedColor && randomImageData.dominantColor) {
                 selectedColor = randomImageData.dominantColor.hex;
-                console.debug(`Using dominant color from random image: ${selectedColor}`);
             }
         }
 
         this.explosionCount++;
-        const startTime = Date.now();
-        console.log(`Creating image explosion #${this.explosionCount} at (${x}, ${y}) using image: ${selectedImageId}`);
-        
-        // Log color information
-        console.log(`Color for image #${this.explosionCount}: ${selectedColor || 'extracting from image'}`);
 
         // Remove old images if we're at the limit
         if (this.images.length >= this.maxImages) {
-            const removeCount = 1;
-            const removedImage = this.images.shift();
+            this.images.shift();
             this.stats.total.removed++;
         }
 
-        // Create new custom image explosion with optional color
+        // Create new image explosion with the color
         const customImage = new CustomImage(x, y, imageData.image, selectedColor);
         this.images.push(customImage);
         this.stats.total.created++;
-
-        const createTime = Date.now() - startTime;
         
-        // Return the color that was actually used
-        const usedColor = selectedColor || customImage.dominantColor.hex;
-        console.debug(`Image explosion #${this.explosionCount} using color: ${usedColor}`);
-        
-        return usedColor;
+        // Return the color that was used
+        return selectedColor || customImage.dominantColor.hex;
     }
 
     // Update all images
     update(currentTime) {
-        const startTime = Date.now();
-        
         // Update all images
         this.images.forEach(image => image.update());
         
@@ -173,14 +136,12 @@ export class ImageManager {
         this.images = this.images.filter(image => !image.isDead());
         const removedCount = initialCount - this.images.length;
         
-        // Update performance stats
-        const endTime = Date.now();
-        this.stats.updateTime = endTime - startTime;
+        // Update stats
         this.stats.images = this.images.length;
         this.stats.removed = removedCount;
         this.stats.total.removed += removedCount;
         
-        // Performance stats logging every second removed to reduce console noise
+        // Reset removed count periodically
         const now = Date.now();
         if (now - this.lastStatsTime >= 1000) {
             this.lastStatsTime = now;
@@ -192,25 +153,14 @@ export class ImageManager {
     // Render all images
     render(ctx) {
         if (this.images.length === 0) return;
-
-        const startTime = Date.now();
         
         ctx.save();
-        // Enable blending for glow effects
-        ctx.globalCompositeOperation = 'source-over'; // Changed from 'lighter' to prevent brightness accumulation
+        ctx.globalCompositeOperation = 'source-over';
         
         // Render all images
         this.images.forEach(image => image.render(ctx));
         
         ctx.restore();
-
-        const renderTime = Date.now() - startTime;
-        if (renderTime > 16) {
-            console.warn('Slow image render:', {
-                time: renderTime.toFixed(2) + 'ms',
-                imageCount: this.images.length
-            });
-        }
     }
 
     // Clear all images
