@@ -1,0 +1,336 @@
+/* Settings Panel with Tabs */
+.settings-panel {
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  padding: 24px;
+  border: 1px solid #2c2c2c;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 90%;
+  box-sizing: border-box;
+}
+
+/* Settings Panel Heading */
+.settings-panel h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #fff;
+  font-size: 22px;
+  text-align: center;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  border-bottom: 1px solid #333;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.tab-button {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  padding: 8px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: none;
+  flex: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  color: #fff;
+}
+
+.tab-button.active {
+  color: #fff;
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #4CAF50;
+}
+
+/* Tab Content */
+.tab-content {
+  width: 100%;
+}
+
+.tab-pane {
+  display: none;
+  width: 100%;
+}
+
+.tab-pane.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Setting Styles */
+.setting {
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.setting label {
+  display: block;
+  margin-bottom: 6px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.setting-description {
+  display: block;
+  color: #999;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.setting-value {
+  display: inline-block;
+  margin-top: 8px;
+  color: #4CAF50;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Range Sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #333;
+  border-radius: 3px;
+  outline: none;
+  margin: 10px 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+  border: none;
+}
+
+/* Toggle Switch */
+.toggle-setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.toggle-setting > div:first-child {
+  flex: 1;
+}
+
+.toggle-setting label {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  margin-left: 15px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: 0.4s;
+}
+
+.toggle-switch label:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: #999;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+.toggle-switch input:checked + label {
+  background-color: #1e3f1e;
+}
+
+.toggle-switch input:checked + label:before {
+  background-color: #4CAF50;
+  transform: translateX(26px);
+}
+
+/* Color picker and related styles */
+.color-picker-container {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+#colorPicker {
+  height: 36px;
+  width: 80px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+#addColor {
+  flex: 1;
+  height: 36px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.custom-colors-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px 0 20px;
+}
+
+.color-swatch {
+  position: relative;
+  width: 35px;
+  height: 35px;
+  margin: 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-swatch button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ccc;
+  border: none;
+  border-radius: 0 3px 0 3px;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.custom-colors-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px 0 20px;
+  gap: 8px; /* Add gap for better spacing */
+}
+
+/* Color Theme Select */
+select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: white;
+  border: 1px solid #444;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* Bottom buttons */
+.settings-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+}
+
+#resetSettings, .close-settings-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#resetSettings {
+  background: #333;
+  color: white;
+  min-width: 100px;
+}
+
+.close-settings-btn {
+  background: #4CAF50;
+  color: white;
+  flex-grow: 1;
+  margin-left: 10px;
+  text-align: center;
+}
+
+/* Empty state */
+.empty-colors-message {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}

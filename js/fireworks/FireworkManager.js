@@ -12,7 +12,14 @@ class FireworkManager {
         this.particleManager = particleManager;
         this.fireworks = [];
         this.launchingFirework = false;
-        this.gravity = 0.02;
+        
+        // Add settings object with defaults
+        this.settings = {
+            gravity: 0.02,
+            maxFireworks: 20,
+            launchHeightFactor: 0.05,
+            smokeTrailIntensity: 0.3
+        };
         
         // Initialize factory
         this.fireworkFactory = new FireworkFactory(
@@ -23,6 +30,26 @@ class FireworkManager {
         
         // Initialize smoke trail effect
         this.smokeTrailEffect = new SmokeTrailEffect(ctx);
+    }
+    
+    /**
+     * Update firework settings
+     */
+    updateSettings(newSettings) {
+        // Log new settings
+        console.log('Updating FireworkManager settings:', newSettings);
+        
+        // Update settings object
+        if (newSettings.gravity !== undefined) this.settings.gravity = newSettings.gravity;
+        if (newSettings.maxFireworks !== undefined) this.settings.maxFireworks = newSettings.maxFireworks;
+        if (newSettings.launchHeightFactor !== undefined) this.settings.launchHeightFactor = newSettings.launchHeightFactor;
+        if (newSettings.smokeTrailIntensity !== undefined) {
+            this.settings.smokeTrailIntensity = newSettings.smokeTrailIntensity;
+            // Update smoke trail effect intensity
+            if (this.smokeTrailEffect) {
+                this.smokeTrailEffect.updateOpacity(this.settings.smokeTrailIntensity);
+            }
+        }
     }
 
     /**
@@ -70,7 +97,7 @@ class FireworkManager {
      * Clean up old exploded fireworks to prevent array growth
      */
     cleanupOldFireworks() {
-        const maxFireworks = 20;
+        const maxFireworks = this.settings.maxFireworks;
         
         if (this.fireworks.length > maxFireworks) {
             // First remove any fully faded exploded fireworks
@@ -101,8 +128,8 @@ class FireworkManager {
             const firework = this.fireworks[i];
             
             if (!firework.exploded) {
-                // Update firework position
-                const reachedTarget = firework.update(this.gravity);
+                // Update firework position using current gravity setting
+                const reachedTarget = firework.update(this.settings.gravity);
                 
                 // Check if firework reached target
                 if (reachedTarget) {

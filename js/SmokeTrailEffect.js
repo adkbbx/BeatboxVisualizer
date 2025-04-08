@@ -84,6 +84,13 @@ class SmokeTrailEffect {
     updateSettings(settings) {
         Object.assign(this.settings, settings);
     }
+    
+    /**
+     * Update only the opacity setting
+     */
+    updateOpacity(opacity) {
+        this.settings.opacity = opacity;
+    }
 }
 
 export default SmokeTrailEffect;

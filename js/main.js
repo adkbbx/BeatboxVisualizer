@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize panel controls
     initializePanelControls();
+    
+    // Load CSS for new settings panel
+    loadSettingsPanelStyles();
 });
 
 /**
@@ -75,4 +78,14 @@ function checkBrowserCompatibility() {
         
         document.body.insertBefore(warningElement, document.body.firstChild);
     }
+}
+
+/**
+ * Load the settings panel CSS
+ */
+function loadSettingsPanelStyles() {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'css/settings-tabs.css';
+    document.head.appendChild(link);
 }

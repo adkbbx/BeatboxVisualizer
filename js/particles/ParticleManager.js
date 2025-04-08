@@ -199,7 +199,20 @@ class ParticleManager {
    * @param {Object} newSettings - New settings to apply
    */
   updateSettings(newSettings) {
-    // Deep merge settings
+    console.log('Updating ParticleManager settings:', newSettings);
+    
+    // Map new setting keys to internal settings
+    if (newSettings.count !== undefined) this.settings.particleCount = newSettings.count;
+    if (newSettings.lifespan !== undefined) this.settings.particleLifespan = newSettings.lifespan;
+    if (newSettings.minSize !== undefined) this.settings.minSize = newSettings.minSize;
+    if (newSettings.maxSize !== undefined) this.settings.maxSize = newSettings.maxSize;
+    if (newSettings.useMultiColor !== undefined) this.settings.useMultiColor = newSettings.useMultiColor;
+    if (newSettings.glowEnabled !== undefined) this.settings.glowEffect = newSettings.glowEnabled;
+    if (newSettings.shimmerEnabled !== undefined) this.settings.shimmerEffect = newSettings.shimmerEnabled;
+    if (newSettings.fadeResistance !== undefined) this.settings.fadeResistance = newSettings.fadeResistance;
+    if (newSettings.trailEffect !== undefined) this.settings.trailLength = newSettings.trailEffect;
+    
+    // Now merge any remaining settings
     this.settings = { ...this.settings, ...newSettings };
   }
 }

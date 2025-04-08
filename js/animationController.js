@@ -16,6 +16,9 @@ class AnimationController {
     // Set up for double-buffer technique
     this.copyCanvas = null;
     this.copyCtx = null;
+    
+    // Add support for animation speed
+    this.globalSpeed = 1.0;
 
     // Initialize managers
     this.colorManager = new ColorManager();
@@ -32,8 +35,29 @@ class AnimationController {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
   
-  // Removed the full clear function to prevent jarring transitions
-
+  /**
+   * Update animation settings
+   */
+  updateSettings(settings) {
+    console.log('Updating AnimationController settings:', settings);
+    
+    // Update global animation speed if provided
+    if (settings.globalSpeed !== undefined) {
+      this.globalSpeed = settings.globalSpeed;
+    }
+    
+    // Forward settings to managers
+    if (settings.fireworks && this.fireworkManager) {
+      this.fireworkManager.updateSettings(settings.fireworks);
+    }
+    
+    if (settings.particles && this.particleManager) {
+      this.particleManager.updateSettings(settings.particles);
+    }
+    
+    // Additional effects settings can be forwarded as needed
+  }
+  
   /**
    * Handle window resize
    */
@@ -104,8 +128,9 @@ class AnimationController {
     }
 
     try {
-      // Calculate delta time
-      const deltaTime = timestamp - this.lastTime || 16;
+      // Calculate delta time and adjust by global speed
+      const rawDeltaTime = timestamp - this.lastTime || 16;
+      const deltaTime = rawDeltaTime * this.globalSpeed;
       this.lastTime = timestamp;
 
       // Initialize copy canvas if needed
@@ -134,7 +159,7 @@ class AnimationController {
       this.ctx.drawImage(this.copyCanvas, 0, 0);
       this.ctx.globalAlpha = 1.0; // Reset alpha for drawing new elements
 
-      // Update all components
+      // Update all components with adjusted deltaTime
       this.fireworkManager.updateFireworks(deltaTime);
       this.particleManager.updateParticles(deltaTime);
       

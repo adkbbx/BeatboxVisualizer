@@ -8,6 +8,7 @@ class FireworkFactory {
         this.colorManager = colorManager;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
+        this.launchHeightFactor = 0.05; // How high fireworks go (default: 5% from top)
     }
     
     /**
@@ -55,7 +56,7 @@ class FireworkFactory {
     calculateLaunchParameters(duration = 250) {
         // Calculate target height based on duration
         const minHeight = this.canvasHeight * 0.2; // Lower starting point
-        const maxHeight = this.canvasHeight * 0.05; // Target closer to top (5% from top)
+        const maxHeight = this.canvasHeight * this.launchHeightFactor; // Target closer to top (configurable)
         const heightRange = minHeight - maxHeight;
         
         // Normalize duration and calculate target height

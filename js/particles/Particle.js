@@ -2,19 +2,28 @@
  * Represents a single particle in an explosion
  */
 class Particle {
-    constructor(x, y, color, velocity, angle) {
+    constructor(x, y, color, velocity, angle, size = null) {
         this.x = x;
         this.y = y;
         this.color = color;
         this.velocity = velocity;
         this.angle = angle;
         this.alpha = 1;
-        this.size = Math.random() * 3 + 2;
+        this.size = size || (Math.random() * 3 + 2);
         this.life = 1;
         this.originalColor = color;
         this.creationTime = Date.now();
         this.explosionId = null;
         this.fadeColor = null;
+        this.lifespan = 1.2; // Default lifespan in seconds
+    }
+    
+    /**
+     * Set custom lifespan for this particle
+     * @param {number} seconds - Lifespan in seconds
+     */
+    setLifespan(seconds) {
+        this.lifespan = seconds;
     }
     
     /**
@@ -31,8 +40,11 @@ class Particle {
         // Apply gravity
         this.velocity *= 0.98;
         
-        // Update life with moderate fading speed
-        this.life -= deltaTime * 0.0018; // Balanced fade speed
+        // Calculate life reduction based on lifespan
+        const lifeReduction = (deltaTime / 1000) / this.lifespan;
+        
+        // Update life with custom lifespan
+        this.life -= lifeReduction;
         this.alpha = this.life * fadeResistance;
         
         // Update fade color

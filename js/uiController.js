@@ -5,6 +5,7 @@
 import UIEventHandlers from './UIEventHandlers.js';
 import SoundVisualization from './SoundVisualization.js';
 import SettingsManager from './SettingsManager.js';
+import SettingsController from './settings/SettingsController.js';
 
 class UIController {
     constructor(audioManager, animationController) {
@@ -30,6 +31,12 @@ class UIController {
         this.fireworksActive = false;
         this.activeSustainedSounds = 0;
         
+        // Reference to color manager
+        this.colorManager = animationController.colorManager;
+        
+        // Initialize settings controller
+        this.settingsController = null;
+        
         // Initialize component modules
         this.soundVisualization = new SoundVisualization(this.volumeLevel, this.micDetection, this.audioManager);
         this.settingsManager = new SettingsManager(this.audioManager);
@@ -43,6 +50,9 @@ class UIController {
         // Set up methods from SoundVisualization
         this.updateVolumeUI = this.soundVisualization.updateVolumeUI.bind(this.soundVisualization);
         this.updateMicrophoneState = this.soundVisualization.updateMicrophoneState.bind(this.soundVisualization);
+        
+        // Initialize settings panel controls
+        this.initializeSettingsPanelControls();
     }
     
     /**
@@ -51,6 +61,39 @@ class UIController {
     initializeEventListeners() {
         // This is now handled by the UIEventHandlers class
         // Left here for backward compatibility
+    }
+    
+    /**
+     * Initialize settings panel controls
+     */
+    initializeSettingsPanelControls() {
+        const toggleSettingsButton = document.getElementById('toggleSettings');
+        const closeSettingsButton = document.getElementById('newCloseSettings');
+        const settingsPanel = document.getElementById('newSettingsPanel');
+        
+        if (toggleSettingsButton && settingsPanel) {
+            toggleSettingsButton.addEventListener('click', () => {
+                settingsPanel.style.display = 'block';
+                
+                // Initialize settings controller if not already done
+                if (!this.settingsController) {
+                    this.settingsController = new SettingsController(
+                        'newSettingsPanel',
+                        this.animationController,
+                        this.audioManager,
+                        this.colorManager
+                    );
+                }
+            });
+        }
+        
+        if (closeSettingsButton) {
+            closeSettingsButton.addEventListener('click', () => {
+                if (settingsPanel) {
+                    settingsPanel.style.display = 'none';
+                }
+            });
+        }
     }
     
     /**
