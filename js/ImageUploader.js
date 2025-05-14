@@ -3,7 +3,6 @@ import { ImageProcessor } from './ImageProcessor.js';
 
 export class ImageUploader {
     constructor(containerId, onImageProcessed) {
-        console.log('Initializing ImageUploader...');
         this.container = document.getElementById(containerId);
         this.onImageProcessed = onImageProcessed;
         this.imageProcessor = new ImageProcessor();
@@ -11,7 +10,6 @@ export class ImageUploader {
     }
 
     setupUI() {
-        console.log('Setting up upload UI...');
         this.container.innerHTML = `
             <div class="image-upload-container">
                 <div class="upload-area" id="dropZone">
@@ -31,7 +29,6 @@ export class ImageUploader {
     }
 
     setupEventListeners() {
-        console.log('Setting up event listeners...');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const selectButton = document.getElementById('selectFiles');
@@ -63,7 +60,6 @@ export class ImageUploader {
     }
 
     async handleFiles(files) {
-        console.log(`Processing ${files.length} files...`);
         for (const file of files) {
             try {
                 this.imageProcessor.validateImage(file);
@@ -80,20 +76,13 @@ export class ImageUploader {
                 
                 // Process the image with the same ID
                 this.onImageProcessed(processedImage, imageId);
-                
-                console.log(`File processed successfully: ${file.name}`, {
-                    imageId,
-                    dominantColor: dominantColor ? dominantColor.hex : 'none'
-                });
             } catch (error) {
-                console.error(`Error handling file ${file.name}:`, error);
                 this.showError(error.message);
             }
         }
     }
 
     addPreview(canvas, dominantColor, imageId) {
-        console.log('Adding image preview...');
         const previewContainer = document.getElementById('previewContainer');
         const preview = document.createElement('div');
         preview.className = 'image-preview';
@@ -105,20 +94,10 @@ export class ImageUploader {
         const img = document.createElement('img');
         img.src = canvas.toDataURL('image/png');
         
-        // Create a color indicator to show the extracted dominant color
-        const colorContainer = document.createElement('div');
-        colorContainer.className = 'color-indicator-container';
-        
+        // Create a color swatch to show the extracted dominant color
         const colorSwatch = document.createElement('div');
         colorSwatch.className = 'color-swatch';
         colorSwatch.style.backgroundColor = dominantColor ? dominantColor.hex : '#cccccc';
-        
-        const colorLabel = document.createElement('span');
-        colorLabel.className = 'color-label';
-        colorLabel.textContent = dominantColor ? dominantColor.hex : 'N/A';
-        
-        colorContainer.appendChild(colorSwatch);
-        colorContainer.appendChild(colorLabel);
         
         const removeButton = document.createElement('button');
         removeButton.textContent = '×';
@@ -128,27 +107,16 @@ export class ImageUploader {
             // Remove from ImageManager when image is removed
             if (window.imageSystem) {
                 window.imageSystem.imageManager.removeProcessedImage(imageId);
-                console.log('Removed image and cleaned up resources:', { imageId });
             }
         };
         
         preview.appendChild(img);
-        preview.appendChild(colorContainer);
+        preview.appendChild(colorSwatch); // Append swatch directly
         preview.appendChild(removeButton);
         previewContainer.appendChild(preview);
-        
-        console.debug('Preview added:', {
-            imageId,
-            dimensions: {
-                width: canvas.width,
-                height: canvas.height
-            },
-            dominantColor: dominantColor ? dominantColor.hex : 'none'
-        });
     }
 
     showError(message) {
-        console.error('Showing error message:', message);
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message';
         errorDiv.textContent = message;
@@ -159,4 +127,4 @@ export class ImageUploader {
             errorDiv.remove();
         }, 3000);
     }
-} 
+}

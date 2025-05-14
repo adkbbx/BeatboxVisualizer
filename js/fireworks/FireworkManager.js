@@ -6,20 +6,23 @@ import SmokeTrailEffect from '../SmokeTrailEffect.js';
 import FireworkFactory from './FireworkFactory.js';
 
 class FireworkManager {
-    constructor(ctx, colorManager, particleManager) {
+    constructor(ctx, colorManager, particleManager, initialFireworkSettings = null) {
         this.ctx = ctx;
         this.colorManager = colorManager;
         this.particleManager = particleManager;
         this.fireworks = [];
         this.launchingFirework = false;
         
-        // Add settings object with defaults
-        this.settings = {
+        // Default settings, can be overridden by initialFireworkSettings
+        const defaultSettings = {
             gravity: 0.02,
             maxFireworks: 20,
             launchHeightFactor: 0.05,
             smokeTrailIntensity: 0.3
         };
+
+        this.settings = { ...defaultSettings, ...initialFireworkSettings };
+        console.log('[FireworkManager] Initialized with settings:', this.settings);
         
         // Initialize factory
         this.fireworkFactory = new FireworkFactory(
@@ -30,15 +33,16 @@ class FireworkManager {
         
         // Initialize smoke trail effect
         this.smokeTrailEffect = new SmokeTrailEffect(ctx);
+        // Apply initial smokeTrailIntensity to the effect
+        if (this.settings.smokeTrailIntensity !== undefined && this.smokeTrailEffect) {
+            this.smokeTrailEffect.updateOpacity(this.settings.smokeTrailIntensity);
+        }
     }
     
     /**
      * Update firework settings
      */
     updateSettings(newSettings) {
-        // Log new settings
-        console.log('Updating FireworkManager settings:', newSettings);
-        
         // Update settings object
         if (newSettings.gravity !== undefined) this.settings.gravity = newSettings.gravity;
         if (newSettings.maxFireworks !== undefined) this.settings.maxFireworks = newSettings.maxFireworks;
@@ -169,7 +173,6 @@ class FireworkManager {
                     imageSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, true);
                 }
             } catch (error) {
-                console.error('Error creating image explosion:', error);
             }
         } else if (window.flowerSystem && window.flowerSystem.flowerManager) {
             // Fallback to legacy flower system
@@ -186,7 +189,6 @@ class FireworkManager {
                     window.flowerSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, true);
                 }
             } catch (error) {
-                console.error('Error creating flower explosion:', error);
             }
         }
         

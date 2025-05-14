@@ -15,7 +15,9 @@
   transform: translate(-50%, -50%);
   z-index: 10;
   width: 90%;
+  max-width: 500px; /* Increased from 450px to better fit tabs */
   box-sizing: border-box;
+  margin: 0 auto; /* Center horizontally */
 }
 
 /* Settings Panel Heading */
@@ -33,21 +35,27 @@
   border-bottom: 1px solid #333;
   margin-bottom: 20px;
   width: 100%;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
 .tab-button {
   background: transparent;
   border: none;
   color: #aaa;
-  padding: 8px 8px;
+  padding: 8px 4px;
   cursor: pointer;
   font-size: 14px;
   transition: all 0.2s ease;
   position: relative;
   box-shadow: none;
-  flex: 1;
+  flex: 1 1 0;
   text-align: center;
   white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 2px;
 }
 
 .tab-button:hover {
@@ -56,6 +64,7 @@
 
 .tab-button.active {
   color: #fff;
+  font-weight: 500;
 }
 
 .tab-button.active::after {
@@ -63,6 +72,7 @@
   position: absolute;
   bottom: -1px;
   left: 0;
+  right: 0;
   width: 100%;
   height: 2px;
   background-color: #4CAF50;
@@ -130,89 +140,71 @@ input[type="range"] {
   border-radius: 3px;
   outline: none;
   margin: 10px 0;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #4CAF50;
-  cursor: pointer;
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #4CAF50;
-  cursor: pointer;
+  max-width: calc(100% - 5px); /* Prevent sliders from overflowing */
   border: none;
 }
 
-/* Toggle Switch */
-.toggle-setting {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-}
-
-.toggle-setting > div:first-child {
-  flex: 1;
-}
-
-.toggle-setting label {
-  display: block;
-  margin-bottom: 4px;
-}
-
-.toggle-switch {
+/* NEW W3Schools-inspired Toggle Switch */
+/* The switch - the box around the slider */
+.switch {
   position: relative;
-  width: 50px;
-  height: 24px;
-  margin-left: 15px;
-  flex-shrink: 0;
+  display: inline-block;
+  width: 44px; /* Adjusted to be similar to old size */
+  height: 22px; /* Adjusted to be similar to old size */
+  margin-left: 15px; /* Retain margin from old .toggle-switch */
+  flex-shrink: 0; /* Retain from old .toggle-switch */
 }
 
-.toggle-switch input {
+/* Hide default HTML checkbox */
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-.toggle-switch label {
+/* The slider */
+.slider {
   position: absolute;
+  cursor: pointer;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #333;
-  border-radius: 24px;
-  cursor: pointer;
-  transition: 0.4s;
+  background-color: #555; /* Off color */
+  transition: .3s;
+  border: 1px solid #444; /* Border similar to old style */
+  box-sizing: border-box; /* Ensure border is included in height/width */
 }
 
-.toggle-switch label:before {
+.slider:before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
-  left: 4px;
-  bottom: 4px;
-  background-color: #999;
-  border-radius: 50%;
-  transition: 0.4s;
+  height: 16px; /* Thumb height */
+  width: 16px;  /* Thumb width */
+  left: 2px;   /* Padding from left */
+  bottom: 2px; /* Padding from bottom */
+  background-color: #bbb; /* Thumb color (off) */
+  transition: .3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Shadow similar to old style */
 }
 
-.toggle-switch input:checked + label {
-  background-color: #1e3f1e;
+input:checked + .slider {
+  background-color: #4CAF50; /* On color */
+  border-color: #388E3C; /* Border similar to old style */
 }
 
-.toggle-switch input:checked + label:before {
-  background-color: #4CAF50;
-  transform: translateX(26px);
+input:checked + .slider:before {
+  background-color: white; /* Thumb color (on) */
+  transform: translateX(20px); /* How far the thumb moves */
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 22px; /* Fully rounded track */
+}
+
+.slider.round:before {
+  border-radius: 50%; /* Circular thumb */
 }
 
 /* Color picker and related styles */
@@ -228,6 +220,16 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
   border: none;
   border-radius: 4px;
+}
+
+/* Attempt to hide browser's default swatch for WebKit */
+#colorPicker::-webkit-color-swatch-wrapper {
+    padding: 0; /* Sometimes needed */
+    display: none; /* Hide the wrapper */
+}
+
+#colorPicker::-webkit-color-swatch {
+    display: none; /* Hide the swatch itself */
 }
 
 #addColor {
@@ -251,28 +253,42 @@ input[type="range"]::-moz-range-thumb {
   position: relative;
   width: 35px;
   height: 35px;
-  margin: 5px;
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .color-swatch button {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 12px;
-  height: 12px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #ccc;
-  border: none;
-  border-radius: 0 3px 0 3px;
-  font-size: 10px;
-  line-height: 1;
+  top: 2px;   /* Small offset from the top edge of the swatch */
+  right: 2px;  /* Small offset from the right edge of the swatch */
+  width: 16px; /* Smaller width */
+  height: 16px; /* Smaller height */
+  background: rgba(50, 50, 50, 0.7); /* Slightly lighter, still darkish */
+  color: #ddd; /* Lighter 'x' */
+  border: none; /* Clean look, rely on background for definition */
+  border-radius: 3px; /* Slightly rounded square, or 50% for circle */
+  font-size: 11px; /* Smaller 'x' */
+  font-weight: bold;
+  line-height: 16px; /* Aligns 'x' in the smaller button */
+  text-align: center;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.color-swatch button:hover {
+  background: rgba(220, 50, 50, 0.85); /* More prominent red on hover */
+  color: white;
+  transform: scale(1.05); /* Subtle scale */
+}
+
+.color-swatch button:active {
+  transform: scale(1);
+  background: rgba(200, 40, 40, 0.9); /* Darker red when pressed */
 }
 
 .custom-colors-list {
@@ -295,35 +311,76 @@ select {
   font-size: 14px;
 }
 
-/* Bottom buttons */
+/* Bottom buttons - Clean, minimal styling */
 .settings-controls {
   display: flex;
-  justify-content: space-between;
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #333;
+  gap: 12px;
 }
 
-#resetSettings, .close-settings-btn {
-  padding: 10px 20px;
+/* Simple consistent styling for both buttons */
+.settings-btn {
+  padding: 10px 16px;
   font-size: 14px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Minimal reset button style */
 #resetSettings {
-  background: #333;
-  color: white;
-  min-width: 100px;
+  background-color: #555;
+  flex: 1;
 }
 
-.close-settings-btn {
-  background: #4CAF50;
-  color: white;
-  flex-grow: 1;
-  margin-left: 10px;
+/* Minimal close button style */
+#closeSettings {
+  background-color: #4CAF50;
+  flex: 2;
+}
+
+/* Simple icon styling */
+.settings-btn .icon {
+  margin-right: 6px;
+}
+
+/* Make sure slider values are properly displayed */
+.setting-value {
+  display: inline-block;
+  margin-top: 8px;
+  color: #4CAF50;
+  font-family: monospace;
+  font-size: 14px;
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  min-width: 40px;
   text-align: center;
+}
+
+/* Media query for smaller screens to ensure tabs fit properly */
+@media (max-width: 480px) {
+  .tab-button {
+    padding: 8px 3px;
+    font-size: 13px;
+  }
+  
+  .settings-panel {
+    padding: 18px 16px;
+  }
+}
+
+/* Fix alignment of value displays */
+.setting {
+  margin-bottom: 24px;
+  width: 100%;
+  padding-right: 10px; /* Prevent text from touching the scrollbar */
 }
 
 /* Empty state */
@@ -334,3 +391,28 @@ select {
   color: #777;
   font-style: italic;
 }
+
+/* Add these styles for .toggle-setting layout */
+.toggle-setting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center; /* Vertically align label and switch */
+  justify-content: space-between; /* Puts label left, switch right on the first "line" */
+  /* margin-bottom is handled by .setting class */
+}
+
+/* Text label within a toggle-setting */
+.toggle-setting > label[for] {
+  /* Override display:block from general .setting label */
+  display: inline; 
+  margin-bottom: 0; /* Remove default bottom margin */
+}
+
+/* Description within a toggle-setting */
+.toggle-setting > .setting-description {
+  width: 100%; /* Forces it to a new line */
+  margin-top: 8px; /* Space between switch/label line and description */
+  margin-bottom: 0; /* Let .setting handle overall bottom margin of the whole block */
+  /* color and font-size are inherited from general .setting-description */
+}
+/* END of new styles for .toggle-setting layout */

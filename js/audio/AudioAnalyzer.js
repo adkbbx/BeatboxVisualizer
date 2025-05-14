@@ -2,24 +2,33 @@
  * AudioAnalyzer handles real-time audio analysis
  */
 class AudioAnalyzer {
-    constructor(audioContext, analyser, dataArray) {
+    constructor(audioContext, analyser, dataArray, initialSettings = null) {
         this.audioContext = audioContext;
         this.analyser = analyser;
         this.dataArray = dataArray;
         
-        // Configuration
+        // Configuration - Default values if not overridden by initialSettings
         this._sensitivity = 1.5;
         this._quietThreshold = 0.06;
         this._loudThreshold = 0.4;
         this._suddenSoundThreshold = 0.15;
-        this._noiseFloor = 0.04;
+        this._noiseFloor = 0.04; // Remains a default, not typically in settings panel
+
+        if (initialSettings) {
+            console.log('[AudioAnalyzer] Initializing with settings:', initialSettings);
+            if (initialSettings.sensitivity !== undefined) this._sensitivity = initialSettings.sensitivity;
+            if (initialSettings.quietThreshold !== undefined) this._quietThreshold = initialSettings.quietThreshold;
+            if (initialSettings.loudThreshold !== undefined) this._loudThreshold = initialSettings.loudThreshold;
+            if (initialSettings.suddenSoundThreshold !== undefined) this._suddenSoundThreshold = initialSettings.suddenSoundThreshold;
+        } else {
+            console.log('[AudioAnalyzer] Initializing with default settings (no initialSettings provided).');
+            // Try to load settings from localStorage if no initialSettings are passed (fallback)
+            // this.loadSettingsFromStorage(); // Commented out for now to prioritize AnimationSettingsManager
+        }
         
         // State tracking
         this.volumeLevel = 0;
         this.lastVolume = 0;
-        
-        // Try to load settings from localStorage
-        this.loadSettingsFromStorage();
     }
     
     /**
@@ -36,11 +45,8 @@ class AudioAnalyzer {
                 if (parsedSettings.quietThreshold !== undefined) this._quietThreshold = parsedSettings.quietThreshold;
                 if (parsedSettings.loudThreshold !== undefined) this._loudThreshold = parsedSettings.loudThreshold;
                 if (parsedSettings.suddenSoundThreshold !== undefined) this._suddenSoundThreshold = parsedSettings.suddenSoundThreshold;
-                
-                console.log('AudioAnalyzer loaded settings from storage:', parsedSettings);
             }
         } catch (error) {
-            console.error('[AudioAnalyzer] Error loading settings from storage:', error);
         }
     }
     

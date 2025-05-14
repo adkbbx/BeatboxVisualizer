@@ -6,57 +6,63 @@ import Particle from './Particle.js';
 import SmokeParticle from './SmokeParticle.js';
 
 class ParticleManager {
-  constructor(ctx, colorManager) {
+  constructor(ctx, colorManager, initialParticleAndEffectSettings = null) {
     this.ctx = ctx;
     this.colorManager = colorManager;
     this.particles = [];
     this.smokeParticles = [];
+    
+    // Default settings, to be merged with initial settings
     this.settings = {
       particleCount: 120,
       particleLifespan: 1.2,
-      fadeResistance: 0.92, // Adjusted for a smoother fade
-      glowEffect: false, // Disable default glow effect to reduce brightness
-      trailLength: 2.5,
-      shimmerEffect: true,
+      fadeResistance: 0.92,
+      glowEffect: false,
+      // trailLength and shimmerEffect are no longer used but might be in old saved settings
+      // They will be deleted by updateSettings if present in initialParticleAndEffectSettings
       useMultiColor: true,
-      // Smoke effect settings
       smokeEnabled: true,
-      smokeOpacity: 0.3,          // More subtle opacity
-      smokeSize: 25,              // Smaller smoke puffs
-      smokeLifespan: 2.5,         // Shorter lifespan
-      smokeCount: 15,             // Fewer smoke particles
-      smokeSpread: 0.7,           // Less spread
-      smokeRiseSpeed: 0.12        // Slightly faster rise
+      smokeOpacity: 0.3,
+      smokeSize: 25,
+      smokeLifespan: 2.5,
+      smokeCount: 15,
+      smokeSpread: 0.7,
+      smokeRiseSpeed: 0.12
     };
+
+    if (initialParticleAndEffectSettings) {
+        console.log('[ParticleManager] Initializing with settings:', initialParticleAndEffectSettings);
+        this.updateSettings(initialParticleAndEffectSettings); // Use existing updateSettings to apply and map
+    } else {
+        console.log('[ParticleManager] Initializing with default settings only.');
+    }
   }
 
   /**
    * Create an explosion of particles
    */
-  createExplosion(x, y, color) {
+  createExplosion(x, y, fireworkColor) {
     const particles = [];
-    const baseColor = color || this.colorManager.getRandomColor();
     const explosionTime = Date.now(); // Timestamp for this explosion
     
-    // Log color information for debugging
-    console.debug('Creating particle explosion:', {
-      position: { x, y },
-      providedColor: color,
-      baseColor,
-      useMultiColor: this.settings.useMultiColor && !color, // Only use multicolor if no specific color provided
-      particleCount: this.settings.particleCount
-    });
+    // Determine the single color for this explosion if not using multicolor
+    // If fireworkColor is provided, use it; otherwise, pick a random one for the whole explosion.
+    const singleExplosionColor = fireworkColor || this.colorManager.getRandomColor();
     
     for (let i = 0; i < this.settings.particleCount; i++) {
       const angle = (Math.PI * 2 * i) / this.settings.particleCount;
       const velocity = Math.random() * 2 + 3;
       
-      // If a color is provided, always use it. Otherwise, use multicolor if enabled
-      const particleColor = color || (this.settings.useMultiColor ? 
-        this.colorManager.getRandomColor() : baseColor);
+      let particleColorToUse;
+      if (this.settings.useMultiColor) {
+        particleColorToUse = this.colorManager.getRandomColor(); // Each particle gets a new random color
+      } else {
+        particleColorToUse = singleExplosionColor; // All particles in this explosion use the same color
+      }
       
       // Create new particle
-      const particle = new Particle(x, y, particleColor, velocity, angle);
+      const particle = new Particle(x, y, particleColorToUse, velocity, angle);
+      particle.setLifespan(this.settings.particleLifespan); // Apply lifespan from settings
       particle.setExplosionId(explosionTime);
       particles.push(particle);
     }
@@ -66,7 +72,10 @@ class ParticleManager {
     
     // Add smoke effect if enabled
     if (this.settings.smokeEnabled) {
-      this.createSmokeEffect(x, y, baseColor);
+      // Smoke effect should generally match the explosion's dominant color if not multicolor,
+      // or a representative color if multicolor (e.g., the first particle's color or a new random one).
+      // For simplicity, let's use singleExplosionColor for smoke as well.
+      this.createSmokeEffect(x, y, singleExplosionColor);
     }
   }
   
@@ -90,11 +99,6 @@ class ParticleManager {
       
       this.smokeParticles.push(smokeParticle);
     }
-    
-    console.debug('Added smoke effect:', {
-      position: { x, y },
-      smokeParticles: this.smokeParticles.length
-    });
   }
 
   /**
@@ -166,16 +170,18 @@ class ParticleManager {
       // Use the pre-calculated fade color if available, otherwise use the default
       const color = particle.fadeColor || this.colorManager.getColorWithAlpha(particle.color, particle.alpha);
       
-      // Subtle glow effect that fades naturally with particle life
-      const fadeProgress = 1 - particle.life;
-      
-      // Only apply glow in the first half of the particle's life
-      if (fadeProgress < 0.5) {
-        const glowIntensity = Math.max(0, 2 - (fadeProgress * 4));
-        this.ctx.shadowColor = color;
-        this.ctx.shadowBlur = glowIntensity;
+      if (this.settings.glowEffect) {
+          const fadeProgress = 1 - particle.life;
+          // Only apply glow in the first half of the particle's life
+          if (fadeProgress < 0.5) {
+              const glowIntensity = Math.max(0, 2 - (fadeProgress * 4));
+              this.ctx.shadowColor = color;
+              this.ctx.shadowBlur = glowIntensity;
+          } else {
+              this.ctx.shadowBlur = 0;
+          }
       } else {
-        this.ctx.shadowBlur = 0;
+          this.ctx.shadowBlur = 0; // Ensure no glow if effect is disabled
       }
       
       // More natural alpha scaling that fades out completely
@@ -199,21 +205,29 @@ class ParticleManager {
    * @param {Object} newSettings - New settings to apply
    */
   updateSettings(newSettings) {
-    console.log('Updating ParticleManager settings:', newSettings);
-    
-    // Map new setting keys to internal settings
+    // Map new setting keys to internal settings (these are typically from UI controls)
     if (newSettings.count !== undefined) this.settings.particleCount = newSettings.count;
     if (newSettings.lifespan !== undefined) this.settings.particleLifespan = newSettings.lifespan;
-    if (newSettings.minSize !== undefined) this.settings.minSize = newSettings.minSize;
-    if (newSettings.maxSize !== undefined) this.settings.maxSize = newSettings.maxSize;
+    // minSize and maxSize are not directly in this.settings but used by Particle.js, passed via createExplosion logic
+    // For consistency, if they are passed, we can store them if needed elsewhere, or ensure Particle.js gets them.
+    // SettingsController maps particleMinSize/particleMaxSize to minSize/maxSize for updateParticleSettings
+    // So, newSettings here might have minSize/maxSize.
+    if (newSettings.minSize !== undefined) this.settings.minSize = newSettings.minSize; // Add if not present
+    if (newSettings.maxSize !== undefined) this.settings.maxSize = newSettings.maxSize; // Add if not present
+    
     if (newSettings.useMultiColor !== undefined) this.settings.useMultiColor = newSettings.useMultiColor;
     if (newSettings.glowEnabled !== undefined) this.settings.glowEffect = newSettings.glowEnabled;
-    if (newSettings.shimmerEnabled !== undefined) this.settings.shimmerEffect = newSettings.shimmerEnabled;
     if (newSettings.fadeResistance !== undefined) this.settings.fadeResistance = newSettings.fadeResistance;
-    if (newSettings.trailEffect !== undefined) this.settings.trailLength = newSettings.trailEffect;
     
-    // Now merge any remaining settings
-    this.settings = { ...this.settings, ...newSettings };
+    // Merge any other settings (like smoke settings if they were part of newSettings)
+    // and also ensures the initial defaults for smoke etc. are preserved if not in newSettings.
+    this.settings = { ...this.settings, ...newSettings }; 
+
+    // Remove shimmerEffect and trailLength specifically if they were part of newSettings, as they are no longer used.
+    // This also cleans them up if they were loaded from old saved settings.
+    delete this.settings.shimmerEffect; 
+    delete this.settings.trailLength;
+    console.log('[ParticleManager] Settings updated to:', this.settings);
   }
 }
 

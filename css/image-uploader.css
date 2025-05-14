@@ -4,6 +4,10 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    padding: 15px;
+    background-color: var(--dark-accent, #1e1e1e);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .upload-area {
@@ -61,7 +65,9 @@
 
 .preview-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 12px;
     padding: 4px;
     overflow-y: auto;
@@ -74,7 +80,7 @@
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    width: 100%;
+    width: 160px;
     height: 160px;
     background-color: rgba(255, 255, 255, 0.05);
 }
@@ -84,14 +90,14 @@
     height: 100%;
     object-fit: contain;
     padding: 8px;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(0, 0, 0, 0.3); /* Darker background to make images and swatches more visible */
 }
 
-.remove-preview {
+.remove-preview, .remove-background {
     position: absolute;
     top: 8px;
     right: 8px;
-    background-color: rgba(231, 76, 60, 0.8);
+    background-color: rgba(231, 76, 60, 0.9);
     color: white;
     border: none;
     border-radius: 50%;
@@ -100,17 +106,19 @@
     line-height: 24px;
     text-align: center;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 18px;
+    font-weight: bold;
     transition: all 0.2s ease;
     padding: 0;
     min-width: unset;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    z-index: 10; /* Ensure button appears above other elements */
 }
 
-.remove-preview:hover {
+.remove-preview:hover, .remove-background:hover {
     background-color: rgba(231, 76, 60, 1);
     transform: scale(1.1);
 }
@@ -125,34 +133,38 @@
     animation: slideIn 0.3s ease;
 }
 
-/* Color indicator styling */
+/* Color indicator styling - REMOVING ALL RELATED RULES */
+/*
 .color-indicator-container {
+    display: none !important; 
+    ...
+}
+*/
+
+/* Improved styling for the color swatch with !important to override conflicting styles */
+.color-swatch {
     position: absolute;
     bottom: 8px;
     left: 8px;
-    display: flex;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 4px 8px;
-    border-radius: 12px;
-    gap: 8px;
-    z-index: 2;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    width: 25px;
+    height: 25px;
+    border-radius: 4px;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 10; /* Ensure it's above the image content but below controls like the remove button */
+    /* background-color is set by JS inline style */
+    /* Ensure it's visible and interactive if these were an issue */
+    opacity: 1;
+    display: block;
+    pointer-events: auto;
+    visibility: visible;
 }
 
-.color-swatch {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
+/*
 .color-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 12px;
-    font-family: monospace;
-    letter-spacing: 0.5px;
+    ...
 }
+*/
 
 @keyframes slideIn {
     from {

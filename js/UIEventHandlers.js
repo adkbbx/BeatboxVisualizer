@@ -8,7 +8,7 @@ class UIEventHandlers {
     }
 
     /**
-     * Set up all event listeners for UI elements
+     * Set up all event listeners for UI elements - simplified
      */
     setupEventListeners() {
         const audioStatus = document.getElementById('audioStatus');
@@ -34,85 +34,34 @@ class UIEventHandlers {
             });
         }
 
-        // Set up settings button
-        if (this.uiController.settingsButton) {
-            this.setupSettingsButton();
-        }
-
-        // Set up close settings button
-        if (this.uiController.closeSettingsButton) {
-            this.setupCloseSettingsButton();
-        }
-
         // Set up sliders
         this.setupSliders();
         
-        // Initialize settings connection
-        // This ensures settings are loaded from storage on page load
-        if (!this.uiController.slidersConnected) {
+        // Load settings on initialization
+        if (this.uiController.settingsManager) {
+            // Update sliders from stored settings
             setTimeout(() => {
-                this.uiController.connectSettingSliders();
-                this.uiController.slidersConnected = true;
-                
-                // Update both slider sets with current values
-                this.uiController.updateNewSlidersFromAudioManager();
+                if (this.uiController.updateSlidersFromAudioManager) {
+                    this.uiController.updateSlidersFromAudioManager();
+                }
             }, 500);
         }
     }
 
     /**
-     * Set up settings button handler
+     * Set up settings button handler - simplified
      */
     setupSettingsButton() {
-        this.uiController.handleSettingsClick = () => {
-            const newSettingsPanel = document.getElementById('newSettingsPanel');
-            if (!newSettingsPanel) return;
-            
-            // Get current display state
-            const currentDisplay = window.getComputedStyle(newSettingsPanel).display;
-            const isVisible = currentDisplay !== 'none';
-            
-            // Connect the sliders if not already done
-            if (!this.uiController.slidersConnected) {
-                this.uiController.connectSettingSliders();
-                this.uiController.slidersConnected = true;
-            } 
-            
-            // Always update slider values from current settings
-            this.uiController.updateNewSlidersFromAudioManager();
-            
-            // Toggle the panel visibility
-            newSettingsPanel.style.display = isVisible ? 'none' : 'block';
-            
-            // If we're closing the panel, save settings
-            if (isVisible && this.uiController.settingsManager) {
-                this.uiController.settingsManager.saveSettingsToStorage();
-            }
-        };
-        
-        this.uiController.settingsButton.addEventListener('click', this.uiController.handleSettingsClick);
+        // We've moved this functionality to UIController.initializeSettingsPanelControls()
+        // No need to duplicate event handlers
     }
 
     /**
-     * Set up close settings button handler
+     * Set up close settings button handler - simplified
      */
     setupCloseSettingsButton() {
-        this.uiController.handleCloseSettings = () => {
-            const settingsPanel = document.getElementById('settingsPanel');
-            
-            // Force settings panel to be hidden
-            settingsPanel.style.display = 'none';
-            settingsPanel.style.opacity = '0';
-            settingsPanel.style.pointerEvents = 'none';
-            settingsPanel.classList.add('hidden');
-            
-            // Save settings when closing
-            if (this.uiController.settingsManager) {
-                this.uiController.settingsManager.saveSettingsToStorage();
-            }
-        };
-        
-        this.uiController.closeSettingsButton.addEventListener('click', this.uiController.handleCloseSettings);
+        // We've moved this functionality to UIController.initializeSettingsPanelControls()
+        // No need to duplicate event handlers
     }
 
     /**

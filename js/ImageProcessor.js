@@ -53,10 +53,12 @@ export class ImageProcessor {
                         
                         // Store the dominant color with the canvas
                         tempCanvas.dominantColor = dominantColor;
+                        
+                        // Log the color for debugging
+                        console.log('Extracted color:', dominantColor);
 
                         resolve(tempCanvas);
                     } catch (error) {
-                        console.error('Error processing image:', error);
                         reject(error);
                     }
                 };

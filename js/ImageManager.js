@@ -3,29 +3,17 @@ import { CustomImage } from './CustomImage.js';
 
 export class ImageManager {
     constructor() {
-        console.log('Initializing ImageManager...');
         this.images = [];
         this.processedImages = new Map();
         this.maxImages = 50; // Reduced since we're using single images
         this.explosionCount = 0;
-        this.lastStatsTime = Date.now();
         this.lastFrameTime = Date.now();
-        this.stats = {
-            updateTime: 0,
-            images: 0,
-            removed: 0,
-            total: {
-                created: 0,
-                removed: 0
-            }
-        };
     }
 
     // Store processed custom images
     addProcessedImage(id, image) {
         // Validate id
         if (!id) {
-            console.error('Attempted to add image with invalid ID');
             return;
         }
         
@@ -47,9 +35,7 @@ export class ImageManager {
 
     // Remove a processed image
     removeProcessedImage(id) {
-        console.log(`Removing processed image with ID: ${id}`);
         const removed = this.processedImages.delete(id);
-        // Debug log for image removal removed to reduce console noise
         return removed;
     }
 
@@ -114,13 +100,11 @@ export class ImageManager {
         // Remove old images if we're at the limit
         if (this.images.length >= this.maxImages) {
             this.images.shift();
-            this.stats.total.removed++;
         }
 
         // Create new image explosion with the color
         const customImage = new CustomImage(x, y, imageData.image, selectedColor);
         this.images.push(customImage);
-        this.stats.total.created++;
         
         // Return the color that was used
         return selectedColor || customImage.dominantColor.hex;
@@ -132,22 +116,9 @@ export class ImageManager {
         this.images.forEach(image => image.update());
         
         // Remove dead images
-        const initialCount = this.images.length;
         this.images = this.images.filter(image => !image.isDead());
-        const removedCount = initialCount - this.images.length;
         
-        // Update stats
-        this.stats.images = this.images.length;
-        this.stats.removed = removedCount;
-        this.stats.total.removed += removedCount;
-        
-        // Reset removed count periodically
-        const now = Date.now();
-        if (now - this.lastStatsTime >= 1000) {
-            this.lastStatsTime = now;
-            this.stats.removed = 0;
-        }
-        this.lastFrameTime = now;
+        this.lastFrameTime = currentTime; // Use currentTime instead of Date.now()
     }
 
     // Render all images
@@ -165,16 +136,6 @@ export class ImageManager {
 
     // Clear all images
     clear() {
-        const clearedCount = this.images.length;
-        this.stats.total.removed += clearedCount;
-        console.log('Clearing images:', {
-            clearedCount,
-            totalStats: {
-                blooms: this.explosionCount,
-                created: this.stats.total.created,
-                removed: this.stats.total.removed
-            }
-        });
         this.images = [];
     }
 } 

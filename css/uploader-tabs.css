@@ -1,0 +1,114 @@
+/* Refined uploader tabs styles to match the image */
+.uploader-tabs-container {
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid #2c2c2c;
+    margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+}
+
+.uploader-tab-navigation {
+    display: flex;
+    background-color: #1d1d1d;
+}
+
+.uploader-tab-button {
+    flex: 1;
+    padding: 15px 12px;
+    background: none;
+    border: none;
+    color: #bbbbbb;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    text-align: center;
+}
+
+.uploader-tab-button:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.uploader-tab-button.active {
+    color: #ffffff;
+    background-color: #1a1a1a;
+}
+
+.uploader-tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0%;
+    right: 0%;
+    height: 3px;
+    background-color: #3498db;
+}
+
+.uploader-tab-content {
+    padding: 0;
+}
+
+.uploader-tab-pane {
+    display: none;
+    padding: 20px;
+}
+
+.uploader-tab-pane.active {
+    display: block;
+}
+
+/* Make tabs match screenshot */
+.uploader-tab-button:first-child.active::after {
+    background-color: #3498db;
+}
+
+.uploader-tab-button:last-child.active::after {
+    background-color: #3498db;
+}
+
+/* Fix layout and spacing */
+.app-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+        "control control"
+        "audio uploader";
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.control-panel {
+    grid-area: control;
+}
+
+.audio-visualizer {
+    grid-area: audio;
+}
+
+.uploader-tabs-container {
+    grid-area: uploader;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .app-container {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "control"
+            "uploader"
+            "audio";
+    }
+    
+    .uploader-tabs-container {
+        margin-left: 0;
+    }
+}

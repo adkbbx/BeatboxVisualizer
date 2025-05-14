@@ -6,7 +6,7 @@ import AudioAnalyzer from './AudioAnalyzer.js';
 import SustainedSoundDetector from './SustainedSoundDetector.js';
 
 class AudioManager {
-    constructor() {
+    constructor(initialSettings = null) {
         this.audioContext = null;
         this.microphone = null;
         this.analyser = null;
@@ -22,9 +22,7 @@ class AudioManager {
         // Create helper modules (will be initialized later)
         this.audioAnalyzer = null;
         this.sustainedSoundDetector = new SustainedSoundDetector();
-        
-        // Debug mode
-        this.debug = true;
+        this.initialAudioSettings = initialSettings;
     }
     
     /**
@@ -66,11 +64,12 @@ class AudioManager {
                 this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
                 this.microphone.connect(this.analyser);
                 
-                // Initialize audio analyzer
+                // Initialize audio analyzer with stored initial settings
                 this.audioAnalyzer = new AudioAnalyzer(
                     this.audioContext,
                     this.analyser,
-                    this.dataArray
+                    this.dataArray,
+                    this.initialAudioSettings
                 );
                 
                 // Update the sustained sound detector with the loud threshold from analyzer
@@ -81,7 +80,6 @@ class AudioManager {
             
             return true;
         } catch (error) {
-            console.error('[AudioManager] Error initializing audio:', error);
             return false;
         }
     }
@@ -91,14 +89,12 @@ class AudioManager {
      */
     start() {
         if (!this.audioContext || !this.analyser) {
-            console.error('[AudioManager] Cannot start - not initialized');
             return false;
         }
         
         // Ensure audio context is running
         if (this.audioContext.state !== 'running') {
-            this.audioContext.resume()
-                .catch(err => console.error('[AudioManager] Error resuming audio context:', err));
+            this.audioContext.resume();
         }
         
         this.isActive = true;
@@ -130,15 +126,13 @@ class AudioManager {
         if (this.audioContext && this.analyser) {
             // Make sure audio context is running
             if (this.audioContext.state !== 'running') {
-                this.audioContext.resume()
-                    .catch(err => console.error('[AudioManager] Error resuming audio context:', err));
+                this.audioContext.resume();
             }
             
             this.isActive = true;
             this.analyzeAudio();
             return true;
         } else {
-            console.error('[AudioManager] Cannot resume - missing required resources');
             return false;
         }
     }
@@ -153,7 +147,6 @@ class AudioManager {
         
         // Check if we still have all required resources
         if (!this.audioContext || !this.analyser || !this.dataArray || !this.audioAnalyzer) {
-            console.error('[AudioManager] Missing required resources');
             this.isActive = false;
             return;
         }

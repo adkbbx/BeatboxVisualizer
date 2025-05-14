@@ -1,11 +1,12 @@
 /**
  * UIController coordinates all UI components and interactions
- * Fixed version with proper separation of concerns
+ * Updated with background image management
  */
 import UIEventHandlers from './UIEventHandlers.js';
 import SoundVisualization from './SoundVisualization.js';
 import SettingsManager from './SettingsManager.js';
 import SettingsController from './settings/SettingsController.js';
+// BackgroundUploader import removed - using direct implementation
 
 class UIController {
     constructor(audioManager, animationController) {
@@ -15,27 +16,29 @@ class UIController {
         // UI elements
         this.startButton = document.getElementById('startMicrophone');
         this.settingsButton = document.getElementById('toggleSettings');
-        this.closeSettingsButton = document.getElementById('closeSettings');
         this.settingsPanel = document.getElementById('settingsPanel');
         this.volumeLevel = document.getElementById('volumeLevel');
         this.audioStatus = document.getElementById('audioStatus');
         this.micDetection = document.getElementById('micDetection');
+        this.togglePanelsButton = document.getElementById('togglePanels');
         
-        // Settings elements
-        this.sensitivitySlider = document.getElementById('sensitivitySlider');
-        this.thresholdLowSlider = document.getElementById('thresholdLow');
-        this.thresholdHighSlider = document.getElementById('thresholdHigh');
-        this.suddenThresholdSlider = document.getElementById('suddenThreshold');
+        // Create background uploader container if it doesn't exist
+        this.createBackgroundUploaderContainer();
         
         // Animation state tracking
         this.fireworksActive = false;
         this.activeSustainedSounds = 0;
+        this.isSettingsPanelOpen = false; // Track settings panel state
+        this.boundHandleOutsideSettingsClick = this.handleOutsideSettingsClick.bind(this); // Bound listener
         
         // Reference to color manager
         this.colorManager = animationController.colorManager;
         
         // Initialize settings controller
         this.settingsController = null;
+        
+        // Initialize background uploader
+        this.initializeBackgroundUploader();
         
         // Initialize component modules
         this.soundVisualization = new SoundVisualization(this.volumeLevel, this.micDetection, this.audioManager);
@@ -45,7 +48,7 @@ class UIController {
         // Methods from SettingsManager that need to be accessible in UIController
         this.connectSettingSliders = this.settingsManager.connectSettingSliders.bind(this.settingsManager);
         this.updateAudioSettings = this.settingsManager.updateAudioSettings.bind(this.settingsManager);
-        this.updateNewSlidersFromAudioManager = this.settingsManager.updateNewSlidersFromAudioManager.bind(this.settingsManager);
+        this.updateSlidersFromAudioManager = this.settingsManager.updateSlidersFromAudioManager.bind(this.settingsManager);
         
         // Set up methods from SoundVisualization
         this.updateVolumeUI = this.soundVisualization.updateVolumeUI.bind(this.soundVisualization);
@@ -53,6 +56,59 @@ class UIController {
         
         // Initialize settings panel controls
         this.initializeSettingsPanelControls();
+        
+        // Initialize panel toggle button - This is now primarily handled by js/panel-controls.js
+        // this.initializePanelToggle(); 
+    }
+    
+    /**
+     * Check for the background uploader container
+     */
+    createBackgroundUploaderContainer() {
+        // In the tabbed interface, the container should already exist
+        // This method is kept for compatibility but now just verifies
+        const bgUploaderContainer = document.getElementById('backgroundUploader');
+        
+        if (!bgUploaderContainer) {
+        }
+    }
+    
+    /**
+     * Initialize the background uploader - disabled in favor of direct implementation
+     */
+    initializeBackgroundUploader() {
+        // Skip initialization since we're using direct implementation in HTML
+    }
+    
+    /**
+     * Initialize panel toggle button
+     */
+    initializePanelToggle() {
+        if (this.togglePanelsButton) {
+            this.togglePanelsButton.addEventListener('click', () => {
+                // This logic is now primarily in js/panel-controls.js
+                // Kept for reference or if specific UIController actions are needed later
+                /*
+                const uploaderTabsContainer = document.querySelector('.uploader-tabs-container');
+                const audioVisualizer = document.querySelector('.audio-visualizer');
+                
+                // Toggle visibility of panels
+                const isPanelsVisible = 
+                    uploaderTabsContainer && getComputedStyle(uploaderTabsContainer).display !== 'none' ||
+                    audioVisualizer && getComputedStyle(audioVisualizer).display !== 'none';
+                
+                // Toggle panels visibility
+                if (uploaderTabsContainer) uploaderTabsContainer.style.display = isPanelsVisible ? 'none' : 'block';
+                if (audioVisualizer) audioVisualizer.style.display = isPanelsVisible ? 'none' : 'block';
+                
+                // Update button text
+                const buttonText = this.togglePanelsButton.querySelector('.text');
+                if (buttonText) {
+                    buttonText.textContent = isPanelsVisible ? 'Show' : 'Hide';
+                }
+                */
+            });
+        }
     }
     
     /**
@@ -67,32 +123,72 @@ class UIController {
      * Initialize settings panel controls
      */
     initializeSettingsPanelControls() {
-        const toggleSettingsButton = document.getElementById('toggleSettings');
-        const closeSettingsButton = document.getElementById('newCloseSettings');
-        const settingsPanel = document.getElementById('newSettingsPanel');
-        
-        if (toggleSettingsButton && settingsPanel) {
-            toggleSettingsButton.addEventListener('click', () => {
-                settingsPanel.style.display = 'block';
-                
-                // Initialize settings controller if not already done
-                if (!this.settingsController) {
-                    this.settingsController = new SettingsController(
-                        'newSettingsPanel',
-                        this.animationController,
-                        this.audioManager,
-                        this.colorManager
-                    );
+        if (this.settingsButton && this.settingsPanel) {
+            this.settingsButton.addEventListener('click', () => {
+                if (this.isSettingsPanelOpen) {
+                    this.closeSettingsPanel();
+                } else {
+                    this.openSettingsPanel();
                 }
             });
         }
-        
+
+        const closeSettingsButton = document.getElementById('closeSettings');
         if (closeSettingsButton) {
             closeSettingsButton.addEventListener('click', () => {
-                if (settingsPanel) {
-                    settingsPanel.style.display = 'none';
-                }
+                this.closeSettingsPanel();
             });
+        }
+    }
+
+    openSettingsPanel() {
+        if (!this.settingsPanel || this.isSettingsPanelOpen) return; // Prevent re-opening or if no panel
+
+        this.settingsPanel.style.display = 'block';
+        this.settingsPanel.classList.remove('is-hidden');
+        this.isSettingsPanelOpen = true;
+        if(this.settingsButton) this.settingsButton.innerHTML = '<span class="icon">⚙️</span><span class="text">Close Settings</span>'; 
+
+        if (!this.settingsController) {
+            this.settingsController = new SettingsController(
+                'settingsPanel',
+                this.animationController,
+                this.audioManager,
+                this.colorManager
+            );
+        }
+        // Add event listener for outside click, use a delay to prevent immediate closing due to the click that opened it
+        setTimeout(() => {
+            document.addEventListener('mousedown', this.boundHandleOutsideSettingsClick);
+        }, 0);
+    }
+
+    closeSettingsPanel() {
+        if (!this.settingsPanel || !this.isSettingsPanelOpen) return; // Prevent re-closing or if no panel
+
+        this.settingsPanel.style.display = 'none';
+        this.isSettingsPanelOpen = false;
+        if(this.settingsButton) this.settingsButton.innerHTML = '<span class="icon">⚙️</span><span class="text">Settings</span>';
+
+        if (this.settingsManager) {
+            this.settingsManager.saveSettingsToStorage();
+        }
+        // Remove event listener for outside click
+        document.removeEventListener('mousedown', this.boundHandleOutsideSettingsClick);
+    }
+
+    handleOutsideSettingsClick(event) {
+        if (!this.settingsPanel.contains(event.target) && 
+            event.target !== this.settingsButton && 
+            !this.settingsButton.contains(event.target)) {
+            this.closeSettingsPanel();
+        }
+    }
+
+    notifySettingsPanelClosed() {
+        // Called by panel-controls.js if it hides the settings panel
+        if (this.isSettingsPanelOpen) { // Only act if UIController thought it was open
+            this.closeSettingsPanel();
         }
     }
     
@@ -116,7 +212,6 @@ class UIController {
                     
                     // For loud sounds, burst all fireworks
                     if (category === 'loud') {
-                        this.soundVisualization.showLoudDetection(`LOUD sound detected - bursting fireworks!`, this.fireworksActive);
                         this.animationController.applyVolume(volume, category);
                     }
                 });
@@ -125,8 +220,6 @@ class UIController {
                 this.audioManager.onSustainedSound((volume, duration) => {
                     // Only respond to significant volume
                     if (volume < 0.1) return null;
-                    
-                    this.soundVisualization.showSustainedDetection(`SUSTAINED sound detected`, this.fireworksActive);
                     
                     // Launch a new firework and get its ID
                     const fireworkId = this.animationController.applySustainedSound(volume, duration);
@@ -140,8 +233,6 @@ class UIController {
                 });
                 
                 this.audioManager.onSustainedSoundEnd((id) => {
-                    this.soundVisualization.showSustainedDetection(`Sustained sound ended`, this.fireworksActive);
-                    
                     // Deactivate the firework
                     this.animationController.deactivateFirework(id);
                     this.activeSustainedSounds--;
@@ -169,8 +260,6 @@ class UIController {
                 this.updateMicrophoneState(false);
             }
         } catch (error) {
-            console.error('[UIController] Error starting microphone:', error);
-            
             this.audioStatus.textContent = 'Microphone Error';
             this.audioStatus.className = 'inactive';
             this.audioStatus.parentElement.classList.add('inactive');
@@ -215,30 +304,12 @@ class UIController {
             this.updateMicrophoneState(false);
             
         } catch (error) {
-            console.error('[UIController] Error stopping microphone:', error);
-            
             // Try to reset UI state even if there was an error
             this.startButton.disabled = false;
             this.audioStatus.textContent = 'Microphone Error';
             this.audioStatus.className = 'inactive';
             this.updateMicrophoneState(false);
         }
-    }
-    
-    /**
-     * Show sustained sound detection in the mic test indicator
-     * Kept for backward compatibility
-     */
-    showSustainedDetection(message) {
-        this.soundVisualization.showSustainedDetection(message, this.fireworksActive);
-    }
-    
-    /**
-     * Show loud sound detection in the mic test indicator
-     * Kept for backward compatibility
-     */
-    showLoudDetection(message) {
-        this.soundVisualization.showLoudDetection(message, this.fireworksActive);
     }
 }
 

@@ -8,10 +8,10 @@ class SmokeTrailEffect {
         // Smoke trail settings
         this.settings = {
             enabled: true,          // Enable/disable smoke trail
-            frequency: 0.5,         // Moderate smoke generation frequency (0-1)
+            frequency: 0.8,         // Increased smoke generation frequency (0-1)
             minSize: 1.5,           // Smaller minimum smoke particle size
             maxSize: 4,             // Smaller maximum smoke particle size
-            opacity: 0.25,          // Lower base opacity for smoke
+            opacity: 0.25,          // Base opacity, controlled by slider
             fadeSpeed: 0.04,        // Faster fading for subtlety
             colorDarkening: 0.6,    // Slightly darker smoke
             brightening: 10         // Minimal color brightening
@@ -54,7 +54,7 @@ class SmokeTrailEffect {
         b = Math.min(255, Math.floor(b * this.settings.colorDarkening) + this.settings.brightening + 20);
         
         // Set opacity and calculate size
-        const smokeOpacity = this.settings.opacity * (0.8 + Math.random() * 0.2);
+        const smokeOpacity = this.settings.opacity;
         const smokeColor = `rgba(${r}, ${g}, ${b}, ${smokeOpacity})`;
         const radius = this.settings.minSize + 
             Math.random() * (this.settings.maxSize - this.settings.minSize);

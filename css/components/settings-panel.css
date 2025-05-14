@@ -59,27 +59,8 @@
     width: 100%;
 }
 
-/* Settings panel buttons */
-#closeSettings, .close-settings-btn {
-    background-color: rgba(231, 76, 60, 0.7);
-    margin-top: 20px;
-    width: 100%;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    color: white;
-    font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    text-align: center;
-    display: block;
-}
-
-#closeSettings:hover, .close-settings-btn:hover {
-    background-color: rgba(231, 76, 60, 0.9);
-    transform: translateY(-1px);
-}
+/* Settings panel buttons - override removed for consistency */
+/* These styles were moved to settings-tabs.css */
 
 /* Visual indicator for settings open state */
 body.settings-open .audio-visualizer {

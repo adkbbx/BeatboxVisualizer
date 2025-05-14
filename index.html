@@ -7,7 +7,17 @@
     <title>Sound-Responsive Fireworks with Custom Images</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/image-uploader.css">
+    <link rel="stylesheet" href="css/background-uploader.css">
     <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/settings-tabs.css">
+    <link rel="stylesheet" href="css/uploader-tabs.css">
+    <link rel="stylesheet" href="css/app-layout.css">
+    <link rel="stylesheet" href="css/uploader-enhancements.css">
+    <link rel="stylesheet" href="css/tab-improved.css">
+    <link rel="stylesheet" href="css/layout-fix.css">
+    <!-- <link rel="stylesheet" href="css/swatch-fix.css"> -->
+    <link rel="stylesheet" href="css/colors-tab-fix.css">
+    
 </head>
 <body>
     <canvas id="animationCanvas"></canvas>
@@ -28,7 +38,46 @@
             </button>
         </div>
         
-        <div id="imageUploader"></div>
+        <!-- Tabbed Uploader Interface -->
+        <div class="uploader-tabs-container">
+            <div class="uploader-tab-navigation">
+                <button class="uploader-tab-button active" data-uploader-tab="firework">Firework Images</button>
+                <button class="uploader-tab-button" data-uploader-tab="background">Background Images</button>
+            </div>
+            
+            <div class="uploader-tab-content">
+                <div class="uploader-tab-pane active" id="firework-tab">
+                    <div class="image-upload-container">
+                        <div class="upload-area" id="dropZone">
+                            <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                            <div class="upload-content">
+                                <p>Drag and drop custom images here</p>
+                                <p>or</p>
+                                <button id="selectFiles" class="button">Select Files</button>
+                                <p class="file-types">Supported: JPG, PNG, GIF (max 5MB)</p>
+                            </div>
+                        </div>
+                        <div class="preview-container" id="previewContainer"></div>
+                    </div>
+                </div>
+                
+                <div class="uploader-tab-pane" id="background-tab">
+                    <div class="image-upload-container">
+                        <div class="upload-area" id="bgDropZone">
+                            <input type="file" id="bgFileInput" accept="image/*" multiple style="display: none;">
+                            <div class="upload-content">
+                                <p>Drag and drop background images here</p>
+                                <p>or</p>
+                                <button id="selectBgFiles" class="button">Select Files</button>
+                                <p class="file-types">Supported: JPG, PNG, GIF (max 5MB)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-container" id="bgPreviewContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div class="audio-visualizer">
             <div id="volumeLevel" class="volume-meter">
@@ -42,8 +91,8 @@
         </div>
     </div>
     
-    <!-- New enhanced settings panel with tabs -->
-    <div id="newSettingsPanel" class="settings-panel" style="display: none;">
+    <!-- Settings panel with tabs -->
+    <div id="settingsPanel" class="settings-panel" style="display: none;">
         <h2>Sound & Animation Settings</h2>
         
         <!-- Tab Navigation -->
@@ -53,266 +102,215 @@
             <button class="tab-button" data-tab="particles" role="tab">Particles</button>
             <button class="tab-button" data-tab="effects" role="tab">Effects</button>
             <button class="tab-button" data-tab="colors" role="tab">Colors</button>
+            <button class="tab-button" data-tab="backgroundCtrl" role="tab">Background</button>
         </div>
         
         <!-- Tab Content -->
         <div class="tab-content">
-            <!-- Audio Settings Tab -->
-            <div class="tab-pane" id="audio-tab" role="tabpanel">
-                <!-- Keep existing audio settings -->
+            <!-- Audio Tab Pane -->
+            <div class="tab-pane" id="audio-tab" data-tab-content="audio">
+                <h4>Audio Settings</h4>
                 <div class="setting">
-                    <label for="newSensitivitySlider">Microphone Sensitivity:</label>
-                    <span class="setting-description">Higher values amplify sounds. Increase if animations aren't triggering.</span>
-                    <input type="range" id="newSensitivitySlider" min="0" max="3" step="0.1" value="1.5">
-                    <div>
-                        <span class="setting-value" id="sensitivityValue">1.5</span>
-                    </div>
+                    <label for="sensitivitySlider">Microphone Sensitivity: <span id="sensitivityValue">1.5</span></label>
+                    <input type="range" id="sensitivitySlider" min="0.1" max="5" step="0.1" value="1.5">
+                    <p class="setting-description">Higher values make the microphone more sensitive to sound.</p>
                 </div>
-                
                 <div class="setting">
-                    <label for="newThresholdLow">Quiet Threshold:</label>
-                    <span class="setting-description">Sound level below this is considered quiet. Lower to detect softer sounds.</span>
-                    <input type="range" id="newThresholdLow" min="0" max="0.5" step="0.01" value="0.06">
-                    <div>
-                        <span class="setting-value" id="thresholdLowValue">0.06</span>
-                    </div>
+                    <label for="thresholdLow">Quiet Threshold: <span id="thresholdLowValue">0.06</span></label>
+                    <input type="range" id="thresholdLow" min="0.01" max="0.3" step="0.01" value="0.06">
+                    <p class="setting-description">Minimum sound level to be considered 'quiet' activity.</p>
                 </div>
-                
                 <div class="setting">
-                    <label for="newThresholdHigh">Loud Threshold:</label>
-                    <span class="setting-description">Sound level above this triggers explosions. Lower for easier bursting.</span>
-                    <input type="range" id="newThresholdHigh" min="0.1" max="1" step="0.01" value="0.4">
-                    <div>
-                        <span class="setting-value" id="thresholdHighValue">0.4</span>
-                    </div>
+                    <label for="thresholdHigh">Loud Threshold: <span id="thresholdHighValue">0.4</span></label>
+                    <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.05" value="0.4">
+                    <p class="setting-description">Sound level above which activity is considered 'loud' (e.g., for bursts).</p>
                 </div>
+                <div class="setting">
+                    <label for="suddenThreshold">Sudden Sound Threshold: <span id="suddenThresholdValue">0.15</span></label>
+                    <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.15">
+                    <p class="setting-description">Minimum increase in sound to detect a 'sudden' sound for effects.</p>
+                </div>
+            </div>
 
+            <!-- Fireworks Tab Pane -->
+            <div class="tab-pane" id="fireworks-tab" data-tab-content="fireworks">
+                <h4>Fireworks Settings</h4>
                 <div class="setting">
-                    <label for="newSuddenThreshold">Sudden Sound Threshold:</label>
-                    <span class="setting-description">How quickly sound must increase to be detected as "sudden." Lower for more sensitivity.</span>
-                    <input type="range" id="newSuddenThreshold" min="0.05" max="0.5" step="0.01" value="0.15">
-                    <div>
-                        <span class="setting-value" id="suddenThresholdValue">0.15</span>
-                    </div>
+                    <label for="fireworkGravity">Gravity: <span id="gravityValue">0.05</span></label>
+                    <input type="range" id="fireworkGravity" min="0.01" max="0.2" step="0.005" value="0.05">
+                    <p class="setting-description">Controls how quickly fireworks fall.</p>
+                </div>
+                <div class="setting">
+                    <label for="maxFireworks">Max Fireworks: <span id="maxFireworksValue">15</span></label>
+                    <input type="range" id="maxFireworks" min="1" max="50" step="1" value="15">
+                    <p class="setting-description">Maximum number of fireworks on screen simultaneously.</p>
+                </div>
+                <div class="setting">
+                    <label for="launchHeight">Launch Height Factor: <span id="launchHeightValue">1</span></label>
+                    <input type="range" id="launchHeight" min="0.5" max="2" step="0.1" value="1">
+                    <p class="setting-description">Multiplier for how high fireworks are launched.</p>
+                </div>
+                <div class="setting">
+                    <label for="smokeTrailIntensity">Smoke Trail Intensity: <span id="smokeTrailValue">0.1</span></label>
+                    <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.1">
+                    <p class="setting-description">Opacity of the smoke trail behind fireworks.</p>
                 </div>
             </div>
-            
-            <!-- Fireworks Settings Tab -->
-            <div class="tab-pane" id="fireworks-tab" role="tabpanel">
+
+            <!-- Particles Tab Pane -->
+            <div class="tab-pane" id="particles-tab" data-tab-content="particles">
+                <h4>Particle Settings</h4>
                 <div class="setting">
-                    <label for="fireworkGravity">Firework Gravity:</label>
-                    <span class="setting-description">Controls how quickly fireworks rise. Lower values = faster rise.</span>
-                    <input type="range" id="fireworkGravity" min="0.01" max="0.05" step="0.005" value="0.02">
-                    <div>
-                        <span class="setting-value" id="gravityValue">0.02</span>
-                    </div>
+                    <label for="particleCount">Particle Count: <span id="particleCountValue">100</span></label>
+                    <input type="range" id="particleCount" min="10" max="500" step="10" value="100">
+                    <p class="setting-description">Number of particles per firework explosion.</p>
                 </div>
-                
                 <div class="setting">
-                    <label for="maxFireworks">Maximum Fireworks:</label>
-                    <span class="setting-description">Limits concurrent fireworks. Higher values may impact performance.</span>
-                    <input type="range" id="maxFireworks" min="5" max="50" step="5" value="20">
-                    <div>
-                        <span class="setting-value" id="maxFireworksValue">20</span>
-                    </div>
+                    <label for="particleLifespan">Particle Lifespan (frames): <span id="particleLifespanValue">60</span></label>
+                    <input type="range" id="particleLifespan" min="20" max="200" step="5" value="60">
+                    <p class="setting-description">How long particles last before fading.</p>
                 </div>
-                
                 <div class="setting">
-                    <label for="launchHeight">Launch Height:</label>
-                    <span class="setting-description">How high fireworks go. Lower values = higher explosion.</span>
-                    <input type="range" id="launchHeight" min="0.02" max="0.3" step="0.01" value="0.05">
-                    <div>
-                        <span class="setting-value" id="launchHeightValue">0.05</span>
-                    </div>
+                    <label for="particleMinSize">Min Particle Size: <span id="particleMinSizeValue">1</span></label>
+                    <input type="range" id="particleMinSize" min="0.5" max="5" step="0.1" value="1">
+                    <p class="setting-description">Minimum size of individual particles.</p>
                 </div>
-                
                 <div class="setting">
-                    <label for="smokeTrailIntensity">Smoke Trail Intensity:</label>
-                    <span class="setting-description">Controls smoke trail visibility.</span>
-                    <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.3">
-                    <div>
-                        <span class="setting-value" id="smokeTrailValue">0.3</span>
-                    </div>
+                    <label for="particleMaxSize">Max Particle Size: <span id="particleMaxSizeValue">3</span></label>
+                    <input type="range" id="particleMaxSize" min="1" max="10" step="0.1" value="3">
+                    <p class="setting-description">Maximum size of individual particles.</p>
+                </div>
+                <div class="setting toggle-setting">
+                    <label for="useMultiColor">Use Multicolor Particles:</label>
+                    <label class="switch">
+                         <input type="checkbox" id="useMultiColor">
+                         <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Particles use a variety of colors if enabled.</p>
                 </div>
             </div>
-            
-            <!-- Particles Settings Tab -->
-            <div class="tab-pane" id="particles-tab" role="tabpanel">
-                <div class="setting">
-                    <label for="particleCount">Particle Count:</label>
-                    <span class="setting-description">Particles per explosion. Higher values may impact performance.</span>
-                    <input type="range" id="particleCount" min="30" max="300" step="10" value="120">
-                    <div>
-                        <span class="setting-value" id="particleCountValue">120</span>
-                    </div>
+
+            <!-- Effects Tab Pane -->
+            <div class="tab-pane" id="effects-tab" data-tab-content="effects">
+                <h4>Visual Effects Settings</h4>
+                <div class="setting toggle-setting">
+                    <label for="glowEffect">Glow Effect:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="glowEffect">
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Adds a glow to fireworks and particles.</p>
                 </div>
-                
                 <div class="setting">
-                    <label for="particleLifespan">Particle Lifespan:</label>
-                    <span class="setting-description">How long particles last (in seconds).</span>
-                    <input type="range" id="particleLifespan" min="0.5" max="3" step="0.1" value="1.2">
-                    <div>
-                        <span class="setting-value" id="particleLifespanValue">1.2</span>
-                    </div>
+                    <label for="fadeResistance">Fade Resistance: <span id="fadeResistanceValue">0.95</span></label>
+                    <input type="range" id="fadeResistance" min="0.8" max="0.99" step="0.01" value="0.95">
+                    <p class="setting-description">How slowly particles fade (higher is slower).</p>
                 </div>
-                
                 <div class="setting">
-                    <label for="particleMinSize">Minimum Particle Size:</label>
-                    <span class="setting-description">Smallest particle size.</span>
-                    <input type="range" id="particleMinSize" min="1" max="5" step="0.5" value="2">
-                    <div>
-                        <span class="setting-value" id="particleMinSizeValue">2</span>
-                    </div>
-                </div>
-                
-                <div class="setting">
-                    <label for="particleMaxSize">Maximum Particle Size:</label>
-                    <span class="setting-description">Largest particle size.</span>
-                    <input type="range" id="particleMaxSize" min="2" max="10" step="0.5" value="5">
-                    <div>
-                        <span class="setting-value" id="particleMaxSizeValue">5</span>
-                    </div>
-                </div>
-                
-                <div class="toggle-setting">
-                    <div>
-                        <label for="useMultiColor">Use Multicolor Particles:</label>
-                        <span class="setting-description">When enabled, particles have random colors.</span>
-                    </div>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="useMultiColor" checked>
-                        <label for="useMultiColor"></label>
-                    </div>
+                    <label for="globalSpeed">Global Animation Speed: <span id="globalSpeedValue">1</span></label>
+                    <input type="range" id="globalSpeed" min="0.1" max="2" step="0.1" value="1">
+                    <p class="setting-description">Overall speed of all animations.</p>
                 </div>
             </div>
-            
-            <!-- Effects Settings Tab -->
-            <div class="tab-pane" id="effects-tab" role="tabpanel">
-                <div class="toggle-setting">
-                    <div>
-                        <label for="glowEffect">Glow Effect:</label>
-                        <span class="setting-description">Adds a subtle glow to particles.</span>
-                    </div>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="glowEffect" checked>
-                        <label for="glowEffect"></label>
-                    </div>
-                </div>
-                
-                <div class="toggle-setting">
-                    <div>
-                        <label for="shimmerEffect">Shimmer Effect:</label>
-                        <span class="setting-description">Makes particles twinkle/vary in brightness.</span>
-                    </div>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="shimmerEffect" checked>
-                        <label for="shimmerEffect"></label>
-                    </div>
-                </div>
-                
-                <div class="setting">
-                    <label for="fadeResistance">Fade Resistance:</label>
-                    <span class="setting-description">How quickly colors fade. Higher values make colors last longer.</span>
-                    <input type="range" id="fadeResistance" min="0.8" max="0.98" step="0.01" value="0.92">
-                    <div>
-                        <span class="setting-value" id="fadeResistanceValue">0.92</span>
-                    </div>
-                </div>
-                
-                <div class="setting">
-                    <label for="trailEffect">Trail Effect:</label>
-                    <span class="setting-description">Length of particle trails. Higher values create longer trails.</span>
-                    <input type="range" id="trailEffect" min="0.5" max="0.95" step="0.05" value="0.8">
-                    <div>
-                        <span class="setting-value" id="trailEffectValue">0.8</span>
-                    </div>
-                </div>
-                
-                <div class="setting">
-                    <label for="globalSpeed">Animation Speed:</label>
-                    <span class="setting-description">Controls overall animation speed.</span>
-                    <input type="range" id="globalSpeed" min="0.5" max="2" step="0.1" value="1.0">
-                    <div>
-                        <span class="setting-value" id="globalSpeedValue">1.0</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Colors Settings Tab -->
-            <div class="tab-pane" id="colors-tab" role="tabpanel">
+
+            <!-- Colors Tab Pane -->
+            <div class="tab-pane" id="colors-tab" data-tab-content="colors">
+                <h4>Color Settings</h4>
                 <div class="setting">
                     <label for="colorTheme">Color Theme:</label>
-                    <span class="setting-description">Predefined color palettes for fireworks and particles.</span>
                     <select id="colorTheme">
-                        <option value="Vivid">Vivid</option>
+                        <option value="Vivid" selected>Vivid</option>
                         <option value="Pastel">Pastel</option>
                         <option value="Neon">Neon</option>
+                        <option value="Earthy">Earthy</option>
                         <option value="Monochrome">Monochrome</option>
                         <option value="Custom">Custom</option>
                     </select>
+                    <p class="setting-description">Select a predefined color theme or create a custom one.</p>
                 </div>
-                
-                <div class="setting" id="customColorsSetting">
-                    <label>Custom Colors:</label>
-                    <span class="setting-description">Add your own colors to the palette.</span>
-                    <div class="color-picker-container">
-                        <input type="color" id="colorPicker" value="#FF5733">
-                        <button id="addColor">Add Color</button>
-                    </div>
-                    <div id="customColorsList" class="custom-colors-list">
-                        <!-- Custom colors will be added here -->
-                    </div>
-                </div>
-                
                 <div class="setting">
-                    <label for="colorIntensity">Color Intensity:</label>
-                    <span class="setting-description">Adjusts the brightness of all colors.</span>
-                    <input type="range" id="colorIntensity" min="0.5" max="1.5" step="0.1" value="1.0">
-                    <div>
-                        <span class="setting-value" id="colorIntensityValue">1.0</span>
+                    <label for="colorIntensity">Color Intensity: <span id="colorIntensityValue">1</span></label>
+                    <input type="range" id="colorIntensity" min="0.1" max="2" step="0.1" value="1">
+                    <p class="setting-description">Adjusts the overall vividness of colors.</p>
+                </div>
+                <div class="setting" id="customColorsSetting" style="display: none;">
+                    <h5>Custom Colors</h5>
+                    <div class="color-picker-container">
+                        <input type="color" id="colorPicker" value="#ff0000">
+                        <button id="addColor" class="button">Add Color</button>
                     </div>
+                    <p class="setting-description">Click a swatch to remove it.</p>
+                    <div id="customColorsList" class="custom-colors-list">
+                        <!-- Custom color swatches will be added here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background Settings Tab Pane (existing) -->
+            <div class="tab-pane" id="backgroundCtrl-tab" data-tab-content="backgroundCtrl">
+                <h4>Background Effects Settings</h4>
+                <div class="setting">
+                    <label for="bgOpacity">Background Opacity: <span id="bgOpacityValue">0.5</span></label>
+                    <input type="range" id="bgOpacity" min="0" max="1" step="0.05" value="0.5">
+                    <p class="setting-description">Controls the transparency of the background images. 0 is fully transparent, 1 is fully opaque.</p>
+                </div>
+                <div class="setting">
+                    <label for="bgTransitionTime">Transition Time (sec): <span id="bgTransitionValue">2</span></label>
+                    <input type="range" id="bgTransitionTime" min="0.5" max="5" step="0.5" value="2">
+                    <p class="setting-description">How long it takes for one background image to fade into the next.</p>
+                </div>
+                <div class="setting">
+                    <label for="bgDisplayTime">Display Duration (sec): <span id="bgDisplayValue">5</span></label>
+                    <input type="range" id="bgDisplayTime" min="2" max="20" step="1" value="5">
+                    <p class="setting-description">How long each background image is shown before transitioning to the next.</p>
                 </div>
             </div>
         </div>
         
         <!-- Control Buttons -->
         <div class="settings-controls">
-            <button id="resetSettings">Reset Tab</button>
-            <button id="newCloseSettings" class="close-settings-btn">Close Settings</button>
+            <button id="resetSettings" class="settings-btn">
+                <span class="icon">↺</span>
+                <span class="text">Reset</span>
+            </button>
+            <button id="closeSettings" class="settings-btn">
+                <span class="icon">✓</span>
+                <span class="text">Close Settings</span>
+            </button>
         </div>
     </div>
+
+    <!-- Tab and button click fixes -->
     
-    <!-- Keep original settings panel but hidden - don't delete it -->
-    <div id="settingsPanel" class="settings-panel hidden" style="display: none !important; opacity: 0 !important; pointer-events: none !important; visibility: hidden !important;">
-        <h2>Settings</h2>
-        
-        <section class="settings-section">
-            <h3>Audio Settings</h3>
-            <div class="setting">
-                <label for="sensitivitySlider">Microphone Sensitivity:</label>
-                <input type="range" id="sensitivitySlider" min="0" max="3" step="0.1" value="1.5">
-            </div>
-            
-            <div class="setting">
-                <label for="thresholdLow">Quiet Threshold:</label>
-                <input type="range" id="thresholdLow" min="0" max="0.5" step="0.01" value="0.06">
-            </div>
-            
-            <div class="setting">
-                <label for="thresholdHigh">Loud Threshold:</label>
-                <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.01" value="0.4">
-            </div>
-
-            <div class="setting">
-                <label for="suddenThreshold">Sudden Sound Threshold:</label>
-                <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.15">
-            </div>
-        </section>
-        
-        <button id="closeSettings">Close Settings</button>
-    </div>
-
+    <!-- Original scripts -->
     <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/image-animation.js"></script>
+    <script type="module" src="js/direct-image-uploader.js"></script>
+    <script type="module" src="js/direct-background-uploader.js"></script>
+    <script src="js/tab-switcher.js"></script>
+    <!-- <script src="js/swatch-fix.js"></script> -->
+    <script src="js/settings-swatch-fix.js"></script>
+    
+    <script>
+        // Direct button handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectFilesBtn = document.getElementById('selectFiles');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (selectFilesBtn && fileInput) {
+                selectFilesBtn.onclick = function() {
+                    fileInput.click();
+                };
+            }
+            
+            const selectBgFilesBtn = document.getElementById('selectBgFiles');
+            const bgFileInput = document.getElementById('bgFileInput');
+            
+            if (selectBgFilesBtn && bgFileInput) {
+                selectBgFilesBtn.onclick = function() {
+                    bgFileInput.click();
+                };
+            }
+        });
+    </script>
 </body>
 </html>

@@ -56,7 +56,6 @@ class AnimationSettingsManager {
     try {
       localStorage.setItem('vibecoding-animation-settings', JSON.stringify(this.settings));
     } catch (error) {
-      console.error('Failed to save animation settings:', error);
     }
   }
   
@@ -70,7 +69,6 @@ class AnimationSettingsManager {
         this.settings = this.deepMerge(this.settings, parsed);
       }
     } catch (error) {
-      console.error('Failed to load animation settings:', error);
     }
   }
   

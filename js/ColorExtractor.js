@@ -99,6 +99,7 @@ class ColorExtractor {
         
         // If all colors were filtered out, try again without the saturation filter
         if (!dominantKey) {
+            console.log('No dominant color found with saturation filter, trying without');
             for (const key in colorBuckets) {
                 const bucket = colorBuckets[key];
                 const [r, g, b] = key.split(',').map(Number);
@@ -116,6 +117,7 @@ class ColorExtractor {
         
         // If still no dominant color, use the most frequent color regardless
         if (!dominantKey) {
+            console.log('No dominant color found, using most frequent color');
             for (const key in colorBuckets) {
                 if (colorBuckets[key].count > maxCount) {
                     maxCount = colorBuckets[key].count;

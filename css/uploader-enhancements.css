@@ -1,0 +1,148 @@
+/* Enhanced styles for the upload containers as seen in the screenshot */
+.image-upload-container,
+.background-upload-container {
+    background: transparent;
+}
+
+/* Upload area styles */
+.upload-area {
+    border: 2px dashed #444;
+    padding: 30px 20px;
+    text-align: center;
+    border-radius: 12px;
+    background-color: #222;
+    transition: all 0.2s;
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+    border-color: #3498db;
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+/* Button styling to match the green button in screenshot */
+.button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 10px 0;
+}
+
+.button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Preview containers */
+.preview-container,
+.background-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+/* Image preview styling */
+.image-preview,
+.background-preview {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    background-color: #1a1a1a;
+}
+
+.image-preview img,
+.background-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-preview,
+.remove-background {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(231, 76, 60, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.remove-preview:hover,
+.remove-background:hover {
+    background-color: #e74c3c;
+}
+
+/* Background name */
+.background-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 4px;
+    font-size: 10px;
+    text-align: center;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Color swatch - drastically enhanced visibility */
+.color-swatch {
+    position: absolute !important;
+    bottom: 8px !important;
+    left: 8px !important;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 4px !important;
+    border: 3px solid white !important;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.8) !important;
+    z-index: 100 !important; /* Very high z-index to ensure it's on top */
+    opacity: 1 !important;
+    display: block !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
+}
+
+/* Color indicator container */
+.color-indicator-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Color label */
+.color-label {
+    font-size: 10px;
+    color: white;
+    padding: 4px;
+    padding-left: 24px; /* Make room for the color swatch */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1,12 +1,12 @@
-import ColorManager from './ColorManager.js';
 import ParticleManager from './particles/ParticleManager.js';
 import FireworkManager from './fireworks/FireworkManager.js';
+import BackgroundManager from './BackgroundManager.js';
 
 /**
  * Main animation controller that coordinates all animation components
  */
 class AnimationController {
-  constructor(canvasId) {
+  constructor(canvasId, colorManagerInstance, initialSettings = {}) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
     this.isActive = false;
@@ -17,13 +17,20 @@ class AnimationController {
     this.copyCanvas = null;
     this.copyCtx = null;
     
-    // Add support for animation speed
-    this.globalSpeed = 1.0;
+    // Default animation settings, merge with provided initial settings
+    const defaultAnimSettings = { globalSpeed: 1.0 };
+    const currentAnimationSettings = { ...defaultAnimSettings, ...(initialSettings.animation || {}) };
+    this.globalSpeed = currentAnimationSettings.globalSpeed;
+    console.log('[AnimationController] Initialized with animation settings:', currentAnimationSettings);
 
-    // Initialize managers
-    this.colorManager = new ColorManager();
-    this.particleManager = new ParticleManager(this.ctx, this.colorManager);
-    this.fireworkManager = new FireworkManager(this.ctx, this.colorManager, this.particleManager);
+    // Initialize managers with their respective initial settings
+    this.colorManager = colorManagerInstance;
+    // Pass particle and effect settings combined to ParticleManager
+    const particleAndEffectSettings = { ...(initialSettings.particles || {}), ...(initialSettings.effects || {}) };
+    this.particleManager = new ParticleManager(this.ctx, this.colorManager, particleAndEffectSettings);
+    this.fireworkManager = new FireworkManager(this.ctx, this.colorManager, this.particleManager, initialSettings.fireworks || {});
+    this.backgroundManager = new BackgroundManager(this.canvas, this.ctx);
+    // Note: BackgroundManager settings are handled differently due to window.backgroundSystem
 
     // Resize handling
     this.resizeHandler = this.handleResize.bind(this);
@@ -39,8 +46,6 @@ class AnimationController {
    * Update animation settings
    */
   updateSettings(settings) {
-    console.log('Updating AnimationController settings:', settings);
-    
     // Update global animation speed if provided
     if (settings.globalSpeed !== undefined) {
       this.globalSpeed = settings.globalSpeed;
@@ -55,7 +60,10 @@ class AnimationController {
       this.particleManager.updateSettings(settings.particles);
     }
     
-    // Additional effects settings can be forwarded as needed
+    // Update background settings if provided
+    if (settings.background && this.backgroundManager) {
+      this.backgroundManager.updateSettings(settings.background);
+    }
   }
   
   /**
@@ -83,12 +91,41 @@ class AnimationController {
   }
 
   /**
+   * Add a background image
+   */
+  addBackgroundImage(image) {
+    if (this.backgroundManager) {
+      return this.backgroundManager.addBackgroundImage(image);
+    }
+    return -1;
+  }
+  
+  /**
+   * Remove a background image
+   */
+  removeBackgroundImage(index) {
+    if (this.backgroundManager) {
+      this.backgroundManager.removeBackgroundImage(index);
+    }
+  }
+  
+  /**
+   * Clear all background images
+   */
+  clearBackgroundImages() {
+    if (this.backgroundManager) {
+      this.backgroundManager.clearBackgroundImages();
+    }
+  }
+
+  /**
    * Start the animation
    */
   start() {
     if (!this.isActive) {
       this.isActive = true;
       this.lastTime = performance.now();
+
       requestAnimationFrame(this.animate.bind(this));
     }
   }
@@ -98,6 +135,11 @@ class AnimationController {
    */
   stop() {
     this.isActive = false;
+
+    // Stop background manager
+    if (this.backgroundManager && typeof this.backgroundManager.stop === 'function') {
+      this.backgroundManager.stop();
+    }
   }
   
   /**
@@ -115,6 +157,12 @@ class AnimationController {
     if (!this.isActive) {
       this.isActive = true;
       this.lastTime = performance.now();
+
+      // Restart background manager's independent loop
+      if (this.backgroundManager && typeof this.backgroundManager.startIndependentLoop === 'function') {
+        this.backgroundManager.startIndependentLoop();
+      }
+
       requestAnimationFrame(this.animate.bind(this));
     }
   }
@@ -154,7 +202,7 @@ class AnimationController {
       this.ctx.fillStyle = '#000000';
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       
-      // Step 3: Draw the previous frame back with reduced alpha for trails
+      // Step 4: Draw the previous frame back with reduced alpha for trails
       this.ctx.globalAlpha = 0.80; // Keep 80% of previous frame for trails
       this.ctx.drawImage(this.copyCanvas, 0, 0);
       this.ctx.globalAlpha = 1.0; // Reset alpha for drawing new elements
@@ -182,8 +230,6 @@ class AnimationController {
       // Continue animation loop
       requestAnimationFrame(this.animate.bind(this));
     } catch (error) {
-      console.error('[AnimationController] Error in animation frame:', error);
-      
       // Try to recover
       if (this.isActive) {
         requestAnimationFrame(this.animate.bind(this));

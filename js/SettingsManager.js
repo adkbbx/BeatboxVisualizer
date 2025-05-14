@@ -31,11 +31,8 @@ class SettingsManager {
                 if (this.audioManager && this.audioManager.audioAnalyzer) {
                     this.audioManager.updateSettings(this.settingsCache);
                 }
-                
-                console.log('Loaded settings from storage:', this.settingsCache);
             }
         } catch (error) {
-            console.error('[SettingsManager] Error loading settings from storage:', error);
         }
     }
     
@@ -49,10 +46,7 @@ class SettingsManager {
             
             // Save to localStorage
             localStorage.setItem('vibecoding-settings', JSON.stringify(currentSettings));
-            
-            console.log('Saved settings to storage:', currentSettings);
         } catch (error) {
-            console.error('[SettingsManager] Error saving settings to storage:', error);
         }
     }
     
@@ -70,79 +64,53 @@ class SettingsManager {
     }
 
     /**
-     * Connect setting sliders between old and new panels
+     * Set up and update audio setting sliders
      */
     connectSettingSliders() {
-        const pairs = [
-            ['newSensitivitySlider', 'sensitivitySlider'],
-            ['newThresholdLow', 'thresholdLow'],
-            ['newThresholdHigh', 'thresholdHigh'],
-            ['newSuddenThreshold', 'suddenThreshold']
+        const sliderIds = [
+            'sensitivitySlider',
+            'thresholdLow',
+            'thresholdHigh',
+            'suddenThreshold'
         ];
         
-        // First, load settings from storage or AudioAnalyzer and update all sliders
+        // Load settings from storage or AudioAnalyzer
         const currentSettings = this.getCurrentSettings();
         
-        // Update input values to match current settings
-        pairs.forEach(([newId, oldId]) => {
-            const newSlider = document.getElementById(newId);
-            const oldSlider = document.getElementById(oldId);
-            
-            if (newSlider && oldSlider) {
-                // Set new slider values
-                if (newId === 'newSensitivitySlider') newSlider.value = currentSettings.sensitivity;
-                if (newId === 'newThresholdLow') newSlider.value = currentSettings.quietThreshold;
-                if (newId === 'newThresholdHigh') newSlider.value = currentSettings.loudThreshold;
-                if (newId === 'newSuddenThreshold') newSlider.value = currentSettings.suddenSoundThreshold;
+        // Update sliders with current settings
+        sliderIds.forEach(id => {
+            const slider = document.getElementById(id);
+            if (slider) {
+                // Set slider values based on current settings
+                if (id === 'sensitivitySlider') slider.value = currentSettings.sensitivity;
+                if (id === 'thresholdLow') slider.value = currentSettings.quietThreshold;
+                if (id === 'thresholdHigh') slider.value = currentSettings.loudThreshold;
+                if (id === 'suddenThreshold') slider.value = currentSettings.suddenSoundThreshold;
                 
-                // Match old sliders to new values
-                oldSlider.value = newSlider.value;
-                
-                // Sync changes from new to old AND directly update settings
-                newSlider.addEventListener('input', () => {
-                    oldSlider.value = newSlider.value;
-                    this.updateAudioSettings();
-                });
-                
-                // Also sync changes from old to new and update settings
-                oldSlider.addEventListener('input', () => {
-                    newSlider.value = oldSlider.value;
+                // Add listener to update settings when value changes
+                slider.addEventListener('input', () => {
                     this.updateAudioSettings();
                 });
             }
         });
-        
-        // Connect close button
-        const newCloseButton = document.getElementById('newCloseSettings');
-        if (newCloseButton) {
-            newCloseButton.addEventListener('click', () => {
-                const panel = document.getElementById('newSettingsPanel');
-                if (panel) {
-                    panel.style.display = 'none';
-                }
-                
-                // Make sure we save settings when panel is closed
-                this.saveSettingsToStorage();
-            });
-        }
     }
 
     /**
-     * Update audio settings from sliders
+     * Update audio settings from sliders - simplified
      */
     updateAudioSettings() {
         try {
-            // Get values from NEW sliders (more reliable)
-            const sensitivitySlider = document.getElementById('newSensitivitySlider');
-            const thresholdLowSlider = document.getElementById('newThresholdLow');
-            const thresholdHighSlider = document.getElementById('newThresholdHigh');
-            const suddenThresholdSlider = document.getElementById('newSuddenThreshold');
+            // Get values from sliders
+            const sensitivitySlider = document.getElementById('sensitivitySlider');
+            const thresholdLowSlider = document.getElementById('thresholdLow');
+            const thresholdHighSlider = document.getElementById('thresholdHigh');
+            const suddenThresholdSlider = document.getElementById('suddenThreshold');
             
-            // Fallback to old sliders if new ones aren't available
-            const sensitivity = parseFloat(sensitivitySlider?.value || document.getElementById('sensitivitySlider')?.value || 1.5);
-            const quietThreshold = parseFloat(thresholdLowSlider?.value || document.getElementById('thresholdLow')?.value || 0.06);
-            const loudThreshold = parseFloat(thresholdHighSlider?.value || document.getElementById('thresholdHigh')?.value || 0.4);
-            const suddenThreshold = parseFloat(suddenThresholdSlider?.value || document.getElementById('suddenThreshold')?.value || 0.15);
+            // Use default values if sliders are not available
+            const sensitivity = parseFloat(sensitivitySlider?.value || 1.5);
+            const quietThreshold = parseFloat(thresholdLowSlider?.value || 0.06);
+            const loudThreshold = parseFloat(thresholdHighSlider?.value || 0.4);
+            const suddenThreshold = parseFloat(suddenThresholdSlider?.value || 0.15);
             
             // Update settings cache
             this.settingsCache = {
@@ -163,7 +131,6 @@ class SettingsManager {
             // Show confirmation
             this.showSettingsConfirmation();
         } catch (error) {
-            console.error('[SettingsManager] Error updating settings:', error);
         }
     }
     
@@ -197,45 +164,36 @@ class SettingsManager {
     }
 
     /**
-     * Update new sliders with values from AudioManager/AudioAnalyzer
+     * Update sliders with values from AudioManager/AudioAnalyzer - simplified
      */
-    updateNewSlidersFromAudioManager() {
+    updateSlidersFromAudioManager() {
         // Get current settings
         const currentSettings = this.getCurrentSettings();
         
-        // Get the sliders
-        const newSensitivitySlider = document.getElementById('newSensitivitySlider');
-        const newThresholdLowSlider = document.getElementById('newThresholdLow');
-        const newThresholdHighSlider = document.getElementById('newThresholdHigh');
-        const newSuddenThresholdSlider = document.getElementById('newSuddenThreshold');
+        // Update sliders with current values
+        const sliderMappings = {
+            'sensitivitySlider': 'sensitivity',
+            'thresholdLow': 'quietThreshold',
+            'thresholdHigh': 'loudThreshold',
+            'suddenThreshold': 'suddenSoundThreshold'
+        };
         
-        // Update values if sliders exist
-        if (newSensitivitySlider) {
-            newSensitivitySlider.value = currentSettings.sensitivity;
-        }
-        
-        if (newThresholdLowSlider) {
-            newThresholdLowSlider.value = currentSettings.quietThreshold;
-        }
-        
-        if (newThresholdHighSlider) {
-            newThresholdHighSlider.value = currentSettings.loudThreshold;
-        }
-        
-        if (newSuddenThresholdSlider) {
-            newSuddenThresholdSlider.value = currentSettings.suddenSoundThreshold;
-        }
-        
-        // Also update old sliders for consistency
-        const sensitivitySlider = document.getElementById('sensitivitySlider');
-        const thresholdLowSlider = document.getElementById('thresholdLow');
-        const thresholdHighSlider = document.getElementById('thresholdHigh');
-        const suddenThresholdSlider = document.getElementById('suddenThreshold');
-        
-        if (sensitivitySlider) sensitivitySlider.value = currentSettings.sensitivity;
-        if (thresholdLowSlider) thresholdLowSlider.value = currentSettings.quietThreshold;
-        if (thresholdHighSlider) thresholdHighSlider.value = currentSettings.loudThreshold;
-        if (suddenThresholdSlider) suddenThresholdSlider.value = currentSettings.suddenSoundThreshold;
+        // Update each slider if it exists
+        Object.entries(sliderMappings).forEach(([sliderId, settingKey]) => {
+            const slider = document.getElementById(sliderId);
+            if (slider && currentSettings[settingKey] !== undefined) {
+                slider.value = currentSettings[settingKey];
+                
+                // Update corresponding value display if it exists
+                const valueDisplay = document.getElementById(sliderId.replace('Slider', 'Value')
+                                                              .replace('new', '')
+                                                              .replace('Low', 'LowValue')
+                                                              .replace('High', 'HighValue'));
+                if (valueDisplay) {
+                    valueDisplay.textContent = currentSettings[settingKey];
+                }
+            }
+        });
     }
 }
 

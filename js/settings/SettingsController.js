@@ -26,21 +26,20 @@ class SettingsController {
   
   // Initialize all event listeners for settings controls
   initializeEventListeners() {
-    // Audio settings (these might already exist in the current implementation)
-    this.setupRangeControl('newSensitivitySlider', 'sensitivityValue', value => {
+    // Audio settings
+    this.setupRangeControl('sensitivitySlider', 'sensitivityValue', value => {
       this.audioManager.updateSettings({ sensitivity: value });
     });
     
-    // Add the other existing audio settings
-    this.setupRangeControl('newThresholdLow', 'thresholdLowValue', value => {
+    this.setupRangeControl('thresholdLow', 'thresholdLowValue', value => {
       this.audioManager.updateSettings({ quietThreshold: value });
     });
     
-    this.setupRangeControl('newThresholdHigh', 'thresholdHighValue', value => {
+    this.setupRangeControl('thresholdHigh', 'thresholdHighValue', value => {
       this.audioManager.updateSettings({ loudThreshold: value });
     });
     
-    this.setupRangeControl('newSuddenThreshold', 'suddenThresholdValue', value => {
+    this.setupRangeControl('suddenThreshold', 'suddenThresholdValue', value => {
       this.audioManager.updateSettings({ suddenThreshold: value });
     });
     
@@ -67,7 +66,8 @@ class SettingsController {
     });
     
     this.setupRangeControl('particleLifespan', 'particleLifespanValue', value => {
-      this.updateParticleSettings({ lifespan: value });
+      // Convert frames to seconds (assuming 60 FPS)
+      this.updateParticleSettings({ lifespan: value / 60 });
     });
     
     this.setupRangeControl('particleMinSize', 'particleMinSizeValue', value => {
@@ -88,16 +88,8 @@ class SettingsController {
       this.updateEffectSettings({ glowEnabled: value });
     });
     
-    this.setupToggleControl('shimmerEffect', value => {
-      this.updateEffectSettings({ shimmerEnabled: value });
-    });
-    
     this.setupRangeControl('fadeResistance', 'fadeResistanceValue', value => {
       this.updateEffectSettings({ fadeResistance: value });
-    });
-    
-    this.setupRangeControl('trailEffect', 'trailEffectValue', value => {
-      this.updateEffectSettings({ trailEffect: value });
     });
     
     this.setupRangeControl('globalSpeed', 'globalSpeedValue', value => {
@@ -144,7 +136,7 @@ class SettingsController {
     }
     
     // Close button
-    const closeButton = document.getElementById('newCloseSettings');
+    const closeButton = document.getElementById('closeSettings');
     if (closeButton) {
       closeButton.addEventListener('click', () => {
         this.panel.style.display = 'none';
@@ -158,7 +150,6 @@ class SettingsController {
     const valueDisplay = document.getElementById(valueId);
     
     if (!input || !valueDisplay) {
-      console.warn(`Could not find range control: ${inputId} or value display: ${valueId}`);
       return;
     }
     
@@ -175,7 +166,6 @@ class SettingsController {
     const input = document.getElementById(inputId);
     
     if (!input) {
-      console.warn(`Could not find toggle control: ${inputId}`);
       return;
     }
     
@@ -241,17 +231,23 @@ class SettingsController {
   
   // Update color settings
   updateColorSettings(settings) {
+    console.log('[SettingsController] Updating color settings with:', settings);
     // Save to settings manager
     this.settingsManager.updateSettings('colors', settings);
     
     // Update ColorManager
     if (this.colorManager) {
       if (settings.theme !== undefined) {
+        console.log('[SettingsController] Calling colorManager.setTheme with:', settings.theme);
         this.colorManager.setTheme(settings.theme);
       }
       
       if (settings.intensity !== undefined) {
         this.colorManager.setIntensity(settings.intensity);
+      }
+      if (settings.customColors !== undefined) {
+        console.log('[SettingsController] updateColorSettings - Calling colorManager.setCustomColors with:', settings.customColors);
+        this.colorManager.setCustomColors(settings.customColors);
       }
     }
   }
@@ -310,19 +306,75 @@ class SettingsController {
         // Create container div for better positioning
         const swatchContainer = document.createElement('div');
         swatchContainer.className = 'color-swatch';
-        swatchContainer.style.backgroundColor = color;
+        
+        // Apply direct styles with !important-like approach for guaranteed visibility
+        swatchContainer.style.cssText = `
+          position: relative !important;
+          display: inline-block !important;
+          width: 35px !important;
+          height: 35px !important;
+          margin: 5px !important;
+          border-radius: 4px !important;
+          border: 2px solid white !important;
+          box-shadow: 0 0 6px rgba(0, 0, 0, 0.5) !important;
+          cursor: pointer !important;
+          opacity: 1 !important;
+          overflow: visible !important;
+          visibility: visible !important;
+          background-color: ${color} !important;
+        `;
+        
         swatchContainer.title = color;
         
-        // Add hex value as data attribute
+        // Add hex value as data attribute for tooltip
         swatchContainer.dataset.color = color;
         
-        // Create remove button with correct positioning
+        // Create remove button with improved styling
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '&times;'; // × character
+        removeBtn.innerHTML = '✖'; // Heavy multiplication X (was &times;)
         removeBtn.title = 'Remove color';
+        removeBtn.setAttribute('aria-label', `Remove ${color} from palette`);
+        
+        console.log('[SettingsController] Applying styles to removeBtn. Current styles:', removeBtn.style.cssText);
+
+        // Apply direct styles to the button for guaranteed visibility
+        removeBtn.style.cssText = `
+          position: absolute !important;
+          top: -5px !important; 
+          right: -5px !important; 
+          width: 20px !important; /* Exact match with height */
+          height: 20px !important;
+          min-width: 20px !important; /* Force minimum width */
+          max-width: 20px !important; /* Force maximum width */
+          background-color: rgba(45, 45, 45, 0.9) !important;  /* Darker, more solid background */
+          color: #ffffff !important;                         /* Pure white 'x' */
+          border-radius: 999px !important; /* Use a large value to ensure roundness */
+          border: 1px solid rgba(80, 80, 80, 0.9) !important; /* Slightly more defined border */
+          font-size: 10px !important;
+          line-height: 1 !important; /* Reset line height */
+          padding: 0 !important;
+          margin: 0 !important; /* Reset margins */
+          text-align: center !important;
+          cursor: pointer !important;
+          z-index: 1000 !important;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          overflow: hidden !important; /* Prevent content from breaking circular shape */
+          box-sizing: border-box !important; /* Include border in dimensions */
+        `;
+        console.log('[SettingsController] Applied styles to removeBtn. New styles:', removeBtn.style.cssText);
+        
+        // Add click event to remove color
         removeBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           e.preventDefault();
+          this.removeCustomColor(color);
+        });
+        
+        // Also allow clicking the swatch itself to remove
+        swatchContainer.addEventListener('click', () => {
           this.removeCustomColor(color);
         });
         
@@ -333,6 +385,9 @@ class SettingsController {
         container.appendChild(swatchContainer);
       });
     }
+    
+    // Log that the colors UI has been updated
+    console.log(`Updated ${colorSettings.customColors.length} color swatches in settings panel`);
   }
   
   // Reset settings for the current active tab
@@ -380,6 +435,16 @@ class SettingsController {
     const animationSettings = this.settingsManager.getSettings('animation');
     const colorSettings = this.settingsManager.getSettings('colors');
     
+    // Update ColorManager instance with all loaded color settings
+    if (this.colorManager) {
+        this.colorManager.setTheme(colorSettings.theme);
+        this.colorManager.setIntensity(colorSettings.intensity);
+        if (colorSettings.customColors && Array.isArray(colorSettings.customColors)) {
+            console.log('[SettingsController] updateUIFromSettings - Calling colorManager.setCustomColors with:', colorSettings.customColors);
+            this.colorManager.setCustomColors(colorSettings.customColors);
+        }
+    }
+
     // Update range controls
     this.updateRangeControl('fireworkGravity', 'gravityValue', fireworkSettings.gravity);
     this.updateRangeControl('maxFireworks', 'maxFireworksValue', fireworkSettings.maxFireworks);
@@ -387,12 +452,11 @@ class SettingsController {
     this.updateRangeControl('smokeTrailIntensity', 'smokeTrailValue', fireworkSettings.smokeTrailIntensity);
     
     this.updateRangeControl('particleCount', 'particleCountValue', particleSettings.count);
-    this.updateRangeControl('particleLifespan', 'particleLifespanValue', particleSettings.lifespan);
+    this.updateRangeControl('particleLifespan', 'particleLifespanValue', particleSettings.lifespan * 60);
     this.updateRangeControl('particleMinSize', 'particleMinSizeValue', particleSettings.minSize);
     this.updateRangeControl('particleMaxSize', 'particleMaxSizeValue', particleSettings.maxSize);
     
     this.updateRangeControl('fadeResistance', 'fadeResistanceValue', effectSettings.fadeResistance);
-    this.updateRangeControl('trailEffect', 'trailEffectValue', effectSettings.trailEffect);
     this.updateRangeControl('globalSpeed', 'globalSpeedValue', animationSettings.globalSpeed);
     
     this.updateRangeControl('colorIntensity', 'colorIntensityValue', colorSettings.intensity);
@@ -400,7 +464,6 @@ class SettingsController {
     // Update toggle controls
     this.updateToggleControl('useMultiColor', particleSettings.useMultiColor);
     this.updateToggleControl('glowEffect', effectSettings.glowEnabled);
-    this.updateToggleControl('shimmerEffect', effectSettings.shimmerEnabled);
     
     // Update select controls
     this.updateSelectControl('colorTheme', colorSettings.theme);

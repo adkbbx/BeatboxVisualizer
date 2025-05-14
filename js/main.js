@@ -2,18 +2,43 @@ import AudioManager from './audio/AudioManager.js';
 import AnimationController from './animationController.js';
 import UIController from './uiController.js';
 import { initializePanelControls } from './panel-controls.js';
+import AnimationSettingsManager from './settings/AnimationSettingsManager.js';
+import ColorManager from './ColorManager.js';
 
 /**
  * Main application entry point
  */
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Sound-Responsive Fireworks initializing...');
-    
+    console.log('[main.js] DOMContentLoaded - Starting initialization');
+
     // Create audio manager instance
-    const audioManager = new AudioManager();
+    const settingsManager = new AnimationSettingsManager();
+    const initialAudioSettings = settingsManager.getSettings('audio');
+    const audioManager = new AudioManager(initialAudioSettings);
     
-    // Create animation controller
-    const animationController = new AnimationController('animationCanvas');
+    // Initialize Settings Manager to load settings first
+    const initialColorSettings = settingsManager.getSettings('colors');
+
+    // Create Color Manager with initial settings
+    const colorManager = new ColorManager(initialColorSettings);
+    console.log('[main.js] ColorManager instance created. Theme from initialSettings:', initialColorSettings.theme, 'Instance theme:', colorManager.currentTheme);
+    
+    // Get other initial settings for AnimationController and its sub-managers
+    const initialAnimationSettings = settingsManager.getSettings('animation');
+    const initialFireworkSettings = settingsManager.getSettings('fireworks');
+    const initialParticleSettings = settingsManager.getSettings('particles');
+    const initialEffectSettings = settingsManager.getSettings('effects');
+    // Background settings are handled by UIController/BackgroundUploader for now
+
+    const allInitialAnimCtrlSettings = {
+        animation: initialAnimationSettings,
+        fireworks: initialFireworkSettings,
+        particles: initialParticleSettings,
+        effects: initialEffectSettings
+    };
+
+    // Create animation controller and pass the pre-configured ColorManager and other initial settings
+    const animationController = new AnimationController('animationCanvas', colorManager, allInitialAnimCtrlSettings);
     
     // Set canvas to full window size
     const canvas = document.getElementById('animationCanvas');
@@ -24,23 +49,92 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        console.log('Canvas resized:', { width: canvas.width, height: canvas.height });
     });
     
     // Create UI controller and connect components
     const uiController = new UIController(audioManager, animationController);
     
-    console.log('Application initialized successfully');
-    console.log('Canvas dimensions:', { width: canvas.width, height: canvas.height });
+    // Connect the direct uploaders to the animation controller
+    window.addEventListener('directUploadersInitialized', () => {
+        // Connect the image system explosion handler to the animation controller
+        if (window.imageSystem && animationController.fireworkManager) {
+            // Override the explosion handler in FireworkManager to use our image system
+            const originalExplodeFirework = animationController.fireworkManager.explodeFirework;
+            animationController.fireworkManager.explodeFirework = (firework) => {
+                // Call the original handler first
+                originalExplodeFirework.call(animationController.fireworkManager, firework);
+            };
+        }
+        
+        // Connect the background system to the animation controller
+        if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+            // Save reference to background manager in animation controller
+            animationController.backgroundManager = window.backgroundSystem.backgroundManager;
+            // Start its independent loop now that it's initialized
+            if (typeof animationController.backgroundManager.startIndependentLoop === 'function') {
+                console.log('[main.js] Starting BackgroundManager independent loop.');
+                animationController.backgroundManager.startIndependentLoop();
+            } else {
+                console.error('[main.js] BackgroundManager does not have startIndependentLoop method.');
+            }
+        }
+    });
     
     // Display browser compatibility warning if necessary
     checkBrowserCompatibility();
 
-    // Initialize panel controls
-    initializePanelControls();
+    // Initialize panel controls and pass the uiController instance
+    initializePanelControls(uiController);
     
     // Load CSS for new settings panel
     loadSettingsPanelStyles();
+    
+    // Initialize uploader tabs
+    initializeUploaderTabs();
+
+    // Setup listeners for background settings in the settings panel
+    const bgOpacitySlider = document.getElementById('bgOpacity');
+    const bgOpacityValue = document.getElementById('bgOpacityValue');
+    const bgTransitionTimeSlider = document.getElementById('bgTransitionTime');
+    const bgTransitionValue = document.getElementById('bgTransitionValue');
+    const bgDisplayTimeSlider = document.getElementById('bgDisplayTime');
+    const bgDisplayValue = document.getElementById('bgDisplayValue');
+
+    if (bgOpacitySlider && bgOpacityValue) {
+        bgOpacitySlider.addEventListener('input', () => {
+            bgOpacityValue.textContent = bgOpacitySlider.value;
+            if (animationController.backgroundManager && typeof animationController.backgroundManager.updateSettings === 'function') {
+                animationController.backgroundManager.updateSettings({ opacity: parseFloat(bgOpacitySlider.value) });
+            } else if (window.backgroundSystem && typeof window.backgroundSystem.updateBackgroundSettings === 'function') {
+                // Fallback for older structure if direct access fails
+                window.backgroundSystem.updateBackgroundSettings(); 
+            }
+        });
+    }
+
+    if (bgTransitionTimeSlider && bgTransitionValue) {
+        bgTransitionTimeSlider.addEventListener('input', () => {
+            bgTransitionValue.textContent = bgTransitionTimeSlider.value;
+            if (animationController.backgroundManager && typeof animationController.backgroundManager.updateSettings === 'function') {
+                // Convert seconds to milliseconds for BackgroundManager
+                animationController.backgroundManager.updateSettings({ transitionDuration: parseFloat(bgTransitionTimeSlider.value) * 1000 });
+            } else if (window.backgroundSystem && typeof window.backgroundSystem.updateBackgroundSettings === 'function') {
+                window.backgroundSystem.updateBackgroundSettings();
+            }
+        });
+    }
+
+    if (bgDisplayTimeSlider && bgDisplayValue) {
+        bgDisplayTimeSlider.addEventListener('input', () => {
+            bgDisplayValue.textContent = bgDisplayTimeSlider.value;
+            if (animationController.backgroundManager && typeof animationController.backgroundManager.updateSettings === 'function') {
+                // Convert seconds to milliseconds for BackgroundManager
+                animationController.backgroundManager.updateSettings({ displayDuration: parseFloat(bgDisplayTimeSlider.value) * 1000 });
+            } else if (window.backgroundSystem && typeof window.backgroundSystem.updateBackgroundSettings === 'function') {
+                window.backgroundSystem.updateBackgroundSettings();
+            }
+        });
+    }
 });
 
 /**
@@ -88,4 +182,31 @@ function loadSettingsPanelStyles() {
     link.rel = 'stylesheet';
     link.href = 'css/settings-tabs.css';
     document.head.appendChild(link);
+}
+
+/**
+ * Initialize the uploader tabs
+ */
+function initializeUploaderTabs() {
+    const tabButtons = document.querySelectorAll('.uploader-tab-button');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Get the tab to activate
+            const tabName = this.getAttribute('data-uploader-tab');
+            
+            // Deactivate all tabs
+            document.querySelectorAll('.uploader-tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.uploader-tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Activate the selected tab
+            this.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        });
+    });
 }
