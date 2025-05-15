@@ -23,6 +23,10 @@ class AudioManager {
         this.audioAnalyzer = null;
         this.sustainedSoundDetector = new SustainedSoundDetector();
         this.initialAudioSettings = initialSettings;
+        
+        // Added property for loudSound cooldown
+        this.lastLoudSoundTime = 0;
+        this.loudSoundCooldown = 750; // Milliseconds
     }
     
     /**
@@ -160,9 +164,18 @@ class AudioManager {
             // Reset sustained state for loud sounds
             this.sustainedSoundDetector.resetForLoudSound(this.sustainedSoundEndCallback);
             
-            // Call volume callback for loud sounds immediately
-            if (this.volumeCallback) {
-                this.volumeCallback(volume, category);
+            // Add cooldown check for loud sound callbacks
+            const now = Date.now();
+            const timeSinceLastLoudSound = now - this.lastLoudSoundTime;
+            
+            // Only trigger the loudSound callback if enough time has passed
+            if (timeSinceLastLoudSound > this.loudSoundCooldown) {
+                this.lastLoudSoundTime = now;
+                
+                // Call volume callback for loud sounds (with cooldown)
+                if (this.volumeCallback) {
+                    this.volumeCallback(volume, category);
+                }
             }
         } else if (volume > this.audioAnalyzer.noiseFloor && category !== 'loud') {
             // Detect sudden sounds

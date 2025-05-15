@@ -15,6 +15,7 @@ class Firework {
         this.isNewest = false;
         this.selectedImageColor = color;
         this.selectedCustomImageId = null;
+        this.hasReachedTarget = false;
     }
     
     /**

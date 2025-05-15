@@ -12,13 +12,18 @@ class FireworkManager {
         this.particleManager = particleManager;
         this.fireworks = [];
         this.launchingFirework = false;
+        this.explosionInProgress = false;
+        this.timeNextExplosionIsAllowed = 0;
+        this.timeNextLoudSoundTriggerAllowed = 0;
         
         // Default settings, can be overridden by initialFireworkSettings
         const defaultSettings = {
             gravity: 0.02,
             maxFireworks: 20,
             launchHeightFactor: 0.05,
-            smokeTrailIntensity: 0.3
+            smokeTrailIntensity: 0.3,
+            sequentialExplosionDelay: 500,
+            loudSoundTriggerCooldown: 250
         };
 
         this.settings = { ...defaultSettings, ...initialFireworkSettings };
@@ -128,20 +133,44 @@ class FireworkManager {
      * Update all fireworks
      */
     updateFireworks(deltaTime) {
+        // 1. Update positions of all unexploded fireworks.
+        //    If a firework naturally reaches its target and isn't already marked,
+        //    set its hasReachedTarget flag.
         for (let i = this.fireworks.length - 1; i >= 0; i--) {
             const firework = this.fireworks[i];
-            
             if (!firework.exploded) {
-                // Update firework position using current gravity setting
-                const reachedTarget = firework.update(this.settings.gravity);
-                
-                // Check if firework reached target
-                if (reachedTarget) {
-                    this.explodeFirework(firework);
-                    firework.exploded = true;
+                const reachedNaturalTarget = firework.update(this.settings.gravity); // This updates x, y
+                if (reachedNaturalTarget && !firework.hasReachedTarget) {
+                    // If it reached its target naturally and wasn't already flagged
+                    // (e.g., by explodeAllFireworks), then mark it as ready.
+                    firework.hasReachedTarget = true;
                 }
-            } else {
-                // Fade out exploded fireworks
+            }
+        }
+
+        // 2. Check for and trigger next explosion if conditions met
+        // Reset explosionInProgress if cooldown has passed, allowing a new check
+        if (this.explosionInProgress && Date.now() >= this.timeNextExplosionIsAllowed) {
+            this.explosionInProgress = false;
+        }
+
+        if (!this.explosionInProgress) {
+            for (let i = 0; i < this.fireworks.length; i++) { // Iterate in launch order
+                const firework = this.fireworks[i];
+                if (firework.hasReachedTarget && !firework.exploded) {
+                    this.explodeFirework(firework);
+                    firework.exploded = true; // Mark as exploded immediately
+                    this.explosionInProgress = true;
+                    this.timeNextExplosionIsAllowed = Date.now() + (this.settings.sequentialExplosionDelay || 500);
+                    break; // Only one explosion per eligible frame
+                }
+            }
+        }
+
+        // 3. Update exploded fireworks (fading) and remove fully faded ones
+        for (let i = this.fireworks.length - 1; i >= 0; i--) {
+            const firework = this.fireworks[i];
+            if (firework.exploded) {
                 const fullyFaded = firework.updateAfterExplosion(deltaTime);
                 if (fullyFaded) {
                     this.fireworks.splice(i, 1);
@@ -228,12 +257,26 @@ class FireworkManager {
      * Explode all active fireworks (called when loud sound is detected)
      */
     explodeAllFireworks() {
-        this.fireworks.forEach(firework => {
-            if (!firework.exploded) {
-                this.explodeFirework(firework);
-                firework.exploded = true;
+        if (Date.now() < this.timeNextLoudSoundTriggerAllowed) {
+            return; // Cooldown active for this action, ignore rapid calls
+        }
+
+        for (let i = 0; i < this.fireworks.length; i++) {
+            const firework = this.fireworks[i];
+            if (!firework.exploded && !firework.hasReachedTarget) {
+                firework.hasReachedTarget = true; // Mark this one for sequential explosion
+                
+                // Update timestamp for the next allowed trigger for this specific action
+                this.timeNextLoudSoundTriggerAllowed = Date.now() + (this.settings.loudSoundTriggerCooldown || 250);
+
+                // If an explosion was in progress but its general explosion cooldown has passed,
+                // reset the flag to allow the main loop to potentially start this explosion sooner.
+                if (this.explosionInProgress && Date.now() >= this.timeNextExplosionIsAllowed) {
+                    this.explosionInProgress = false;
+                }
+                break; // Important: Only mark one firework per processed call
             }
-        });
+        }
     }
     
     /**
