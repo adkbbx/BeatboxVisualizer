@@ -9,7 +9,7 @@ class AnimationSettingsManager {
       fireworks: {
         gravity: 0.02,
         maxFireworks: 20,
-        launchHeightFactor: 0.05,
+        launchHeightFactor: 0.15,
         smokeTrailIntensity: 0.3
       },
       particles: {

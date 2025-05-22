@@ -22,8 +22,6 @@ class AudioAnalyzer {
             if (initialSettings.suddenSoundThreshold !== undefined) this._suddenSoundThreshold = initialSettings.suddenSoundThreshold;
         } else {
             console.log('[AudioAnalyzer] Initializing with default settings (no initialSettings provided).');
-            // Try to load settings from localStorage if no initialSettings are passed (fallback)
-            // this.loadSettingsFromStorage(); // Commented out for now to prioritize AnimationSettingsManager
         }
         
         // State tracking

@@ -4,11 +4,12 @@
 import Firework from './Firework.js';
 
 class FireworkFactory {
-    constructor(colorManager, canvasWidth, canvasHeight) {
+    constructor(colorManager, canvasWidth, canvasHeight, fireworkSettings = null) {
         this.colorManager = colorManager;
         this.canvasWidth = canvasWidth;
         this.canvasHeight = canvasHeight;
-        this.launchHeightFactor = 0.05; // How high fireworks go (default: 5% from top)
+        this.launchHeightFactor = fireworkSettings?.launchHeightFactor || 0.15; // How high fireworks go
+        this.gravity = fireworkSettings?.gravity || 0.02; // Store gravity for physics calculations
     }
     
     /**
@@ -21,24 +22,21 @@ class FireworkFactory {
      * @returns {Firework} - The created firework
      */
     createFirework(startX, startY, targetX, targetY, color) {
-        // Calculate angle between start and target
-        const angle = Math.atan2(targetY - startY, targetX - startX);
+        // Simplified physics calculation for better first-launch performance
+        const heightDifference = startY - targetY;
         
-        // Limit the angle to be more vertical (between -45 and 45 degrees for straighter paths)
-        const maxAngle = Math.PI / 2;
-        const clampedAngle = Math.max(-maxAngle, Math.min(maxAngle, angle));
+        // Simple velocity calculation without complex physics
+        const baseVelocity = Math.sqrt(heightDifference * 0.1);
+        const velocityVariation = 0.9 + (Math.random() * 0.2); // 90-110% variation
+        const finalVerticalVelocity = -baseVelocity * velocityVariation;
         
-        // Calculate distance to target
-        const distance = Math.hypot(targetX - startX, targetY - startY);
+        // Simple horizontal velocity
+        const horizontalDistance = targetX - startX;
+        const horizontalVelocity = horizontalDistance * 0.02;
         
-        // Increase base velocity and adjust scaling for higher launches
-        const baseVelocity = 3; 
-        const velocity = baseVelocity * Math.sqrt(distance / 300);
-        
-        // Set velocity components
         const velocityObj = {
-            x: Math.cos(clampedAngle) * velocity,
-            y: Math.sin(clampedAngle) * velocity
+            x: Math.max(-2, Math.min(2, horizontalVelocity)), // Clamp horizontal velocity
+            y: finalVerticalVelocity
         };
         
         // Get color if not provided
@@ -54,14 +52,41 @@ class FireworkFactory {
      * @returns {Object} - Launch parameters
      */
     calculateLaunchParameters(duration = 250) {
-        // Calculate target height based on duration
-        const minHeight = this.canvasHeight * 0.2; // Lower starting point
-        const maxHeight = this.canvasHeight * this.launchHeightFactor; // Target closer to top (configurable)
-        const heightRange = minHeight - maxHeight;
+        // Calculate target height based on duration and launch height factor
+        const startHeight = this.canvasHeight; // Start from bottom
         
-        // Normalize duration and calculate target height
+        // Clamp launchHeightFactor to reasonable range (10 to 100)
+        const clampedFactor = Math.max(10, Math.min(100, this.launchHeightFactor));
+        
+        // Map factor 10-100 to height range 80%-5% from top
+        // Factor 10 = 80% from top (lower)
+        // Factor 50 = 42.5% from top (middle) 
+        // Factor 100 = 5% from top (very high)
+        const minHeightPercent = 0.05; // 5% from top (highest)
+        const maxHeightPercent = 0.80; // 80% from top (lowest)
+        
+        // Linear interpolation between min and max
+        const heightFromTop = maxHeightPercent - ((clampedFactor - 10) / (100 - 10)) * (maxHeightPercent - minHeightPercent);
+        const targetY = this.canvasHeight * heightFromTop;
+        
+        // Normalize duration and adjust height based on sustained sound duration
         const normalizedDuration = Math.min(duration / 1500, 1);
-        const targetY = minHeight - (heightRange * normalizedDuration);
+        const durationBonus = normalizedDuration * 0.15; // Up to 15% closer to top for long sounds
+        const finalTargetY = Math.max(5, targetY - (this.canvasHeight * durationBonus)); // Move closer to top
+        
+        console.log('[FireworkFactory] Launch params:', {
+            canvasHeight: this.canvasHeight,
+            launchHeightFactor: this.launchHeightFactor,
+            clampedFactor,
+            heightFromTop,
+            targetY,
+            finalTargetY,
+            duration,
+            normalizedDuration,
+            durationBonus,
+            heightPercentageFromTop: (finalTargetY / this.canvasHeight) * 100,
+            heightPercentageFromBottom: (1 - finalTargetY / this.canvasHeight) * 100
+        });
         
         // Set X positions
         const centerX = this.canvasWidth / 2;
@@ -70,7 +95,7 @@ class FireworkFactory {
         const targetX = centerX + (Math.random() - 0.5) * spread;
         const startY = this.canvasHeight;
         
-        return { startX, startY, targetX, targetY };
+        return { startX, startY, targetX, targetY: finalTargetY };
     }
     
     /**
@@ -106,6 +131,21 @@ class FireworkFactory {
         }
         
         return { fireworkColor, selectedCustomImageId };
+    }
+    
+    /**
+     * Update factory settings
+     * @param {Object} settings - New settings to apply
+     */
+    updateSettings(settings) {
+        if (settings.launchHeightFactor !== undefined) {
+            console.log('[FireworkFactory] Updating launchHeightFactor from', this.launchHeightFactor, 'to', settings.launchHeightFactor);
+            this.launchHeightFactor = settings.launchHeightFactor;
+        }
+        if (settings.gravity !== undefined) {
+            console.log('[FireworkFactory] Updating gravity from', this.gravity, 'to', settings.gravity);
+            this.gravity = settings.gravity;
+        }
     }
     
     /**

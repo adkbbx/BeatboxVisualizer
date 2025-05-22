@@ -111,23 +111,23 @@
             <div class="tab-pane" id="audio-tab" data-tab-content="audio">
                 <h4>Audio Settings</h4>
                 <div class="setting">
-                    <label for="sensitivitySlider">Microphone Sensitivity: <span id="sensitivityValue">1.5</span></label>
-                    <input type="range" id="sensitivitySlider" min="0.1" max="5" step="0.1" value="1.5">
+                    <label for="sensitivitySlider">Microphone Sensitivity: <span id="sensitivityValue">2.0</span></label>
+                    <input type="range" id="sensitivitySlider" min="0.5" max="4" step="0.1" value="2.0">
                     <p class="setting-description">Higher values make the microphone more sensitive to sound.</p>
                 </div>
                 <div class="setting">
-                    <label for="thresholdLow">Quiet Threshold: <span id="thresholdLowValue">0.06</span></label>
-                    <input type="range" id="thresholdLow" min="0.01" max="0.3" step="0.01" value="0.06">
-                    <p class="setting-description">Minimum sound level to be considered 'quiet' activity.</p>
+                    <label for="thresholdLow">Quiet Threshold: <span id="thresholdLowValue">0.08</span></label>
+                    <input type="range" id="thresholdLow" min="0.02" max="0.2" step="0.01" value="0.08">
+                    <p class="setting-description">Minimum sound level to launch fireworks (sustained sounds).</p>
                 </div>
                 <div class="setting">
                     <label for="thresholdHigh">Loud Threshold: <span id="thresholdHighValue">0.4</span></label>
                     <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.05" value="0.4">
-                    <p class="setting-description">Sound level above which activity is considered 'loud' (e.g., for bursts).</p>
+                    <p class="setting-description">Sound level to explode all fireworks (loud bursts).</p>
                 </div>
                 <div class="setting">
-                    <label for="suddenThreshold">Sudden Sound Threshold: <span id="suddenThresholdValue">0.15</span></label>
-                    <input type="range" id="suddenThreshold" min="0.05" max="0.5" step="0.01" value="0.15">
+                    <label for="suddenThreshold">Sudden Sound Threshold: <span id="suddenThresholdValue">0.12</span></label>
+                    <input type="range" id="suddenThreshold" min="0.05" max="0.3" step="0.01" value="0.12">
                     <p class="setting-description">Minimum increase in sound to detect a 'sudden' sound for effects.</p>
                 </div>
             </div>
@@ -136,8 +136,8 @@
             <div class="tab-pane" id="fireworks-tab" data-tab-content="fireworks">
                 <h4>Fireworks Settings</h4>
                 <div class="setting">
-                    <label for="fireworkGravity">Gravity: <span id="gravityValue">0.05</span></label>
-                    <input type="range" id="fireworkGravity" min="0.01" max="0.2" step="0.005" value="0.05">
+                    <label for="fireworkGravity">Gravity: <span id="gravityValue">0.02</span></label>
+                    <input type="range" id="fireworkGravity" min="0.01" max="0.2" step="0.005" value="0.02">
                     <p class="setting-description">Controls how quickly fireworks fall.</p>
                 </div>
                 <div class="setting">
@@ -146,8 +146,8 @@
                     <p class="setting-description">Maximum number of fireworks on screen simultaneously.</p>
                 </div>
                 <div class="setting">
-                    <label for="launchHeight">Launch Height Factor: <span id="launchHeightValue">1</span></label>
-                    <input type="range" id="launchHeight" min="0.5" max="2" step="0.1" value="1">
+                    <label for="launchHeight">Launch Height Factor: <span id="launchHeightValue">10</span></label>
+                    <input type="range" id="launchHeight" min="10" max="100" step="10" value="10">
                     <p class="setting-description">Multiplier for how high fireworks are launched.</p>
                 </div>
                 <div class="setting">

@@ -3,10 +3,10 @@
  */
 class SustainedSoundDetector {
     constructor() {
-        // Configuration
-        this.sustainedSoundDuration = 400; // Minimum duration in milliseconds
-        this.sustainedSoundThreshold = 0.12; // Minimum volume for sustained sound
-        this.loudThreshold = 0.4; // Maximum volume for sustained sound (above this is "loud")
+        // Configuration - optimized for better detection
+        this.sustainedSoundDuration = 300; // Minimum duration in milliseconds (reduced for quicker response)
+        this.sustainedSoundThreshold = 0.08; // Minimum volume for sustained sound (matches quietThreshold)
+        this.loudThreshold = 0.4; // Maximum volume for sustained sound (matches loudThreshold)
         
         // State tracking
         this.sustainedSoundStart = 0;

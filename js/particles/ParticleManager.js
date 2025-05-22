@@ -41,12 +41,11 @@ class ParticleManager {
   /**
    * Create an explosion of particles
    */
-  createExplosion(x, y, fireworkColor) {
+  createExplosion(x, y, fireworkColor, fireworkVelocity = { x: 0, y: 0 }) {
     const particles = [];
     const explosionTime = Date.now(); // Timestamp for this explosion
     
     // Determine the single color for this explosion if not using multicolor
-    // If fireworkColor is provided, use it; otherwise, pick a random one for the whole explosion.
     const singleExplosionColor = fireworkColor || this.colorManager.getRandomColor();
     
     for (let i = 0; i < this.settings.particleCount; i++) {
@@ -72,29 +71,34 @@ class ParticleManager {
     
     // Add smoke effect if enabled
     if (this.settings.smokeEnabled) {
-      // Smoke effect should generally match the explosion's dominant color if not multicolor,
-      // or a representative color if multicolor (e.g., the first particle's color or a new random one).
-      // For simplicity, let's use singleExplosionColor for smoke as well.
-      this.createSmokeEffect(x, y, singleExplosionColor);
+      this.createSmokeEffect(x, y, singleExplosionColor, fireworkVelocity);
     }
   }
   
   /**
-   * Create a smoke effect at the explosion point
+   * Create a smoke effect at the explosion point with reduced complexity
    */
-  createSmokeEffect(x, y, color) {
-    // Create multiple smoke particles with various directions
-    for (let i = 0; i < this.settings.smokeCount; i++) {
-      // Add some randomness to the position to make smoke appear more natural
+  createSmokeEffect(x, y, color, fireworkVelocity = { x: 0, y: 0 }) {
+    // Reduce smoke particle count for better performance
+    const smokeCount = Math.max(5, Math.floor(this.settings.smokeCount * 0.6)); // 60% of original
+    
+    for (let i = 0; i < smokeCount; i++) {
+      // Smaller offset range for less complexity
       const offsetX = (Math.random() - 0.5) * 20;
       const offsetY = (Math.random() - 0.5) * 20;
       
-      // Create and add smoke particle
+      // Simpler velocity inheritance
+      const inheritedVelocity = {
+        x: fireworkVelocity.x * 0.2 + (Math.random() - 0.5) * 0.4,
+        y: fireworkVelocity.y * 0.2 + (Math.random() - 0.5) * 0.4
+      };
+      
       const smokeParticle = new SmokeParticle(
         x + offsetX, 
         y + offsetY, 
         color,
-        this.settings.smokeSize
+        this.settings.smokeSize,
+        inheritedVelocity
       );
       
       this.smokeParticles.push(smokeParticle);

@@ -210,8 +210,14 @@ class UIController {
                         return;
                     }
                     
+                    // Debug logging for audio levels
+                    if (volume > 0.05) {
+                        console.log('[UIController] Audio detected:', { volume: volume.toFixed(3), category });
+                    }
+                    
                     // For loud sounds, burst all fireworks
                     if (category === 'loud') {
+                        console.log('[UIController] LOUD SOUND detected - exploding fireworks!', volume);
                         this.animationController.applyVolume(volume, category);
                     }
                 });
@@ -219,7 +225,9 @@ class UIController {
                 // Set up sustained sound detection for launching fireworks
                 this.audioManager.onSustainedSound((volume, duration) => {
                     // Only respond to significant volume
-                    if (volume < 0.1) return null;
+                    if (volume < 0.05) return null;
+                    
+                    console.log('[UIController] Sustained sound detected:', { volume, duration });
                     
                     // Launch a new firework and get its ID
                     const fireworkId = this.animationController.applySustainedSound(volume, duration);

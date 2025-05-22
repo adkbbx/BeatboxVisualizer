@@ -3,7 +3,7 @@
  */
 class Firework {
     constructor(x, y, targetX, targetY, color, velocity) {
-        this.id = Date.now();
+        this.id = Date.now() + Math.random(); // More unique ID
         this.x = x;
         this.y = y;
         this.targetX = targetX;
@@ -16,27 +16,35 @@ class Firework {
         this.selectedImageColor = color;
         this.selectedCustomImageId = null;
         this.hasReachedTarget = false;
+        this.markedForExplosion = false;
+        this.age = 0; // Track how long the firework has existed
+        this.maxAge = 1000; // Auto-cleanup after 1000 frames (~16 seconds)
     }
     
     /**
-     * Update firework position and state
+     * Update firework position and state using realistic physics
      * @param {number} gravity - Gravity effect to apply
-     * @returns {boolean} - Whether the firework has reached its target
+     * @returns {boolean} - Whether the firework has reached its peak height
      */
     update(gravity) {
-        // Update position
+        // Age the firework
+        this.age++;
+        
+        // Update position based on velocity
         this.x += this.velocity.x;
         this.y += this.velocity.y;
+        
+        // Apply gravity to vertical velocity
         this.velocity.y += gravity;
         
-        // Check if firework reached target
-        const distanceToTarget = Math.hypot(
-            this.targetX - this.x,
-            this.targetY - this.y
-        );
+        // Check if firework has reached its peak (when vertical velocity becomes positive)
+        // This is more realistic than checking distance to a target point
+        const hasReachedPeak = this.velocity.y >= 0;
         
-        // Return true if reached target
-        return distanceToTarget < 5;
+        // Optional: Add air resistance for more realism
+        this.velocity.x *= 0.999; // Very slight horizontal drag
+        
+        return hasReachedPeak;
     }
     
     /**
@@ -45,7 +53,8 @@ class Firework {
      * @returns {boolean} - Whether the firework is fully faded
      */
     updateAfterExplosion(deltaTime) {
-        this.alpha -= deltaTime * 0.003;
+        // Much faster fade for immediate cleanup (fade in ~25 frames = 0.4 seconds)
+        this.alpha -= 0.04; 
         return this.alpha <= 0;
     }
     
@@ -105,6 +114,14 @@ class Firework {
      */
     setCustomImageId(imageId) {
         this.selectedCustomImageId = imageId;
+    }
+    
+    /**
+     * Check if this firework should be automatically cleaned up
+     * @returns {boolean} - Whether firework is too old
+     */
+    isExpired() {
+        return this.age >= this.maxAge;
     }
 }
 

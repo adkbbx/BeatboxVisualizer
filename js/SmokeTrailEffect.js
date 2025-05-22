@@ -1,81 +1,70 @@
 /**
- * Handles smoke trail effects for fireworks
+ * Lightweight smoke trail effects for fireworks
  */
 class SmokeTrailEffect {
     constructor(ctx) {
         this.ctx = ctx;
         
-        // Smoke trail settings
+        // Simplified smoke trail settings for better performance
         this.settings = {
-            enabled: true,          // Enable/disable smoke trail
-            frequency: 0.8,         // Increased smoke generation frequency (0-1)
-            minSize: 1.5,           // Smaller minimum smoke particle size
-            maxSize: 4,             // Smaller maximum smoke particle size
-            opacity: 0.25,          // Base opacity, controlled by slider
-            fadeSpeed: 0.04,        // Faster fading for subtlety
-            colorDarkening: 0.6,    // Slightly darker smoke
-            brightening: 10         // Minimal color brightening
+            enabled: true,
+            frequency: 0.6,              // Reduced frequency
+            minSize: 1.5,
+            maxSize: 4,
+            opacity: 0.25,
+            fadeSpeed: 0.03,
+            colorDarkening: 0.6,
+            brightening: 10
         };
     }
 
     /**
-     * Create a smoke trail behind a firework
+     * Create simple smoke trail behind a firework
      */
     createSmokeTrail(firework) {
-        // Skip if smoke trails are disabled or outside frequency range
         if (!this.settings.enabled || Math.random() > this.settings.frequency) return;
         
-        // Calculate trail position
+        // Simple trail calculation
         const trailLength = 2 + Math.random() * 3;
         const trailX = firework.x - firework.velocity.x * trailLength;
         const trailY = firework.y - firework.velocity.y * trailLength;
         
-        // Add natural randomness based on velocity
-        const speedFactor = Math.sqrt(
-            firework.velocity.x * firework.velocity.x + 
-            firework.velocity.y * firework.velocity.y
-        ) / 3;
-        const offsetX = (Math.random() - 0.5) * 2 * speedFactor;
-        const offsetY = (Math.random() - 0.5) * 2 * speedFactor;
+        // Add minimal randomness
+        const offsetX = (Math.random() - 0.5) * 3;
+        const offsetY = (Math.random() - 0.5) * 3;
         
-        // Parse firework color
-        let r = 0, g = 0, b = 0;
+        // Simple color parsing
+        let r = 100, g = 95, b = 90;
         if (firework.color.startsWith('#')) {
             r = parseInt(firework.color.slice(1, 3), 16);
             g = parseInt(firework.color.slice(3, 5), 16);
             b = parseInt(firework.color.slice(5, 7), 16);
-        } else {
-            r = g = b = 150; // Default gray
         }
         
-        // Adjust smoke color
+        // Apply simple color adjustment
         r = Math.min(255, Math.floor(r * this.settings.colorDarkening) + this.settings.brightening);
         g = Math.min(255, Math.floor(g * this.settings.colorDarkening) + this.settings.brightening);
-        b = Math.min(255, Math.floor(b * this.settings.colorDarkening) + this.settings.brightening + 20);
+        b = Math.min(255, Math.floor(b * this.settings.colorDarkening) + this.settings.brightening + 5);
         
-        // Set opacity and calculate size
-        const smokeOpacity = this.settings.opacity;
-        const smokeColor = `rgba(${r}, ${g}, ${b}, ${smokeOpacity})`;
-        const radius = this.settings.minSize + 
-            Math.random() * (this.settings.maxSize - this.settings.minSize);
+        const radius = this.settings.minSize + Math.random() * (this.settings.maxSize - this.settings.minSize);
         
-        // Create radial gradient
+        // Simple gradient
         const gradient = this.ctx.createRadialGradient(
             trailX + offsetX, trailY + offsetY, 0,
             trailX + offsetX, trailY + offsetY, radius
         );
         
-        // Set gradient stops
-        gradient.addColorStop(0, `rgba(${Math.min(255, r+10)}, ${Math.min(255, g+10)}, ${Math.min(255, b+10)}, ${smokeOpacity * 0.9})`);
-        gradient.addColorStop(0.3, smokeColor);
-        gradient.addColorStop(0.6, `rgba(${r}, ${g}, ${b}, ${smokeOpacity * 0.4})`);
-        gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+        gradient.addColorStop(0, `rgba(${r + 10}, ${g + 5}, ${b}, ${this.settings.opacity * 0.8})`);
+        gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${this.settings.opacity * 0.5})`);
+        gradient.addColorStop(1, `rgba(${r - 10}, ${g - 10}, ${b - 10}, 0)`);
         
-        // Draw smoke particle
-        this.ctx.beginPath();
+        // Draw simple smoke particle
+        this.ctx.save();
         this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
         this.ctx.arc(trailX + offsetX, trailY + offsetY, radius, 0, Math.PI * 2);
         this.ctx.fill();
+        this.ctx.restore();
     }
     
     /**
