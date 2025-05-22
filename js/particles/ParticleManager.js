@@ -21,13 +21,15 @@ class ParticleManager {
       // trailLength and shimmerEffect are no longer used but might be in old saved settings
       // They will be deleted by updateSettings if present in initialParticleAndEffectSettings
       useMultiColor: true,
+      minSize: 2,
+      maxSize: 5,
       smokeEnabled: true,
       smokeOpacity: 0.3,
       smokeSize: 25,
-      smokeLifespan: 2.5,
+      smokeLifespan: 3.5,
       smokeCount: 15,
       smokeSpread: 0.7,
-      smokeRiseSpeed: 0.12
+      smokeRiseSpeed: 0.06
     };
 
     if (initialParticleAndEffectSettings) {
@@ -41,7 +43,15 @@ class ParticleManager {
   /**
    * Create an explosion of particles
    */
-  createExplosion(x, y, fireworkColor, fireworkVelocity = { x: 0, y: 0 }) {
+  createExplosion(x, y, fireworkColor, fireworkVelocity, sizeMultiplier) {
+    // Handle default parameters manually for better compatibility
+    if (!fireworkVelocity) {
+      fireworkVelocity = {};
+      fireworkVelocity.x = 0;
+      fireworkVelocity.y = 0;
+    }
+    if (!sizeMultiplier) sizeMultiplier = 1.0;
+    
     const particles = [];
     const explosionTime = Date.now(); // Timestamp for this explosion
     
@@ -59,8 +69,12 @@ class ParticleManager {
         particleColorToUse = singleExplosionColor; // All particles in this explosion use the same color
       }
       
-      // Create new particle
-      const particle = new Particle(x, y, particleColorToUse, velocity, angle);
+      // Calculate particle size with size multiplier and settings
+      const baseSize = this.settings.minSize + Math.random() * (this.settings.maxSize - this.settings.minSize);
+      const particleSize = baseSize * sizeMultiplier;
+      
+      // Create new particle with size
+      const particle = new Particle(x, y, particleColorToUse, velocity, angle, particleSize);
       particle.setLifespan(this.settings.particleLifespan); // Apply lifespan from settings
       particle.setExplosionId(explosionTime);
       particles.push(particle);
@@ -69,16 +83,24 @@ class ParticleManager {
     // Add new particles at the beginning so they render on top (newest first)
     this.particles.unshift(...particles);
     
-    // Add smoke effect if enabled
+    // Add smoke effect if enabled - also scale smoke size
     if (this.settings.smokeEnabled) {
-      this.createSmokeEffect(x, y, singleExplosionColor, fireworkVelocity);
+      this.createSmokeEffect(x, y, singleExplosionColor, fireworkVelocity, sizeMultiplier);
     }
   }
   
   /**
    * Create a smoke effect at the explosion point with reduced complexity
    */
-  createSmokeEffect(x, y, color, fireworkVelocity = { x: 0, y: 0 }) {
+  createSmokeEffect(x, y, color, fireworkVelocity, sizeMultiplier) {
+    // Handle default parameters manually for better compatibility
+    if (!fireworkVelocity) {
+      fireworkVelocity = {};
+      fireworkVelocity.x = 0;
+      fireworkVelocity.y = 0;
+    }
+    if (!sizeMultiplier) sizeMultiplier = 1.0;
+    
     // Reduce smoke particle count for better performance
     const smokeCount = Math.max(5, Math.floor(this.settings.smokeCount * 0.6)); // 60% of original
     
@@ -88,16 +110,18 @@ class ParticleManager {
       const offsetY = (Math.random() - 0.5) * 20;
       
       // Simpler velocity inheritance
-      const inheritedVelocity = {
-        x: fireworkVelocity.x * 0.2 + (Math.random() - 0.5) * 0.4,
-        y: fireworkVelocity.y * 0.2 + (Math.random() - 0.5) * 0.4
-      };
+      const inheritedVelocity = {};
+      inheritedVelocity.x = fireworkVelocity.x * 0.2 + (Math.random() - 0.5) * 0.4;
+      inheritedVelocity.y = fireworkVelocity.y * 0.2 + (Math.random() - 0.5) * 0.4;
+      
+      // Apply size multiplier to smoke size
+      const scaledSmokeSize = this.settings.smokeSize * sizeMultiplier;
       
       const smokeParticle = new SmokeParticle(
         x + offsetX, 
         y + offsetY, 
         color,
-        this.settings.smokeSize,
+        scaledSmokeSize,
         inheritedVelocity
       );
       
@@ -225,7 +249,7 @@ class ParticleManager {
     
     // Merge any other settings (like smoke settings if they were part of newSettings)
     // and also ensures the initial defaults for smoke etc. are preserved if not in newSettings.
-    this.settings = { ...this.settings, ...newSettings }; 
+    this.settings = Object.assign({}, this.settings, newSettings); 
 
     // Remove shimmerEffect and trailLength specifically if they were part of newSettings, as they are no longer used.
     // This also cleans them up if they were loaded from old saved settings.

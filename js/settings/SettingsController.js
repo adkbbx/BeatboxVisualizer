@@ -60,6 +60,10 @@ class SettingsController {
       this.updateFireworkSettings({ smokeTrailIntensity: value });
     });
     
+    this.setupRangeControl('fireworkSize', 'fireworkSizeValue', value => {
+      this.updateFireworkSettings({ fireworkSize: value });
+    });
+    
     // Particle settings
     this.setupRangeControl('particleCount', 'particleCountValue', value => {
       this.updateParticleSettings({ count: value });
@@ -450,6 +454,7 @@ class SettingsController {
     this.updateRangeControl('maxFireworks', 'maxFireworksValue', fireworkSettings.maxFireworks);
     this.updateRangeControl('launchHeight', 'launchHeightValue', fireworkSettings.launchHeightFactor);
     this.updateRangeControl('smokeTrailIntensity', 'smokeTrailValue', fireworkSettings.smokeTrailIntensity);
+    this.updateRangeControl('fireworkSize', 'fireworkSizeValue', fireworkSettings.fireworkSize);
     
     this.updateRangeControl('particleCount', 'particleCountValue', particleSettings.count);
     this.updateRangeControl('particleLifespan', 'particleLifespanValue', particleSettings.lifespan * 60);

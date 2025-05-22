@@ -10,6 +10,7 @@ class FireworkFactory {
         this.canvasHeight = canvasHeight;
         this.launchHeightFactor = fireworkSettings?.launchHeightFactor || 0.15; // How high fireworks go
         this.gravity = fireworkSettings?.gravity || 0.02; // Store gravity for physics calculations
+        this.fireworkSize = fireworkSettings?.fireworkSize || 1.0; // Store firework size setting
     }
     
     /**
@@ -34,16 +35,15 @@ class FireworkFactory {
         const horizontalDistance = targetX - startX;
         const horizontalVelocity = horizontalDistance * 0.02;
         
-        const velocityObj = {
-            x: Math.max(-2, Math.min(2, horizontalVelocity)), // Clamp horizontal velocity
-            y: finalVerticalVelocity
-        };
+        const velocityObj = {};
+        velocityObj.x = Math.max(-2, Math.min(2, horizontalVelocity)); // Clamp horizontal velocity
+        velocityObj.y = finalVerticalVelocity;
         
         // Get color if not provided
         const fireworkColor = color || this.colorManager.getRandomColor();
         
         // Create and return the firework
-        return new Firework(startX, startY, targetX, targetY, fireworkColor, velocityObj);
+        return new Firework(startX, startY, targetX, targetY, fireworkColor, velocityObj, this.fireworkSize);
     }
     
     /**
@@ -145,6 +145,10 @@ class FireworkFactory {
         if (settings.gravity !== undefined) {
             console.log('[FireworkFactory] Updating gravity from', this.gravity, 'to', settings.gravity);
             this.gravity = settings.gravity;
+        }
+        if (settings.fireworkSize !== undefined) {
+            console.log('[FireworkFactory] Updating fireworkSize from', this.fireworkSize, 'to', settings.fireworkSize);
+            this.fireworkSize = settings.fireworkSize;
         }
     }
     

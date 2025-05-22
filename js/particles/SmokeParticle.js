@@ -2,18 +2,24 @@
  * Simplified smoke particle for better performance
  */
 class SmokeParticle {
-    constructor(x, y, color, smokeSize, initialVelocity = { x: 0, y: 0 }) {
+    constructor(x, y, color, smokeSize, initialVelocity) {
+        // Handle default parameter manually for better compatibility
+        if (!initialVelocity) {
+            initialVelocity = {};
+            initialVelocity.x = 0;
+            initialVelocity.y = 0;
+        }
+        
         this.x = x;
         this.y = y;
         
         // Simplified physics properties
-        this.velocity = {
-            x: initialVelocity.x + (Math.random() - 0.5) * 0.5,
-            y: initialVelocity.y + (Math.random() - 0.5) * 0.5
-        };
+        this.velocity = {};
+        this.velocity.x = initialVelocity.x + (Math.random() - 0.5) * 0.3;
+        this.velocity.y = initialVelocity.y + (Math.random() - 0.5) * 0.3;
         
-        this.buoyancy = 0.02 + Math.random() * 0.01;
-        this.drag = 0.98;
+        this.buoyancy = 0.01 + Math.random() * 0.005;
+        this.drag = 0.99;
         
         // Visual properties
         this.color = this.getRGBFromColor(color);

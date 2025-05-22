@@ -1,9 +1,14 @@
 // CustomImage.js
 export class CustomImage {
-    constructor(x, y, image, forcedColor = null) {
+    constructor(x, y, image, forcedColor, sizeMultiplier) {
+        // Handle default parameters manually for better compatibility
+        if (forcedColor === undefined) forcedColor = null;
+        if (sizeMultiplier === undefined) sizeMultiplier = 1.0;
+        
         this.x = x;
         this.y = y;
         this.image = image;
+        this.sizeMultiplier = sizeMultiplier; // Store size multiplier
         
         // Set color based on priority: forced color > pre-computed > extracted
         if (forcedColor) {
@@ -19,17 +24,24 @@ export class CustomImage {
         this.lastUpdateTime = this.startTime;
         this.lifeTime = 2000; // 2 seconds lifetime
         
-        // Visual properties
-        this.scale = 0.1; // Start small
-        this.targetScale = 0.8 + Math.random() * 0.2;
-        this.rotation = Math.random() * Math.PI * 2;
-        this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+        // Visual properties - apply size multiplier to scale
+        this.scale = 0.1 * sizeMultiplier; // Start small but respect size
+        this.targetScale = (0.8 + Math.random() * 0.2) * sizeMultiplier; // Apply size to target
+        this.rotation = 0; // Start with no rotation
+        this.rotationSpeed = 0; // No rotation by default
         this.opacity = 0.1;
         
-        // Particle effect properties
+        // Check if rotation is enabled in settings
+        const rotationEnabled = document.getElementById('imageRotation')?.checked || false;
+        if (rotationEnabled) {
+            this.rotation = Math.random() * Math.PI * 2;
+            this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+        }
+        
+        // Particle effect properties - scale particles too
         this.particles = [];
         this.particleCount = 6;
-        this.particleSize = 1.5;
+        this.particleSize = 1.5 * sizeMultiplier; // Scale particle size
         this.particleSpeed = 0.5;
         
         // Initialize particles
@@ -139,8 +151,10 @@ export class CustomImage {
             this.opacity = 1.0;
         }
 
-        // Rotate image
-        this.rotation += this.rotationSpeed * timeScale;
+        // Only update rotation if rotation speed is non-zero
+        if (this.rotationSpeed !== 0) {
+            this.rotation += this.rotationSpeed * timeScale;
+        }
 
         // Update particles
         this.particles.forEach((particle, index) => {

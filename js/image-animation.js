@@ -37,16 +37,22 @@ export class ImageAnimationSystem {
 
     // Handle firework explosion by creating image effect with consistent color
     // Added customImageId parameter to use a specific custom image
-    handleFireworkExplosion(x, y, color, useFireworkColor = true, customImageId = null) {
+    // Added size parameter to control image scaling
+    handleFireworkExplosion(x, y, color, useFireworkColor, customImageId, size) {
+        // Handle default parameters manually for better compatibility
+        if (useFireworkColor === undefined) useFireworkColor = true;
+        if (customImageId === undefined) customImageId = null;
+        if (size === undefined) size = 1.0;
+        
         this.explosionCount++;
         
         // Use the specific custom image ID if provided
         let imageColor;
         if (customImageId) {
-            imageColor = this.imageManager.createImageExplosion(x, y, customImageId, color);
+            imageColor = this.imageManager.createImageExplosion(x, y, customImageId, color, size);
         } else {
-            // Otherwise use a random image with the provided color
-            imageColor = this.imageManager.createImageExplosion(x, y, null, color);
+            // Otherwise use a random image with the provided color and size
+            imageColor = this.imageManager.createImageExplosion(x, y, null, color, size);
         }
         
         // Return the color that was actually used

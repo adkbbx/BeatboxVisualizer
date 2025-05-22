@@ -22,6 +22,7 @@ class FireworkManager {
             maxFireworks: 20,
             launchHeightFactor: 0.05,
             smokeTrailIntensity: 0.3,
+            fireworkSize: 1.0,
             sequentialExplosionDelay: 500,
             loudSoundTriggerCooldown: 250
         };
@@ -53,6 +54,7 @@ class FireworkManager {
         if (newSettings.gravity !== undefined) this.settings.gravity = newSettings.gravity;
         if (newSettings.maxFireworks !== undefined) this.settings.maxFireworks = newSettings.maxFireworks;
         if (newSettings.launchHeightFactor !== undefined) this.settings.launchHeightFactor = newSettings.launchHeightFactor;
+        if (newSettings.fireworkSize !== undefined) this.settings.fireworkSize = newSettings.fireworkSize;
         if (newSettings.smokeTrailIntensity !== undefined) {
             this.settings.smokeTrailIntensity = newSettings.smokeTrailIntensity;
             // Update smoke trail effect intensity
@@ -216,17 +218,25 @@ class FireworkManager {
         if (imageSystem) {
             try {
                 if (firework.selectedCustomImageId) {
-                    // Pass the exact custom image ID and color
+                    // Pass the exact custom image ID, color, and size
                     imageSystem.handleFireworkExplosion(
                         firework.x, 
                         firework.y, 
                         explosionColor, 
                         true, 
-                        firework.selectedCustomImageId
+                        firework.selectedCustomImageId,
+                        firework.size || this.settings.fireworkSize
                     );
                 } else {
-                    // No specific image ID, just use the color
-                    imageSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, true);
+                    // No specific image ID, just use the color and size
+                    imageSystem.handleFireworkExplosion(
+                        firework.x, 
+                        firework.y, 
+                        explosionColor, 
+                        true, 
+                        null,
+                        firework.size || this.settings.fireworkSize
+                    );
                 }
             } catch (error) {
             }
@@ -239,17 +249,31 @@ class FireworkManager {
                         firework.y, 
                         explosionColor, 
                         true, 
-                        firework.selectedCustomImageId
+                        firework.selectedCustomImageId,
+                        firework.size || this.settings.fireworkSize
                     );
                 } else {
-                    window.flowerSystem.handleFireworkExplosion(firework.x, firework.y, explosionColor, true);
+                    window.flowerSystem.handleFireworkExplosion(
+                        firework.x, 
+                        firework.y, 
+                        explosionColor, 
+                        true, 
+                        null,
+                        firework.size || this.settings.fireworkSize
+                    );
                 }
             } catch (error) {
             }
         }
         
-        // Create the particle explosion with firework velocity for realistic smoke
-        this.particleManager.createExplosion(firework.x, firework.y, explosionColor, firework.velocity);
+        // Create the particle explosion with firework velocity for realistic smoke and size
+        this.particleManager.createExplosion(
+            firework.x, 
+            firework.y, 
+            explosionColor, 
+            firework.velocity, 
+            firework.size || this.settings.fireworkSize
+        );
     }
 
     /**

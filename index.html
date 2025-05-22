@@ -151,9 +151,14 @@
                     <p class="setting-description">Multiplier for how high fireworks are launched.</p>
                 </div>
                 <div class="setting">
-                    <label for="smokeTrailIntensity">Smoke Trail Intensity: <span id="smokeTrailValue">0.1</span></label>
-                    <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.1">
+                    <label for="smokeTrailIntensity">Smoke Trail Intensity: <span id="smokeTrailValue">0.3</span></label>
+                    <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.3">
                     <p class="setting-description">Opacity of the smoke trail behind fireworks.</p>
+                </div>
+                <div class="setting">
+                    <label for="fireworkSize">Firework Size: <span id="fireworkSizeValue">1.0</span></label>
+                    <input type="range" id="fireworkSize" min="0.5" max="3.0" step="0.1" value="1.0">
+                    <p class="setting-description">Controls the size of fireworks and uploaded images during explosions.</p>
                 </div>
             </div>
 
@@ -193,6 +198,14 @@
             <!-- Effects Tab Pane -->
             <div class="tab-pane" id="effects-tab" data-tab-content="effects">
                 <h4>Visual Effects Settings</h4>
+                <div class="setting toggle-setting">
+                    <label for="imageRotation">Image Rotation:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="imageRotation">
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Enable or disable image rotation during explosions.</p>
+                </div>
                 <div class="setting toggle-setting">
                     <label for="glowEffect">Glow Effect:</label>
                     <label class="switch">

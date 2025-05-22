@@ -58,11 +58,40 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('directUploadersInitialized', () => {
         // Connect the image system explosion handler to the animation controller
         if (window.imageSystem && animationController.fireworkManager) {
+            // Store the image system reference in the animation controller
+            animationController.imageSystem = window.imageSystem;
+            
             // Override the explosion handler in FireworkManager to use our image system
             const originalExplodeFirework = animationController.fireworkManager.explodeFirework;
             animationController.fireworkManager.explodeFirework = (firework) => {
-                // Call the original handler first
+                // Create the particle explosion
                 originalExplodeFirework.call(animationController.fireworkManager, firework);
+                
+                // Then create the image effect if we have uploaded images
+                if (animationController.imageSystem && animationController.imageSystem.imageManager.processedImages.size > 0) {
+                    // Clear any existing images at this position first
+                    const existingImages = animationController.imageSystem.imageManager.images;
+                    const x = firework.x;
+                    const y = firework.y;
+                    const tolerance = 5; // pixels
+                    
+                    // Remove any images that are too close to the new explosion
+                    existingImages.forEach((img, index) => {
+                        if (Math.abs(img.x - x) < tolerance && Math.abs(img.y - y) < tolerance) {
+                            existingImages.splice(index, 1);
+                        }
+                    });
+                    
+                    // Create the new image explosion
+                    animationController.imageSystem.handleFireworkExplosion(
+                        firework.x,
+                        firework.y,
+                        firework.selectedImageColor,
+                        true,
+                        firework.selectedCustomImageId,
+                        firework.size || 1.0
+                    );
+                }
             };
         }
         
@@ -91,6 +120,24 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize uploader tabs
     initializeUploaderTabs();
+
+    // Setup rotation toggle default state and listener
+    const imageRotationToggle = document.getElementById('imageRotation');
+    if (imageRotationToggle) {
+        // Default to disabled
+        imageRotationToggle.checked = false;
+        
+        // Store the setting in localStorage
+        imageRotationToggle.addEventListener('change', () => {
+            localStorage.setItem('imageRotationEnabled', imageRotationToggle.checked);
+        });
+        
+        // Load saved setting
+        const savedRotationSetting = localStorage.getItem('imageRotationEnabled');
+        if (savedRotationSetting !== null) {
+            imageRotationToggle.checked = savedRotationSetting === 'true';
+        }
+    }
 
     // Setup listeners for background settings in the settings panel
     const bgOpacitySlider = document.getElementById('bgOpacity');

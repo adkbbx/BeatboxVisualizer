@@ -63,8 +63,13 @@ export class ImageManager {
         };
     }
 
-    // Create an image explosion effect with optional color
-    createImageExplosion(x, y, imageId = null, forcedColor = null) {
+    // Create an image explosion effect with optional color and size
+    createImageExplosion(x, y, imageId, forcedColor, size) {
+        // Handle default parameters manually for better compatibility
+        if (imageId === undefined) imageId = null;
+        if (forcedColor === undefined) forcedColor = null;
+        if (size === undefined) size = 1.0;
+        
         // Determine which image to use
         let imageData;
         let selectedImageId;
@@ -102,8 +107,8 @@ export class ImageManager {
             this.images.shift();
         }
 
-        // Create new image explosion with the color
-        const customImage = new CustomImage(x, y, imageData.image, selectedColor);
+        // Create new image explosion with the color and size
+        const customImage = new CustomImage(x, y, imageData.image, selectedColor, size);
         this.images.push(customImage);
         
         // Return the color that was used

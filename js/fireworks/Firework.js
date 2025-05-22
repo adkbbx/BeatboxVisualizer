@@ -2,7 +2,10 @@
  * Represents a single firework
  */
 class Firework {
-    constructor(x, y, targetX, targetY, color, velocity) {
+    constructor(x, y, targetX, targetY, color, velocity, size) {
+        // Handle default parameter manually for better compatibility
+        if (size === undefined) size = 1.0;
+        
         this.id = Date.now() + Math.random(); // More unique ID
         this.x = x;
         this.y = y;
@@ -10,6 +13,7 @@ class Firework {
         this.targetY = targetY;
         this.color = color;
         this.velocity = velocity;
+        this.size = size; // Size multiplier for the firework
         this.exploded = false;
         this.alpha = 1;
         this.isNewest = false;
@@ -74,7 +78,7 @@ class Firework {
         
         // Draw the main firework body
         ctx.beginPath();
-        ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, 2.5 * this.size, 0, Math.PI * 2);
         ctx.fillStyle = color;
         ctx.fill();
         
@@ -96,7 +100,7 @@ class Firework {
         
         // Draw the trail
         ctx.beginPath();
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2 * this.size;
         ctx.strokeStyle = gradient;
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(
