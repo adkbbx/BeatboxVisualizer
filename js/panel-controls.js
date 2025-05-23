@@ -8,6 +8,12 @@ export function initializePanelControls(uiControllerInstance) {
     const settingsPanel = document.getElementById('settingsPanel');
     
     let panelsVisible = true;
+    
+    // Track key states to prevent repeated firing when held down
+    let keysPressed = {
+        space: false,
+        h: false
+    };
 
     function togglePanels() {
         panelsVisible = !panelsVisible;
@@ -53,14 +59,52 @@ export function initializePanelControls(uiControllerInstance) {
     // Button click handler
     toggleButton.addEventListener('click', togglePanels);
 
-    // Keyboard shortcut handler
+    // Keyboard shortcut handlers
     document.addEventListener('keydown', (event) => {
+        // Only handle keyboard shortcuts when not typing in input fields
+        if (document.activeElement.tagName === 'INPUT' || 
+            document.activeElement.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        // Handle 'H' key for panel toggle
         if (event.key.toLowerCase() === 'h' && 
             !event.ctrlKey && 
             !event.altKey && 
             !event.metaKey && 
-            document.activeElement.tagName !== 'INPUT') {
+            !keysPressed.h) {
+            event.preventDefault();
+            keysPressed.h = true;
             togglePanels();
+        }
+
+        // Handle Space bar for test firework launch
+        if (event.code === 'Space' && 
+            !event.ctrlKey && 
+            !event.altKey && 
+            !event.metaKey && 
+            !keysPressed.space) {
+            event.preventDefault();
+            keysPressed.space = true;
+            
+            // Launch test firework if uiController is available
+            if (uiControllerInstance && typeof uiControllerInstance.launchTestFirework === 'function') {
+                uiControllerInstance.launchTestFirework();
+                console.log('[panel-controls] Space bar pressed - launching test firework');
+            } else {
+                console.warn('[panel-controls] Space bar pressed but uiController not available or missing launchTestFirework method');
+            }
+        }
+    });
+
+    // Reset key states when keys are released
+    document.addEventListener('keyup', (event) => {
+        if (event.key.toLowerCase() === 'h') {
+            keysPressed.h = false;
+        }
+        
+        if (event.code === 'Space') {
+            keysPressed.space = false;
         }
     });
 }
