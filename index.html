@@ -28,6 +28,10 @@
                 <span class="icon">🎤</span>
                 <span class="text">Start</span>
             </button>
+            <button id="testFirework" class="test-button">
+                <span class="icon">🎆</span>
+                <span class="text">Test</span>
+            </button>
             <button id="toggleSettings">
                 <span class="icon">⚙️</span>
                 <span class="text">Settings</span>
@@ -223,6 +227,26 @@
                     <label for="globalSpeed">Global Animation Speed: <span id="globalSpeedValue">1</span></label>
                     <input type="range" id="globalSpeed" min="0.1" max="2" step="0.1" value="1">
                     <p class="setting-description">Overall speed of all animations.</p>
+                </div>
+                <div class="setting toggle-setting">
+                    <label for="testSoundEnabled">Test Firework Sounds:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="testSoundEnabled" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Enable launch and burst sounds for test fireworks.</p>
+                </div>
+                <div class="setting">
+                    <label for="testSoundVolume">Sound Volume: <span id="testSoundVolumeValue">0.3</span></label>
+                    <input type="range" id="testSoundVolume" min="0" max="1" step="0.05" value="0.3">
+                    <p class="setting-description">Volume for test firework sound effects.</p>
+                </div>
+                <div class="setting">
+                    <button id="soundSetupBtn" class="button" style="margin-top: 10px;">
+                        <span class="icon">🔊</span>
+                        <span class="text">Sound Setup Guide</span>
+                    </button>
+                    <p class="setting-description">Learn how to add custom firework sounds</p>
                 </div>
             </div>
 

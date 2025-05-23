@@ -97,3 +97,17 @@ button:active {
 #startMicrophone.active:hover {
     background-color: rgba(231, 76, 60, 0.9); /* Even brighter red on hover */
 }
+
+/* Test button styling */
+.test-button {
+    background-color: rgba(155, 89, 182, 0.7); /* Purple for test button */
+}
+
+.test-button:hover {
+    background-color: rgba(155, 89, 182, 0.9); /* Brighter purple on hover */
+}
+
+.test-button:active {
+    background-color: rgba(142, 68, 173, 1); /* Darker purple when clicked */
+    transform: translateY(1px);
+}

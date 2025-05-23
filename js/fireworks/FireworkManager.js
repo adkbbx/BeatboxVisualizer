@@ -4,6 +4,7 @@
  */
 import SmokeTrailEffect from '../SmokeTrailEffect.js';
 import FireworkFactory from './FireworkFactory.js';
+import TestFireworkManager from '../TestFireworkManager.js';
 
 class FireworkManager {
     constructor(ctx, colorManager, particleManager, initialFireworkSettings = null) {
@@ -44,6 +45,9 @@ class FireworkManager {
         if (this.settings.smokeTrailIntensity !== undefined && this.smokeTrailEffect) {
             this.smokeTrailEffect.updateOpacity(this.settings.smokeTrailIntensity);
         }
+        
+        // Initialize test firework manager
+        this.testFireworkManager = new TestFireworkManager(this);
     }
     
     /**
@@ -152,6 +156,14 @@ class FireworkManager {
                     // Mark that it reached its peak height (natural physics)
                     firework.hasReachedTarget = true;
                     console.log('[FireworkManager] Firework reached peak height:', firework.id, 'at position', firework.y);
+                    
+                    // Check if this is a test firework that should auto-explode
+                    if (this.testFireworkManager && this.testFireworkManager.shouldAutoExplode(firework)) {
+                        console.log('[FireworkManager] Auto-exploding test firework at peak:', firework.id);
+                        this.explodeFirework(firework);
+                        firework.exploded = true;
+                        this.testFireworkManager.cleanupTestFirework(firework.id);
+                    }
                 }
                 
                 // Check for automatic cleanup of very old fireworks (reduce maxAge for faster cleanup)
@@ -302,6 +314,15 @@ class FireworkManager {
         
         // Reset composite operation
         this.ctx.globalCompositeOperation = 'source-over';
+    }
+
+    /**
+     * Launch a test firework that auto-explodes at peak
+     */
+    async launchTestFirework() {
+        if (this.testFireworkManager) {
+            await this.testFireworkManager.launchTestFirework();
+        }
     }
 
     /**

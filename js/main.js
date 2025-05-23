@@ -139,6 +139,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Setup test sound settings
+    const testSoundEnabledToggle = document.getElementById('testSoundEnabled');
+    const testSoundVolumeSlider = document.getElementById('testSoundVolume');
+    const testSoundVolumeValue = document.getElementById('testSoundVolumeValue');
+
+    if (testSoundEnabledToggle) {
+        // Default to enabled
+        testSoundEnabledToggle.checked = true;
+        
+        // Store the setting
+        testSoundEnabledToggle.addEventListener('change', () => {
+            const enabled = testSoundEnabledToggle.checked;
+            localStorage.setItem('testSoundEnabled', enabled);
+            
+            // Update the test firework manager if available
+            if (animationController.fireworkManager && 
+                animationController.fireworkManager.testFireworkManager) {
+                animationController.fireworkManager.testFireworkManager.setSoundEnabled(enabled);
+            }
+        });
+        
+        // Load saved setting
+        const savedSoundSetting = localStorage.getItem('testSoundEnabled');
+        if (savedSoundSetting !== null) {
+            testSoundEnabledToggle.checked = savedSoundSetting === 'true';
+        }
+    }
+
+    if (testSoundVolumeSlider && testSoundVolumeValue) {
+        testSoundVolumeSlider.addEventListener('input', () => {
+            const volume = parseFloat(testSoundVolumeSlider.value);
+            testSoundVolumeValue.textContent = volume.toFixed(2);
+            localStorage.setItem('testSoundVolume', volume);
+            
+            // Update the test firework manager if available
+            if (animationController.fireworkManager && 
+                animationController.fireworkManager.testFireworkManager) {
+                animationController.fireworkManager.testFireworkManager.setSoundVolume(volume);
+            }
+        });
+        
+        // Load saved volume
+        const savedVolume = localStorage.getItem('testSoundVolume');
+        if (savedVolume !== null) {
+            testSoundVolumeSlider.value = savedVolume;
+            testSoundVolumeValue.textContent = parseFloat(savedVolume).toFixed(2);
+        }
+    }
+
+    // Setup sound guide button
+    const soundSetupBtn = document.getElementById('soundSetupBtn');
+    if (soundSetupBtn) {
+        soundSetupBtn.addEventListener('click', () => {
+            window.open('sound-setup.html', '_blank');
+        });
+    }
+
     // Setup listeners for background settings in the settings panel
     const bgOpacitySlider = document.getElementById('bgOpacity');
     const bgOpacityValue = document.getElementById('bgOpacityValue');

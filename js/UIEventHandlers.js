@@ -34,6 +34,14 @@ class UIEventHandlers {
             });
         }
 
+        // Set up test button
+        const testButton = document.getElementById('testFirework');
+        if (testButton) {
+            testButton.addEventListener('click', () => {
+                this.uiController.launchTestFirework();
+            });
+        }
+
         // Set up sliders
         this.setupSliders();
         

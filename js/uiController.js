@@ -308,15 +308,26 @@ class UIController {
             this.audioStatus.parentElement.classList.add('inactive');
             this.updateVolumeUI(0);
             this.micDetection.textContent = 'Microphone inactive - no sound detected';
-            this.micDetection.className = 'mic-detection';
             this.updateMicrophoneState(false);
-            
         } catch (error) {
-            // Try to reset UI state even if there was an error
-            this.startButton.disabled = false;
-            this.audioStatus.textContent = 'Microphone Error';
-            this.audioStatus.className = 'inactive';
-            this.updateMicrophoneState(false);
+            console.error('[UIController] Error stopping microphone:', error);
+        }
+    }
+    
+    /**
+     * Launch a test firework
+     */
+    async launchTestFirework() {
+        // Ensure animation is running
+        if (!this.animationController.isActive) {
+            this.animationController.start();
+        }
+        
+        // Launch test firework through firework manager
+        if (this.animationController.fireworkManager) {
+            await this.animationController.fireworkManager.launchTestFirework();
+        } else {
+            console.error('[UIController] FireworkManager not available');
         }
     }
 }
