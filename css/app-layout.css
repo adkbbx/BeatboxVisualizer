@@ -36,14 +36,62 @@
     pointer-events: none !important; /* Prevents the canvas from capturing clicks */
 }
 
-/* Responsive layout adjustments */
-@media (max-width: 992px) {
+/* Enhanced responsive layout adjustments */
+@media (max-width: 1024px) {
     .app-container {
         grid-template-columns: 1fr;
         grid-template-areas:
             "control"
             "uploader"
             "audio";
+        gap: 16px;
+        padding: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: none !important;
+        grid-template-areas: none !important;
+        gap: 12px;
+        padding: 12px;
+        height: calc(100vh - 24px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    .control-panel {
+        flex: 0 0 auto;
+        grid-area: none;
+    }
+    
+    .uploader-tabs-container {
+        flex: 1 1 auto;
+        grid-area: none;
+        min-height: 0;
+        overflow: hidden;
+    }
+    
+    .audio-visualizer {
+        flex: 0 0 auto;
+        grid-area: none;
+        min-height: 120px;
+        max-height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-container {
+        gap: 10px;
+        padding: 8px;
+        height: calc(100vh - 16px);
+    }
+    
+    .audio-visualizer {
+        min-height: 100px;
+        max-height: 120px;
     }
 }
 
@@ -63,12 +111,48 @@
     z-index: 5; /* ADDED */
 }
 
+/* Mobile-specific tab pane height adjustments */
+@media (max-width: 768px) {
+    .uploader-tab-pane {
+        height: 100% !important;
+        max-height: none !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+@media (max-width: 480px) {
+    .uploader-tab-pane {
+        height: 100% !important;
+        max-height: none !important;
+    }
+}
+
 /* Make sure the upload containers fit within tabs */
 .background-upload-container,
 .image-upload-container {
     padding: 15px;
     position: relative; /* ADDED */
     z-index: 5; /* ADDED */
+}
+
+/* Mobile adjustments for upload containers */
+@media (max-width: 768px) {
+    .background-upload-container,
+    .image-upload-container {
+        padding: 12px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+}
+
+@media (max-width: 480px) {
+    .background-upload-container,
+    .image-upload-container {
+        padding: 10px;
+    }
 }
 
 /* Enhance tab active state for better visibility */
@@ -90,4 +174,37 @@
     z-index: 20 !important;
     position: relative !important;
     pointer-events: auto !important;
+}
+
+/* Mobile-specific button improvements */
+@media (max-width: 768px) {
+    .button, button {
+        min-height: 44px; /* Touch-friendly minimum */
+        border-radius: 8px;
+    }
+    
+    #selectFiles,
+    #selectBgFiles {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+/* Improve spacing for very small screens */
+@media (max-width: 360px) {
+    .app-container {
+        padding: 5px;
+        gap: 8px;
+        height: calc(100vh - 10px);
+    }
+    
+    .background-upload-container,
+    .image-upload-container {
+        padding: 8px;
+    }
+    
+    .audio-visualizer {
+        min-height: 80px;
+        max-height: 100px;
+    }
 }

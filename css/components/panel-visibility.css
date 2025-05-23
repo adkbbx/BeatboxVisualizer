@@ -1,5 +1,5 @@
 /* Panel visibility controls */
-/* Update the hidden panels class to exclude the toggle button */
+/* Update the hidden panels class to exclude the toggle button and test button */
 .hidden-panels .control-panel > *,
 .hidden-panels .audio-visualizer,
 .hidden-panels #imageUploader {
@@ -8,19 +8,23 @@
     transition: opacity 0.3s ease;
 }
 
-/* Keep the toggle button visible */
-.hidden-panels .control-panel #togglePanels {
-    opacity: 1;
-    pointer-events: auto;
+/* Keep the toggle button and test button visible */
+.hidden-panels .control-panel #togglePanels,
+.hidden-panels .control-panel #testFirework {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    display: flex !important; /* Ensure it's displayed */
     min-width: 90px; /* Match the min-width from controls.css */
     justify-content: center; /* Ensure consistent alignment */
 }
 
-/* Position the toggle button absolutely when panels are hidden */
+/* Position the buttons when panels are hidden */
 .hidden-panels .control-panel {
     background: none;
     border: none;
     box-shadow: none;
+    display: flex;
+    gap: 8px; /* Space between buttons */
 }
 
 .hidden-panels .control-panel #togglePanels {
@@ -28,6 +32,16 @@
     top: 20px;
     left: 20px;
     background-color: rgba(30, 30, 30, 0.75);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hidden-panels .control-panel #testFirework {
+    position: fixed;
+    top: 20px;
+    left: 125px; /* Position next to the toggle button */
+    background-color: rgba(155, 89, 182, 0.75); /* Keep the purple color */
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);

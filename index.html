@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
     <title>Sound-Responsive Fireworks with Custom Images</title>
     <link rel="stylesheet" href="css/style.css">
@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="css/layout-fix.css">
     <!-- <link rel="stylesheet" href="css/swatch-fix.css"> -->
     <link rel="stylesheet" href="css/colors-tab-fix.css">
+    <link rel="stylesheet" href="css/mobile-responsive.css">
     
 </head>
 <body>
@@ -210,6 +211,11 @@
                     </label>
                     <p class="setting-description">Enable or disable image rotation during explosions.</p>
                 </div>
+                <div class="setting">
+                    <label for="imageGravity">Image Gravity Strength: <span id="imageGravityValue">1.0</span></label>
+                    <input type="range" id="imageGravity" min="0" max="3" step="0.1" value="1.0">
+                    <p class="setting-description">How strongly gravity affects falling images after explosion (0 = no gravity, higher = faster falling).</p>
+                </div>
                 <div class="setting toggle-setting">
                     <label for="glowEffect">Glow Effect:</label>
                     <label class="switch">
@@ -240,13 +246,6 @@
                     <label for="testSoundVolume">Sound Volume: <span id="testSoundVolumeValue">0.3</span></label>
                     <input type="range" id="testSoundVolume" min="0" max="1" step="0.05" value="0.3">
                     <p class="setting-description">Volume for test firework sound effects.</p>
-                </div>
-                <div class="setting">
-                    <button id="soundSetupBtn" class="button" style="margin-top: 10px;">
-                        <span class="icon">🔊</span>
-                        <span class="text">Sound Setup Guide</span>
-                    </button>
-                    <p class="setting-description">Learn how to add custom firework sounds</p>
                 </div>
             </div>
 

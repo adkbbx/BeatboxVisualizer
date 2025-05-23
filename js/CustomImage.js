@@ -10,6 +10,12 @@ export class CustomImage {
         this.image = image;
         this.sizeMultiplier = sizeMultiplier; // Store size multiplier
         
+        // Physics properties for gravity effect
+        this.velocityX = (Math.random() - 0.5) * 0.5; // Small horizontal velocity for natural movement
+        this.velocityY = -1 + Math.random() * 0.5; // Initial upward velocity (negative Y is up)
+        this.baseGravity = 0.02; // Base gravity acceleration
+        this.airResistance = 0.999; // Air resistance factor
+        
         // Set color based on priority: forced color > pre-computed > extracted
         if (forcedColor) {
             this.setForcedColor(forcedColor);
@@ -132,6 +138,18 @@ export class CustomImage {
         const age = now - this.startTime;
         const lifeProgress = Math.min(1, age / this.lifeTime);
         const timeScale = deltaTime / 16; // Normalize to 60fps
+
+        // Apply gravity physics - update position based on velocity
+        this.x += this.velocityX * timeScale;
+        this.y += this.velocityY * timeScale;
+        
+        // Apply gravity to vertical velocity with user-controlled multiplier
+        const gravityMultiplier = window.imageGravityMultiplier || 1.0;
+        this.velocityY += this.baseGravity * gravityMultiplier * timeScale;
+        
+        // Apply air resistance to both velocities
+        this.velocityX *= Math.pow(this.airResistance, timeScale);
+        this.velocityY *= Math.pow(this.airResistance, timeScale);
 
         // Animation phases
         if (lifeProgress < 0.3) {

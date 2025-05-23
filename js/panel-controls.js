@@ -18,8 +18,22 @@ export function initializePanelControls(uiControllerInstance) {
     function togglePanels() {
         panelsVisible = !panelsVisible;
 
-        // Toggle visibility of core panels
-        if (controlPanel) controlPanel.classList.toggle('is-hidden', !panelsVisible);
+        // Toggle the hidden-panels class on the app container
+        if (appContainer) {
+            appContainer.classList.toggle('hidden-panels', !panelsVisible);
+            console.log('Panel visibility changed:', panelsVisible ? 'showing' : 'hiding');
+            console.log('App container classes:', appContainer.className);
+            
+            // Debug: check if test button is visible
+            const testButton = document.getElementById('testFirework');
+            if (testButton) {
+                console.log('Test button visibility - display:', getComputedStyle(testButton).display);
+                console.log('Test button visibility - opacity:', getComputedStyle(testButton).opacity);
+            }
+        }
+
+        // Toggle visibility of other panels (but NOT control panel when using hidden-panels approach)
+        // The control panel visibility is handled by the hidden-panels CSS rules
         if (audioVisualizer) audioVisualizer.classList.toggle('is-hidden', !panelsVisible);
         if (uploaderContainer) uploaderContainer.classList.toggle('is-hidden', !panelsVisible);
 

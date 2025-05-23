@@ -139,6 +139,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Setup image gravity control
+    const imageGravitySlider = document.getElementById('imageGravity');
+    const imageGravityValue = document.getElementById('imageGravityValue');
+    if (imageGravitySlider && imageGravityValue) {
+        // Set default value
+        imageGravitySlider.value = '1.0';
+        imageGravityValue.textContent = '1.0';
+        
+        // Store gravity multiplier globally for CustomImage to access
+        window.imageGravityMultiplier = 1.0;
+        
+        imageGravitySlider.addEventListener('input', () => {
+            const gravityValue = parseFloat(imageGravitySlider.value);
+            imageGravityValue.textContent = gravityValue.toFixed(1);
+            window.imageGravityMultiplier = gravityValue;
+            localStorage.setItem('imageGravityMultiplier', gravityValue);
+        });
+        
+        // Load saved setting
+        const savedGravity = localStorage.getItem('imageGravityMultiplier');
+        if (savedGravity !== null) {
+            const gravity = parseFloat(savedGravity);
+            imageGravitySlider.value = gravity;
+            imageGravityValue.textContent = gravity.toFixed(1);
+            window.imageGravityMultiplier = gravity;
+        }
+    }
+
     // Setup test sound settings
     const testSoundEnabledToggle = document.getElementById('testSoundEnabled');
     const testSoundVolumeSlider = document.getElementById('testSoundVolume');
@@ -186,14 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
             testSoundVolumeSlider.value = savedVolume;
             testSoundVolumeValue.textContent = parseFloat(savedVolume).toFixed(2);
         }
-    }
-
-    // Setup sound guide button
-    const soundSetupBtn = document.getElementById('soundSetupBtn');
-    if (soundSetupBtn) {
-        soundSetupBtn.addEventListener('click', () => {
-            window.open('sound-setup.html', '_blank');
-        });
     }
 
     // Setup listeners for background settings in the settings panel

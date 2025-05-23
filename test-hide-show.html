@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Hide/Show Buttons</title>
+    <style>
+        /* Import the panel visibility styles */
+        .hidden-panels .control-panel > * {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .hidden-panels .control-panel #togglePanels,
+        .hidden-panels .control-panel #testFirework {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            display: flex !important;
+            min-width: 90px;
+            justify-content: center;
+        }
+
+        .hidden-panels .control-panel {
+            background: none;
+            border: none;
+            box-shadow: none;
+            display: flex;
+            gap: 8px;
+        }
+
+        .hidden-panels .control-panel #togglePanels {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(30, 30, 30, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .hidden-panels .control-panel #testFirework {
+            position: fixed;
+            top: 20px;
+            left: 125px;
+            background-color: rgba(155, 89, 182, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Basic styling */
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .control-panel {
+            background-color: rgba(30, 30, 30, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-start;
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: fit-content;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.15);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 90px;
+            justify-content: center;
+        }
+
+        .test-button {
+            background-color: rgba(155, 89, 182, 0.7);
+        }
+
+        #togglePanels {
+            background-color: rgba(149, 165, 166, 0.5);
+        }
+
+        .other-panel {
+            background: rgba(50, 50, 50, 0.8);
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="control-panel">
+            <button id="startMicrophone">🎤 Start</button>
+            <button id="testFirework" class="test-button">🎆 Test</button>
+            <button id="toggleSettings">⚙️ Settings</button>
+            <button id="togglePanels">👁️ Hide</button>
+        </div>
+        
+        <div class="other-panel">
+            <h3>Other Panel Content</h3>
+            <p>This should be hidden when you click Hide</p>
+        </div>
+    </div>
+
+    <script>
+        const toggleButton = document.getElementById('togglePanels');
+        const appContainer = document.querySelector('.app-container');
+        let panelsVisible = true;
+
+        function togglePanels() {
+            panelsVisible = !panelsVisible;
+
+            if (appContainer) {
+                appContainer.classList.toggle('hidden-panels', !panelsVisible);
+                console.log('Panel visibility changed:', panelsVisible ? 'showing' : 'hiding');
+                console.log('App container classes:', appContainer.className);
+                
+                const testButton = document.getElementById('testFirework');
+                if (testButton) {
+                    console.log('Test button display:', getComputedStyle(testButton).display);
+                    console.log('Test button opacity:', getComputedStyle(testButton).opacity);
+                    console.log('Test button position:', getComputedStyle(testButton).position);
+                }
+            }
+
+            toggleButton.innerHTML = panelsVisible ? '👁️ Hide' : '👁️‍🗨️ Show';
+        }
+
+        toggleButton.addEventListener('click', togglePanels);
+        
+        // Add click handler for test button
+        document.getElementById('testFirework').addEventListener('click', () => {
+            alert('Test button clicked!');
+        });
+    </script>
+</body>
+</html> 
