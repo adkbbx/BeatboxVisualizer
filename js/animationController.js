@@ -21,7 +21,6 @@ class AnimationController {
     const defaultAnimSettings = { globalSpeed: 1.0 };
     const currentAnimationSettings = { ...defaultAnimSettings, ...(initialSettings.animation || {}) };
     this.globalSpeed = currentAnimationSettings.globalSpeed;
-    console.log('[AnimationController] Initialized with animation settings:', currentAnimationSettings);
 
     // Initialize managers with their respective initial settings
     this.colorManager = colorManagerInstance;

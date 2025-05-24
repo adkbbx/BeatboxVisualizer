@@ -1,7 +1,7 @@
 // ImageManager.js
 import { CustomImage } from './CustomImage.js';
 
-export class ImageManager {
+class ImageManager {
     constructor() {
         this.images = [];
         this.processedImages = new Map();
@@ -143,4 +143,6 @@ export class ImageManager {
     clear() {
         this.images = [];
     }
-} 
+}
+
+export default ImageManager;

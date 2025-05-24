@@ -1,7 +1,7 @@
 import AudioManager from './audio/AudioManager.js';
 import AnimationController from './animationController.js';
 import UIController from './uiController.js';
-import { initializePanelControls } from './panel-controls.js';
+import initializePanelControls from './panel-controls.js';
 import AnimationSettingsManager from './settings/AnimationSettingsManager.js';
 import ColorManager from './ColorManager.js';
 
@@ -9,7 +9,6 @@ import ColorManager from './ColorManager.js';
  * Main application entry point
  */
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('[main.js] DOMContentLoaded - Starting initialization');
 
     // Create audio manager instance
     const settingsManager = new AnimationSettingsManager();
@@ -21,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Create Color Manager with initial settings
     const colorManager = new ColorManager(initialColorSettings);
-    console.log('[main.js] ColorManager instance created. Theme from initialSettings:', initialColorSettings.theme, 'Instance theme:', colorManager.currentTheme);
     
     // Get other initial settings for AnimationController and its sub-managers
     const initialAnimationSettings = settingsManager.getSettings('animation');
@@ -101,10 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
             animationController.backgroundManager = window.backgroundSystem.backgroundManager;
             // Start its independent loop now that it's initialized
             if (typeof animationController.backgroundManager.startIndependentLoop === 'function') {
-                console.log('[main.js] Starting BackgroundManager independent loop.');
                 animationController.backgroundManager.startIndependentLoop();
             } else {
-                console.error('[main.js] BackgroundManager does not have startIndependentLoop method.');
             }
         }
     });
@@ -302,10 +298,13 @@ function checkBrowserCompatibility() {
  * Load the settings panel CSS
  */
 function loadSettingsPanelStyles() {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'css/settings-tabs.css';
-    document.head.appendChild(link);
+    const cssPath = 'css/settings.css';
+    if (!document.querySelector(`link[href="${cssPath}"]`)) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = cssPath;
+        document.head.appendChild(link);
+    }
 }
 
 /**

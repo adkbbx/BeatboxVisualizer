@@ -15,13 +15,10 @@ class AudioAnalyzer {
         this._noiseFloor = 0.04; // Remains a default, not typically in settings panel
 
         if (initialSettings) {
-            console.log('[AudioAnalyzer] Initializing with settings:', initialSettings);
             if (initialSettings.sensitivity !== undefined) this._sensitivity = initialSettings.sensitivity;
             if (initialSettings.quietThreshold !== undefined) this._quietThreshold = initialSettings.quietThreshold;
             if (initialSettings.loudThreshold !== undefined) this._loudThreshold = initialSettings.loudThreshold;
             if (initialSettings.suddenSoundThreshold !== undefined) this._suddenSoundThreshold = initialSettings.suddenSoundThreshold;
-        } else {
-            console.log('[AudioAnalyzer] Initializing with default settings (no initialSettings provided).');
         }
         
         // State tracking

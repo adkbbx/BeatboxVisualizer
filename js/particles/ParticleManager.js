@@ -33,10 +33,7 @@ class ParticleManager {
     };
 
     if (initialParticleAndEffectSettings) {
-        console.log('[ParticleManager] Initializing with settings:', initialParticleAndEffectSettings);
         this.updateSettings(initialParticleAndEffectSettings); // Use existing updateSettings to apply and map
-    } else {
-        console.log('[ParticleManager] Initializing with default settings only.');
     }
   }
 
@@ -255,7 +252,6 @@ class ParticleManager {
     // This also cleans them up if they were loaded from old saved settings.
     delete this.settings.shimmerEffect; 
     delete this.settings.trailLength;
-    console.log('[ParticleManager] Settings updated to:', this.settings);
   }
 }
 

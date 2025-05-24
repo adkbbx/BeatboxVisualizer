@@ -235,14 +235,12 @@ class SettingsController {
   
   // Update color settings
   updateColorSettings(settings) {
-    console.log('[SettingsController] Updating color settings with:', settings);
     // Save to settings manager
     this.settingsManager.updateSettings('colors', settings);
     
     // Update ColorManager
     if (this.colorManager) {
       if (settings.theme !== undefined) {
-        console.log('[SettingsController] Calling colorManager.setTheme with:', settings.theme);
         this.colorManager.setTheme(settings.theme);
       }
       
@@ -250,7 +248,6 @@ class SettingsController {
         this.colorManager.setIntensity(settings.intensity);
       }
       if (settings.customColors !== undefined) {
-        console.log('[SettingsController] updateColorSettings - Calling colorManager.setCustomColors with:', settings.customColors);
         this.colorManager.setCustomColors(settings.customColors);
       }
     }
@@ -339,8 +336,6 @@ class SettingsController {
         removeBtn.title = 'Remove color';
         removeBtn.setAttribute('aria-label', `Remove ${color} from palette`);
         
-        console.log('[SettingsController] Applying styles to removeBtn. Current styles:', removeBtn.style.cssText);
-
         // Apply direct styles to the button for guaranteed visibility
         removeBtn.style.cssText = `
           position: absolute !important;
@@ -368,7 +363,6 @@ class SettingsController {
           overflow: hidden !important; /* Prevent content from breaking circular shape */
           box-sizing: border-box !important; /* Include border in dimensions */
         `;
-        console.log('[SettingsController] Applied styles to removeBtn. New styles:', removeBtn.style.cssText);
         
         // Add click event to remove color
         removeBtn.addEventListener('click', (e) => {
@@ -390,8 +384,6 @@ class SettingsController {
       });
     }
     
-    // Log that the colors UI has been updated
-    console.log(`Updated ${colorSettings.customColors.length} color swatches in settings panel`);
   }
   
   // Reset settings for the current active tab
@@ -444,7 +436,6 @@ class SettingsController {
         this.colorManager.setTheme(colorSettings.theme);
         this.colorManager.setIntensity(colorSettings.intensity);
         if (colorSettings.customColors && Array.isArray(colorSettings.customColors)) {
-            console.log('[SettingsController] updateUIFromSettings - Calling colorManager.setCustomColors with:', colorSettings.customColors);
             this.colorManager.setCustomColors(colorSettings.customColors);
         }
     }

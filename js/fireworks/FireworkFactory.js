@@ -74,20 +74,6 @@ class FireworkFactory {
         const durationBonus = normalizedDuration * 0.15; // Up to 15% closer to top for long sounds
         const finalTargetY = Math.max(5, targetY - (this.canvasHeight * durationBonus)); // Move closer to top
         
-        console.log('[FireworkFactory] Launch params:', {
-            canvasHeight: this.canvasHeight,
-            launchHeightFactor: this.launchHeightFactor,
-            clampedFactor,
-            heightFromTop,
-            targetY,
-            finalTargetY,
-            duration,
-            normalizedDuration,
-            durationBonus,
-            heightPercentageFromTop: (finalTargetY / this.canvasHeight) * 100,
-            heightPercentageFromBottom: (1 - finalTargetY / this.canvasHeight) * 100
-        });
-        
         // Set X positions
         const centerX = this.canvasWidth / 2;
         const spread = this.canvasWidth * 0.2;
@@ -139,15 +125,12 @@ class FireworkFactory {
      */
     updateSettings(settings) {
         if (settings.launchHeightFactor !== undefined) {
-            console.log('[FireworkFactory] Updating launchHeightFactor from', this.launchHeightFactor, 'to', settings.launchHeightFactor);
             this.launchHeightFactor = settings.launchHeightFactor;
         }
         if (settings.gravity !== undefined) {
-            console.log('[FireworkFactory] Updating gravity from', this.gravity, 'to', settings.gravity);
             this.gravity = settings.gravity;
         }
         if (settings.fireworkSize !== undefined) {
-            console.log('[FireworkFactory] Updating fireworkSize from', this.fireworkSize, 'to', settings.fireworkSize);
             this.fireworkSize = settings.fireworkSize;
         }
     }

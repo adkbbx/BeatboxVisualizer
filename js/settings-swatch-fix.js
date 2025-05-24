@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to fix color swatches in settings panel
     function fixSettingsColorSwatches() {
-        console.log('Fixing settings panel color swatches');
         
         // First, make sure the custom colors container is visible
         const customColorsSetting = document.getElementById('customColorsSetting');
@@ -57,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Fix each color swatch
         const swatches = colorsList.querySelectorAll('.color-swatch');
-        console.log(`Found ${swatches.length} color swatches to fix in settings panel`);
         
         swatches.forEach((swatch, index) => {
             // Get the current color

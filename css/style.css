@@ -11,12 +11,12 @@ body {
     line-height: 1.6;
     color: #e0e0e0;
     background-color: #121212;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    margin: 0;
+    padding: 0;
     animation: fadeIn 0.4s ease-in;
-    overflow-x: hidden;
-    width: 100%;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
 }
 
 header {
@@ -89,6 +89,18 @@ header h1 {
 
 .control-panel #togglePanels {
     order: 4; /* Default order assuming it's last */
+    background-color: #95a5a6 !important;
+    color: #ffffff !important;
+}
+
+.control-panel button#togglePanels {
+    background-color: #95a5a6 !important;
+    color: #ffffff !important;
+}
+
+#togglePanels {
+    background-color: #95a5a6 !important;
+    color: #ffffff !important;
 }
 
 .control-panel #startMicrophone {
@@ -145,12 +157,12 @@ button:disabled {
     background-color: #c0392b;
 }
 
-#testFireworks {
+#testFirework {
     background-color: #9b59b6;
     color: #ffffff;
 }
 
-#testFireworks:hover {
+#testFirework:hover {
     background-color: #8e44ad;
 }
 
@@ -511,4 +523,11 @@ footer {
     button .text {
         font-size: 14px;
     }
+}
+
+.control-panel #togglePanels:hover,
+.control-panel button#togglePanels:hover,
+#togglePanels:hover {
+    background-color: #7f8c8d !important;
+    color: #ffffff !important;
 }

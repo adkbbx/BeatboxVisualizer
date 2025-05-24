@@ -49,10 +49,9 @@ class SoundEffects {
             const launchResponse = await fetch('sounds/launch.mp3');
             if (launchResponse.ok) {
                 const launchData = await launchResponse.arrayBuffer();                this.launchBuffer = await this.audioContext.decodeAudioData(launchData);
-                console.log('[SoundEffects] Loaded custom launch sound');
             }
         } catch (error) {
-            console.log('[SoundEffects] No custom launch sound found, will use synthesized');
+            // No custom launch sound found, will use synthesized
         }
 
         try {
@@ -61,10 +60,9 @@ class SoundEffects {
             if (burstResponse.ok) {
                 const burstData = await burstResponse.arrayBuffer();
                 this.burstBuffer = await this.audioContext.decodeAudioData(burstData);
-                console.log('[SoundEffects] Loaded custom burst sound');
             }
         } catch (error) {
-            console.log('[SoundEffects] No custom burst sound found, will use synthesized');
+            // No custom burst sound found, will use synthesized
         }
 
         this.useCustomSounds = !!(this.launchBuffer || this.burstBuffer);

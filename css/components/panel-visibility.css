@@ -27,21 +27,21 @@
     gap: 8px; /* Space between buttons */
 }
 
-.hidden-panels .control-panel #togglePanels {
+.hidden-panels .control-panel #testFirework {
     position: fixed;
     top: 20px;
-    left: 20px;
-    background-color: rgba(30, 30, 30, 0.75);
+    left: 20px; /* Test button first */
+    background-color: rgba(155, 89, 182, 0.75); /* Keep the purple color */
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.hidden-panels .control-panel #testFirework {
+.hidden-panels .control-panel #togglePanels {
     position: fixed;
     top: 20px;
-    left: 125px; /* Position next to the toggle button */
-    background-color: rgba(155, 89, 182, 0.75); /* Keep the purple color */
+    left: 125px; /* Position next to the test button */
+    background-color: rgba(149, 165, 166, 0.9) !important;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);

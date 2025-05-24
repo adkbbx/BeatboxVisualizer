@@ -1,6 +1,6 @@
 // direct-image-uploader.js
-import { ImageManager } from './ImageManager.js';
-import { ImageProcessor } from './ImageProcessor.js';
+import ImageManager from './ImageManager.js';
+import ImageProcessor from './ImageProcessor.js';
 
 export class DirectImageUploader {
     constructor() {
@@ -143,8 +143,6 @@ export class DirectImageUploader {
         
         // Force a reflow to ensure all styles are applied
         // preview.offsetHeight; // Removed forced reflow, likely unnecessary now
-        
-        // Debug the swatch's position and visibility // Removed console.log for computed style
     }
 
     showError(message) {

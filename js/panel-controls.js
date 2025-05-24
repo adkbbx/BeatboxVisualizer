@@ -1,4 +1,4 @@
-export function initializePanelControls(uiControllerInstance) {
+function initializePanelControls(uiControllerInstance) {
     const toggleButton = document.getElementById('togglePanels');
     const appContainer = document.querySelector('.app-container');
     
@@ -21,15 +21,6 @@ export function initializePanelControls(uiControllerInstance) {
         // Toggle the hidden-panels class on the app container
         if (appContainer) {
             appContainer.classList.toggle('hidden-panels', !panelsVisible);
-            console.log('Panel visibility changed:', panelsVisible ? 'showing' : 'hiding');
-            console.log('App container classes:', appContainer.className);
-            
-            // Debug: check if test button is visible
-            const testButton = document.getElementById('testFirework');
-            if (testButton) {
-                console.log('Test button visibility - display:', getComputedStyle(testButton).display);
-                console.log('Test button visibility - opacity:', getComputedStyle(testButton).opacity);
-            }
         }
 
         // Toggle visibility of other panels (but NOT control panel when using hidden-panels approach)
@@ -104,9 +95,6 @@ export function initializePanelControls(uiControllerInstance) {
             // Launch test firework if uiController is available
             if (uiControllerInstance && typeof uiControllerInstance.launchTestFirework === 'function') {
                 uiControllerInstance.launchTestFirework();
-                console.log('[panel-controls] Space bar pressed - launching test firework');
-            } else {
-                console.warn('[panel-controls] Space bar pressed but uiController not available or missing launchTestFirework method');
             }
         }
     });
@@ -122,3 +110,5 @@ export function initializePanelControls(uiControllerInstance) {
         }
     });
 }
+
+export default initializePanelControls;

@@ -2,7 +2,7 @@
 import BackgroundRemover from './BackgroundRemover.js';
 import ColorExtractor from './ColorExtractor.js';
 
-export class ImageProcessor {
+class ImageProcessor {
     constructor() {
         this.maxSize = 150; // Maximum size for any dimension
         this.backgroundRemover = new BackgroundRemover();
@@ -54,9 +54,6 @@ export class ImageProcessor {
                         // Store the dominant color with the canvas
                         tempCanvas.dominantColor = dominantColor;
                         
-                        // Log the color for debugging
-                        console.log('Extracted color:', dominantColor);
-
                         resolve(tempCanvas);
                     } catch (error) {
                         reject(error);
@@ -88,3 +85,5 @@ export class ImageProcessor {
         return true;
     }
 }
+
+export default ImageProcessor;

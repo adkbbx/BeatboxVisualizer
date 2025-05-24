@@ -75,12 +75,10 @@ class ColorManager {
       this.colorIntensity = initialSettings.intensity !== undefined 
                             ? initialSettings.intensity 
                             : 1.0;
-      console.log('[ColorManager] Initialized with settings:', this.currentTheme, this.customColors, this.colorIntensity);
     } else {
       this.currentTheme = 'Vivid';
       this.customColors = [];
       this.colorIntensity = 1.0;
-      console.log('[ColorManager] Initialized with default settings.');
     }
   }
 
@@ -88,12 +86,8 @@ class ColorManager {
    * Set the current color theme
    */
   setTheme(themeName) {
-    console.log('[ColorManager] setTheme called with:', themeName); // Log 3
     if (this.themes[themeName] || themeName === 'Custom') {
       this.currentTheme = themeName;
-      console.log('[ColorManager] currentTheme is now:', this.currentTheme); // Log 4
-    } else {
-      console.warn('[ColorManager] Attempted to set invalid theme:', themeName); // Log 5
     }
   }
   
@@ -117,14 +111,8 @@ class ColorManager {
    * Remove a custom color from the palette
    */
   removeCustomColor(color) {
-    console.log('[ColorManager] removeCustomColor trying to remove:', color, 'Current customColors:', JSON.parse(JSON.stringify(this.customColors)));
     const initialLength = this.customColors.length;
     this.customColors = this.customColors.filter(c => c !== color);
-    if (this.customColors.length < initialLength) {
-        console.log('[ColorManager] removeCustomColor - REMOVED. New customColors:', JSON.parse(JSON.stringify(this.customColors)));
-    } else {
-        console.log('[ColorManager] removeCustomColor - SKIPPED (not found). customColors:', JSON.parse(JSON.stringify(this.customColors)));
-    }
   }
 
   /**
@@ -134,11 +122,6 @@ class ColorManager {
   setCustomColors(colorsArray) {
     if (Array.isArray(colorsArray)) {
         this.customColors = [...colorsArray]; // Set a copy
-        console.log('[ColorManager] setCustomColors - Successfully set to:', JSON.parse(JSON.stringify(this.customColors)));
-    } else {
-        console.warn('[ColorManager] setCustomColors - input was not an array:', colorsArray);
-        // Optionally, clear if input is invalid and a reset is desired
-        // this.customColors = []; 
     }
   }
 
@@ -147,27 +130,21 @@ class ColorManager {
    */
   getRandomColor() {
     let palette;
-    // Log 6: Log currentTheme at the start of getRandomColor
-    console.log('[ColorManager] getRandomColor - currentTheme:', this.currentTheme, 'Custom colors length:', this.customColors.length);
 
     if (this.currentTheme === 'Custom') {
         if (this.customColors.length > 0) {
             palette = this.customColors;
-            console.log('[ColorManager] getRandomColor - Using Custom palette:', palette); // Log 7
         } else {
             // "Custom" theme is active, but no custom colors are defined.
             // Fallback to "Vivid" as a default behavior in this specific case.
             palette = this.themes.Vivid;
-            console.warn('[ColorManager] getRandomColor - Custom theme selected but no custom colors; falling back to Vivid palette.'); // Log new
         }
     } else if (this.themes[this.currentTheme]) {
         // A predefined theme (like Vivid, Pastel, Neon) is active
         palette = this.themes[this.currentTheme];
-        console.log('[ColorManager] getRandomColor - Using Theme palette:', this.currentTheme, palette); // Log 8
     } else {
         // Current theme is not 'Custom' and not a recognized predefined theme name (should not happen if UI is correct)
         palette = this.themes.Vivid; // Fallback for safety
-        console.warn('[ColorManager] getRandomColor - Unrecognized theme name, falling back to Vivid palette.'); // Log new
     }
 
     if (!palette || palette.length === 0) { // Should not happen if Vivid always has colors

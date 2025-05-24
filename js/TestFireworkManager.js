@@ -17,7 +17,6 @@ class TestFireworkManager {
     async launchTestFirework() {
         // Prevent launching if already at max capacity
         if (this.fireworkManager.fireworks.length >= this.fireworkManager.settings.maxFireworks) {
-            console.log('[TestFireworkManager] Max fireworks reached, cannot launch test firework');
             return;
         }
 
@@ -55,7 +54,6 @@ class TestFireworkManager {
             await this.soundEffects.playLaunchSound();
         }
         
-        console.log('[TestFireworkManager] Launched test firework with ID:', firework.id);
     }
 
     /**
