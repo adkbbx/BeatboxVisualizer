@@ -10,6 +10,12 @@ import ColorManager from './ColorManager.js';
  */
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Immediately hide custom colors section to prevent flash of visible content
+    const customColorsSection = document.getElementById('customColorsSetting');
+    if (customColorsSection) {
+        customColorsSection.classList.remove('custom-colors-visible');
+    }
+
     // Create audio manager instance
     const settingsManager = new AnimationSettingsManager();
     const initialAudioSettings = settingsManager.getSettings('audio');

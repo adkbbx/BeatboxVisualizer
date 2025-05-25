@@ -11,6 +11,22 @@ class FireworkFactory {
         this.launchHeightFactor = fireworkSettings?.launchHeightFactor || 0.15; // How high fireworks go
         this.gravity = fireworkSettings?.gravity || 0.02; // Store gravity for physics calculations
         this.fireworkSize = fireworkSettings?.fireworkSize || 1.0; // Store firework size setting
+        this.randomSize = fireworkSettings?.randomSize || false; // Whether to use random sizes
+        this.randomSizeMin = fireworkSettings?.randomSizeMin || 0.5; // Minimum random size
+        this.randomSizeMax = fireworkSettings?.randomSizeMax || 2.0; // Maximum random size
+    }
+    
+    
+    /**
+     * Calculate size for a firework (random or fixed)
+     * @returns {number} - The size to use for this firework
+     */
+    calculateFireworkSize() {
+        if (this.randomSize) {
+            // Generate random size between min and max
+            return this.randomSizeMin + Math.random() * (this.randomSizeMax - this.randomSizeMin);
+        }
+        return this.fireworkSize;
     }
     
     /**
@@ -42,8 +58,11 @@ class FireworkFactory {
         // Get color if not provided
         const fireworkColor = color || this.colorManager.getRandomColor();
         
+        // Calculate size (random or fixed)
+        const fireworkSize = this.calculateFireworkSize();
+        
         // Create and return the firework
-        return new Firework(startX, startY, targetX, targetY, fireworkColor, velocityObj, this.fireworkSize);
+        return new Firework(startX, startY, targetX, targetY, fireworkColor, velocityObj, fireworkSize);
     }
     
     /**
@@ -132,6 +151,15 @@ class FireworkFactory {
         }
         if (settings.fireworkSize !== undefined) {
             this.fireworkSize = settings.fireworkSize;
+        }
+        if (settings.randomSize !== undefined) {
+            this.randomSize = settings.randomSize;
+        }
+        if (settings.randomSizeMin !== undefined) {
+            this.randomSizeMin = settings.randomSizeMin;
+        }
+        if (settings.randomSizeMax !== undefined) {
+            this.randomSizeMax = settings.randomSizeMax;
         }
     }
     

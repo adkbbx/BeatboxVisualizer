@@ -42,6 +42,18 @@ class ColorManager {
         "#AAFF00", // Bright Lime
         "#AA00FF"  // Bright Purple
       ],
+      Earthy: [
+        "#8B4513", // Saddle Brown
+        "#D2691E", // Chocolate
+        "#CD853F", // Peru
+        "#DAA520", // Goldenrod
+        "#B8860B", // Dark Goldenrod
+        "#228B22", // Forest Green
+        "#556B2F", // Dark Olive Green
+        "#8FBC8F", // Dark Sea Green
+        "#A0522D", // Sienna
+        "#DEB887"  // Burlywood
+      ],
       Monochrome: [
         "#FFFFFF", // White
         "#EEEEEE", // Light Gray 1

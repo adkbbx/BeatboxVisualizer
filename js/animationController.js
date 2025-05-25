@@ -235,7 +235,7 @@ class AnimationController {
       }
     }
   }
-
+  
   /**
    * Launch a new firework
    */

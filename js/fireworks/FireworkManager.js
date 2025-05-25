@@ -24,6 +24,9 @@ class FireworkManager {
             launchHeightFactor: 0.05,
             smokeTrailIntensity: 0.3,
             fireworkSize: 1.0,
+            randomSize: false,
+            randomSizeMin: 0.5,
+            randomSizeMax: 2.0,
             sequentialExplosionDelay: 500,
             loudSoundTriggerCooldown: 250
         };
@@ -58,6 +61,9 @@ class FireworkManager {
         if (newSettings.maxFireworks !== undefined) this.settings.maxFireworks = newSettings.maxFireworks;
         if (newSettings.launchHeightFactor !== undefined) this.settings.launchHeightFactor = newSettings.launchHeightFactor;
         if (newSettings.fireworkSize !== undefined) this.settings.fireworkSize = newSettings.fireworkSize;
+        if (newSettings.randomSize !== undefined) this.settings.randomSize = newSettings.randomSize;
+        if (newSettings.randomSizeMin !== undefined) this.settings.randomSizeMin = newSettings.randomSizeMin;
+        if (newSettings.randomSizeMax !== undefined) this.settings.randomSizeMax = newSettings.randomSizeMax;
         if (newSettings.smokeTrailIntensity !== undefined) {
             this.settings.smokeTrailIntensity = newSettings.smokeTrailIntensity;
             // Update smoke trail effect intensity

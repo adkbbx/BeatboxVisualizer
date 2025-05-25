@@ -22,6 +22,12 @@ class SettingsController {
     
     // Initialize slider values from stored settings
     this.updateUIFromSettings();
+    
+    // Ensure custom colors visibility is set correctly after DOM is ready
+    setTimeout(() => {
+      const colorSettings = this.settingsManager.getSettings('colors');
+      this.updateCustomColorsSectionVisibility(colorSettings.theme);
+    }, 100);
   }
   
   // Initialize all event listeners for settings controls
@@ -62,6 +68,27 @@ class SettingsController {
     
     this.setupRangeControl('fireworkSize', 'fireworkSizeValue', value => {
       this.updateFireworkSettings({ fireworkSize: value });
+    });
+    
+    // Random size toggle
+    this.setupToggleControl('randomFireworkSize', isChecked => {
+      this.updateFireworkSettings({ randomSize: isChecked });
+      // Show/hide random size range controls
+      const rangeControls = document.getElementById('randomSizeRange');
+      const maxRangeControls = document.getElementById('randomSizeMaxSetting');
+      if (rangeControls && maxRangeControls) {
+        rangeControls.style.display = isChecked ? 'block' : 'none';
+        maxRangeControls.style.display = isChecked ? 'block' : 'none';
+      }
+    });
+    
+    // Random size range controls
+    this.setupRangeControl('randomSizeMin', 'randomSizeMinValue', value => {
+      this.updateFireworkSettings({ randomSizeMin: value });
+    });
+    
+    this.setupRangeControl('randomSizeMax', 'randomSizeMaxValue', value => {
+      this.updateFireworkSettings({ randomSizeMax: value });
     });
     
     // Particle settings
@@ -108,10 +135,7 @@ class SettingsController {
         this.updateColorSettings({ theme });
         
         // Toggle visibility of custom colors section
-        const customColorsSection = document.getElementById('customColorsSetting');
-        if (customColorsSection) {
-          customColorsSection.style.display = theme === 'Custom' ? 'block' : 'none';
-        }
+        this.updateCustomColorsSectionVisibility(theme);
       });
     }
     
@@ -446,6 +470,8 @@ class SettingsController {
     this.updateRangeControl('launchHeight', 'launchHeightValue', fireworkSettings.launchHeightFactor);
     this.updateRangeControl('smokeTrailIntensity', 'smokeTrailValue', fireworkSettings.smokeTrailIntensity);
     this.updateRangeControl('fireworkSize', 'fireworkSizeValue', fireworkSettings.fireworkSize);
+    this.updateRangeControl('randomSizeMin', 'randomSizeMinValue', fireworkSettings.randomSizeMin);
+    this.updateRangeControl('randomSizeMax', 'randomSizeMaxValue', fireworkSettings.randomSizeMax);
     
     this.updateRangeControl('particleCount', 'particleCountValue', particleSettings.count);
     this.updateRangeControl('particleLifespan', 'particleLifespanValue', particleSettings.lifespan * 60);
@@ -460,6 +486,15 @@ class SettingsController {
     // Update toggle controls
     this.updateToggleControl('useMultiColor', particleSettings.useMultiColor);
     this.updateToggleControl('glowEffect', effectSettings.glowEnabled);
+    this.updateToggleControl('randomFireworkSize', fireworkSettings.randomSize);
+    
+    // Show/hide random size range controls based on toggle state
+    const rangeControls = document.getElementById('randomSizeRange');
+    const maxRangeControls = document.getElementById('randomSizeMaxSetting');
+    if (rangeControls && maxRangeControls) {
+      rangeControls.style.display = fireworkSettings.randomSize ? 'block' : 'none';
+      maxRangeControls.style.display = fireworkSettings.randomSize ? 'block' : 'none';
+    }
     
     // Update select controls
     this.updateSelectControl('colorTheme', colorSettings.theme);
@@ -467,10 +502,22 @@ class SettingsController {
     // Update custom colors UI
     this.updateCustomColorsUI();
     
-    // Show/hide custom colors section based on theme
+    // Ensure custom colors section visibility is set correctly
+    this.updateCustomColorsSectionVisibility(colorSettings.theme);
+  }
+  
+  /**
+   * Update the visibility of the custom colors section based on theme
+   * @param {string} theme - The current color theme
+   */
+  updateCustomColorsSectionVisibility(theme) {
     const customColorsSection = document.getElementById('customColorsSetting');
     if (customColorsSection) {
-      customColorsSection.style.display = colorSettings.theme === 'Custom' ? 'block' : 'none';
+      if (theme === 'Custom') {
+        customColorsSection.classList.add('custom-colors-visible');
+      } else {
+        customColorsSection.classList.remove('custom-colors-visible');
+      }
     }
   }
   

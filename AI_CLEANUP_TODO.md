@@ -161,7 +161,7 @@ When working on these tasks:
 **PHASE 2 PROGRESS**: ⬜ 2/3 tasks complete  
 **PHASE 3 PROGRESS**: ⬜ 0/3 tasks complete  
 
-**OVERALL PROGRESS**: ✅ 6/10 major tasks complete
+**OVERALL PROGRESS**: ✅ 6/10 major tasks complete + ✅ Random Firework Size Feature Added
 
 ---
 
@@ -174,6 +174,27 @@ When working on these tasks:
 - [ ] Page load performance improved
 - [ ] Code is easier to maintain and understand
 - [ ] File organization follows logical patterns instead of AI iteration artifacts
+
+## ✨ NEW FEATURES ADDED
+
+- ✅ **Random Firework Size Feature** (May 25, 2025)
+  - Added toggle control to enable/disable random firework sizes
+  - Added min/max range controls for random size variation
+  - Integrated with existing settings management system
+  - Each firework can now have a unique random size when enabled
+  - Settings persist in localStorage like other preferences
+
+## 🐛 BUGS FIXED
+
+- ✅ **Custom Colors Visibility Bug** (May 25, 2025)
+  - Fixed custom colors section appearing on page refresh regardless of theme
+  - Implemented robust 3-layer solution: CSS, early DOM, and class-based JS control
+  - Custom colors now only show when "Custom" theme is selected
+
+- ✅ **Missing Earthy Color Palette** (May 25, 2025)
+  - Added complete Earthy theme with 10 natural colors (browns, greens, golds)
+  - Fixed theme selection where Earthy was listed but not implemented
+  - Colors include: Saddle Brown, Chocolate, Peru, Goldenrod, Forest Green, etc.
 
 ---
 

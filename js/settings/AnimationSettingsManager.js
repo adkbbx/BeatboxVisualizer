@@ -11,7 +11,10 @@ class AnimationSettingsManager {
         maxFireworks: 20,
         launchHeightFactor: 0.15,
         smokeTrailIntensity: 0.3,
-        fireworkSize: 1.0
+        fireworkSize: 1.0,
+        randomSize: false,
+        randomSizeMin: 0.5,
+        randomSizeMax: 2.0
       },
       particles: {
         count: 120,

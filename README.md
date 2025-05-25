@@ -33,6 +33,9 @@ A web application that captures audio input through a device's microphone, analy
    - Adjust microphone sensitivity
    - Set quiet and loud thresholds
    - Adjust sudden sound detection
+   - Control firework size or enable random sizing
+   - Customize particle effects and colors
+   - Configure background image rotation
 
 ## Technical Implementation
 
