@@ -271,8 +271,8 @@ button:disabled {
     box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
 }
 
-/* Animation Canvas */
-#animationCanvas {
+/* Animation Canvas - both layers */
+#animationCanvas, #backgroundCanvas {
     width: 100%;
     height: 500px;
     background-color: #000000;
@@ -460,7 +460,7 @@ footer {
         flex: 1;
     }
     
-    #animationCanvas {
+    #animationCanvas, #backgroundCanvas {
         flex: 2;
         height: 500px;
     }
@@ -493,7 +493,7 @@ footer {
         min-width: 45%;
     }
     
-    #animationCanvas {
+    #animationCanvas, #backgroundCanvas {
         height: 350px;
     }
 }

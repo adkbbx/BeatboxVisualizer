@@ -24,7 +24,12 @@ class AnimationSettingsManager {
         useMultiColor: true
       },
       effects: {
+        backgroundRemovalEnabled: true,
+        imageRotation: false,
+        imageGravity: 1.0,
         glowEnabled: true,
+        testSoundEnabled: true,
+        testSoundVolume: 0.3,
         shimmerEnabled: true,
         fadeResistance: 0.92,
         trailEffect: 0.8

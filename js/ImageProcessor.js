@@ -44,9 +44,33 @@ class ImageProcessor {
                         // Draw and process the image
                         tempCtx.drawImage(img, 0, 0, width, height);
                         
-                        // Remove background
-                        const imageData = tempCtx.getImageData(0, 0, width, height);
-                        this.backgroundRemover.removeBackground(imageData, tempCtx);
+                        // Check if background removal is enabled
+                        let backgroundRemovalEnabled = true; // default to true
+                        
+                        // Try to get from DOM element first
+                        const backgroundRemovalToggle = document.getElementById('backgroundRemovalEnabled');
+                        if (backgroundRemovalToggle) {
+                            backgroundRemovalEnabled = backgroundRemovalToggle.checked;
+                        } else {
+                            // Fallback to checking localStorage settings
+                            try {
+                                const savedSettings = localStorage.getItem('vibecoding-animation-settings');
+                                if (savedSettings) {
+                                    const parsed = JSON.parse(savedSettings);
+                                    if (parsed.effects && parsed.effects.backgroundRemovalEnabled !== undefined) {
+                                        backgroundRemovalEnabled = parsed.effects.backgroundRemovalEnabled;
+                                    }
+                                }
+                            } catch (error) {
+                                // Keep default value if parsing fails
+                            }
+                        }
+                        
+                        // Remove background only if enabled
+                        if (backgroundRemovalEnabled) {
+                            const imageData = tempCtx.getImageData(0, 0, width, height);
+                            this.backgroundRemover.removeBackground(imageData, tempCtx);
+                        }
                         
                         // Extract the dominant color
                         const dominantColor = this.colorExtractor.extractDominantColor(tempCanvas);

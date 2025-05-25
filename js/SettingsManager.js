@@ -10,7 +10,12 @@ class SettingsManager {
             sensitivity: 1.5,
             quietThreshold: 0.06,
             loudThreshold: 0.4,
-            suddenSoundThreshold: 0.15
+            suddenSoundThreshold: 0.15,
+            backgroundRemovalEnabled: true,
+            imageRotation: false,
+            glowEffect: false,
+            testSoundEnabled: true,
+            randomFireworkSize: false
         };
         
         // Try to load settings from localStorage
@@ -31,9 +36,33 @@ class SettingsManager {
                 if (this.audioManager && this.audioManager.audioAnalyzer) {
                     this.audioManager.updateSettings(this.settingsCache);
                 }
+                
+                // Apply UI settings
+                this.applyUISettings();
             }
         } catch (error) {
         }
+    }
+    
+    /**
+     * Apply UI settings to form elements
+     */
+    applyUISettings() {
+        // Apply toggle settings
+        const toggleSettings = [
+            'backgroundRemovalEnabled',
+            'imageRotation',
+            'glowEffect', 
+            'testSoundEnabled',
+            'randomFireworkSize'
+        ];
+        
+        toggleSettings.forEach(settingId => {
+            const element = document.getElementById(settingId);
+            if (element && this.settingsCache[settingId] !== undefined) {
+                element.checked = this.settingsCache[settingId];
+            }
+        });
     }
     
     /**
@@ -43,6 +72,22 @@ class SettingsManager {
         try {
             // Get current settings
             const currentSettings = this.getCurrentSettings();
+            
+            // Also include UI toggle settings
+            const toggleSettings = [
+                'backgroundRemovalEnabled',
+                'imageRotation',
+                'glowEffect',
+                'testSoundEnabled', 
+                'randomFireworkSize'
+            ];
+            
+            toggleSettings.forEach(settingId => {
+                const element = document.getElementById(settingId);
+                if (element) {
+                    currentSettings[settingId] = element.checked;
+                }
+            });
             
             // Save to localStorage
             localStorage.setItem('vibecoding-settings', JSON.stringify(currentSettings));
@@ -90,6 +135,33 @@ class SettingsManager {
                 // Add listener to update settings when value changes
                 slider.addEventListener('input', () => {
                     this.updateAudioSettings();
+                });
+            }
+        });
+        
+        // Connect toggle settings
+        this.connectToggleSettings();
+    }
+    
+    /**
+     * Connect toggle setting event listeners
+     */
+    connectToggleSettings() {
+        const toggleSettings = [
+            'backgroundRemovalEnabled',
+            'imageRotation',
+            'glowEffect',
+            'testSoundEnabled',
+            'randomFireworkSize'
+        ];
+        
+        toggleSettings.forEach(settingId => {
+            const toggle = document.getElementById(settingId);
+            if (toggle) {
+                // Add listener to save settings when changed
+                toggle.addEventListener('change', () => {
+                    this.saveSettingsToStorage();
+                    this.showSettingsConfirmation();
                 });
             }
         });

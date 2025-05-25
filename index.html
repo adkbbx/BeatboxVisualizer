@@ -16,9 +16,11 @@
     
 </head>
 <body>
-    <canvas id="animationCanvas"></canvas>
+    <!-- FINAL FIX: Animation canvas must be transparent -->
+    <canvas id="backgroundCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></canvas>
+    <canvas id="animationCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; background: transparent;"></canvas>
     
-    <div class="app-container">
+    <div class="app-container" style="z-index: 10; background: transparent !important;">
         <div class="control-panel">
             <button id="startMicrophone" class="mic-button">
                 <span class="icon">🎤</span>
@@ -93,159 +95,41 @@
     
     <!-- Settings panel with tabs -->
     <div id="settingsPanel" class="settings-panel" style="display: none;">
-        <h2>Sound & Animation Settings</h2>
+        <h2>Fireworks Settings</h2>
         
         <!-- Tab Navigation -->
         <div class="tab-navigation" role="tablist">
-            <button class="tab-button" data-tab="audio" role="tab">Audio</button>
-            <button class="tab-button" data-tab="fireworks" role="tab">Fireworks</button>
-            <button class="tab-button" data-tab="particles" role="tab">Particles</button>
-            <button class="tab-button" data-tab="effects" role="tab">Effects</button>
-            <button class="tab-button" data-tab="colors" role="tab">Colors</button>
-            <button class="tab-button" data-tab="backgroundCtrl" role="tab">Background</button>
+            <button class="tab-button" data-tab="audio" role="tab">🎤 Audio</button>
+            <button class="tab-button" data-tab="fireworks" role="tab">🎆 Fireworks</button>
+            <button class="tab-button" data-tab="effects" role="tab">✨ Effects</button>
+            <button class="tab-button" data-tab="images" role="tab">🖼️ Images</button>
+            <button class="tab-button" data-tab="colors" role="tab">🎨 Colors</button>
         </div>
         
         <!-- Tab Content -->
         <div class="tab-content">
-            <!-- Audio Tab Pane -->
+            <!-- Audio & Sound Tab Pane -->
             <div class="tab-pane" id="audio-tab" data-tab-content="audio">
-                <h4>Audio Settings</h4>
+                <h4>🎤 Audio & Sound Settings</h4>
                 <div class="setting">
                     <label for="sensitivitySlider">Microphone Sensitivity: <span id="sensitivityValue">2.0</span></label>
                     <input type="range" id="sensitivitySlider" min="0.5" max="4" step="0.1" value="2.0">
-                    <p class="setting-description">Higher values make the microphone more sensitive to sound.</p>
+                    <p class="setting-description">How sensitive the microphone is to your voice and sounds.</p>
                 </div>
                 <div class="setting">
-                    <label for="thresholdLow">Quiet Threshold: <span id="thresholdLowValue">0.08</span></label>
+                    <label for="thresholdLow">Launch Sensitivity: <span id="thresholdLowValue">0.08</span></label>
                     <input type="range" id="thresholdLow" min="0.02" max="0.2" step="0.01" value="0.08">
-                    <p class="setting-description">Minimum sound level to launch fireworks (sustained sounds).</p>
+                    <p class="setting-description">How quiet your voice can be to still launch fireworks.</p>
                 </div>
                 <div class="setting">
-                    <label for="thresholdHigh">Loud Threshold: <span id="thresholdHighValue">0.4</span></label>
+                    <label for="thresholdHigh">Burst Sensitivity: <span id="thresholdHighValue">0.4</span></label>
                     <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.05" value="0.4">
-                    <p class="setting-description">Sound level to explode all fireworks (loud bursts).</p>
+                    <p class="setting-description">How loud you need to be to explode all fireworks at once.</p>
                 </div>
                 <div class="setting">
-                    <label for="suddenThreshold">Sudden Sound Threshold: <span id="suddenThresholdValue">0.12</span></label>
+                    <label for="suddenThreshold">Quick Response: <span id="suddenThresholdValue">0.12</span></label>
                     <input type="range" id="suddenThreshold" min="0.05" max="0.3" step="0.01" value="0.12">
-                    <p class="setting-description">Minimum increase in sound to detect a 'sudden' sound for effects.</p>
-                </div>
-            </div>
-
-            <!-- Fireworks Tab Pane -->
-            <div class="tab-pane" id="fireworks-tab" data-tab-content="fireworks">
-                <h4>Fireworks Settings</h4>
-                <div class="setting">
-                    <label for="fireworkGravity">Gravity: <span id="gravityValue">0.02</span></label>
-                    <input type="range" id="fireworkGravity" min="0.01" max="0.2" step="0.005" value="0.02">
-                    <p class="setting-description">Controls how quickly fireworks fall.</p>
-                </div>
-                <div class="setting">
-                    <label for="maxFireworks">Max Fireworks: <span id="maxFireworksValue">15</span></label>
-                    <input type="range" id="maxFireworks" min="1" max="50" step="1" value="15">
-                    <p class="setting-description">Maximum number of fireworks on screen simultaneously.</p>
-                </div>
-                <div class="setting">
-                    <label for="launchHeight">Launch Height Factor: <span id="launchHeightValue">10</span></label>
-                    <input type="range" id="launchHeight" min="10" max="100" step="10" value="10">
-                    <p class="setting-description">Multiplier for how high fireworks are launched.</p>
-                </div>
-                <div class="setting">
-                    <label for="smokeTrailIntensity">Smoke Trail Intensity: <span id="smokeTrailValue">0.3</span></label>
-                    <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.3">
-                    <p class="setting-description">Opacity of the smoke trail behind fireworks.</p>
-                </div>
-                <div class="setting">
-                    <label for="fireworkSize">Firework Size: <span id="fireworkSizeValue">1.0</span></label>
-                    <input type="range" id="fireworkSize" min="0.5" max="5.0" step="0.1" value="1.0">
-                    <p class="setting-description">Controls the size of fireworks and uploaded images during explosions.</p>
-                </div>
-                <div class="setting toggle-setting">
-                    <label for="randomFireworkSize">Random Firework Sizes:</label>
-                    <label class="switch">
-                        <input type="checkbox" id="randomFireworkSize">
-                        <span class="slider round"></span>
-                    </label>
-                    <p class="setting-description">When enabled, each firework will have a random size within the specified range.</p>
-                </div>
-                <div class="setting" id="randomSizeRange" style="display: none;">
-                    <label for="randomSizeMin">Random Size Min: <span id="randomSizeMinValue">0.5</span></label>
-                    <input type="range" id="randomSizeMin" min="0.5" max="2.0" step="0.1" value="0.5">
-                    <p class="setting-description">Minimum size for random fireworks.</p>
-                </div>
-                <div class="setting" id="randomSizeMaxSetting" style="display: none;">
-                    <label for="randomSizeMax">Random Size Max: <span id="randomSizeMaxValue">2.0</span></label>
-                    <input type="range" id="randomSizeMax" min="2.0" max="5.0" step="0.1" value="2.0">
-                    <p class="setting-description">Maximum size for random fireworks.</p>
-                </div>
-            </div>
-
-            <!-- Particles Tab Pane -->
-            <div class="tab-pane" id="particles-tab" data-tab-content="particles">
-                <h4>Particle Settings</h4>
-                <div class="setting">
-                    <label for="particleCount">Particle Count: <span id="particleCountValue">100</span></label>
-                    <input type="range" id="particleCount" min="10" max="500" step="10" value="100">
-                    <p class="setting-description">Number of particles per firework explosion.</p>
-                </div>
-                <div class="setting">
-                    <label for="particleLifespan">Particle Lifespan (frames): <span id="particleLifespanValue">60</span></label>
-                    <input type="range" id="particleLifespan" min="20" max="200" step="5" value="60">
-                    <p class="setting-description">How long particles last before fading.</p>
-                </div>
-                <div class="setting">
-                    <label for="particleMinSize">Min Particle Size: <span id="particleMinSizeValue">1</span></label>
-                    <input type="range" id="particleMinSize" min="0.5" max="5" step="0.1" value="1">
-                    <p class="setting-description">Minimum size of individual particles.</p>
-                </div>
-                <div class="setting">
-                    <label for="particleMaxSize">Max Particle Size: <span id="particleMaxSizeValue">3</span></label>
-                    <input type="range" id="particleMaxSize" min="1" max="10" step="0.1" value="3">
-                    <p class="setting-description">Maximum size of individual particles.</p>
-                </div>
-                <div class="setting toggle-setting">
-                    <label for="useMultiColor">Use Multicolor Particles:</label>
-                    <label class="switch">
-                         <input type="checkbox" id="useMultiColor">
-                         <span class="slider round"></span>
-                    </label>
-                    <p class="setting-description">Particles use a variety of colors if enabled.</p>
-                </div>
-            </div>
-
-            <!-- Effects Tab Pane -->
-            <div class="tab-pane" id="effects-tab" data-tab-content="effects">
-                <h4>Visual Effects Settings</h4>
-                <div class="setting toggle-setting">
-                    <label for="imageRotation">Image Rotation:</label>
-                    <label class="switch">
-                        <input type="checkbox" id="imageRotation">
-                        <span class="slider round"></span>
-                    </label>
-                    <p class="setting-description">Enable or disable image rotation during explosions.</p>
-                </div>
-                <div class="setting">
-                    <label for="imageGravity">Image Gravity Strength: <span id="imageGravityValue">1.0</span></label>
-                    <input type="range" id="imageGravity" min="0" max="3" step="0.1" value="1.0">
-                    <p class="setting-description">How strongly gravity affects falling images after explosion (0 = no gravity, higher = faster falling).</p>
-                </div>
-                <div class="setting toggle-setting">
-                    <label for="glowEffect">Glow Effect:</label>
-                    <label class="switch">
-                        <input type="checkbox" id="glowEffect">
-                        <span class="slider round"></span>
-                    </label>
-                    <p class="setting-description">Adds a glow to fireworks and particles.</p>
-                </div>
-                <div class="setting">
-                    <label for="fadeResistance">Fade Resistance: <span id="fadeResistanceValue">0.95</span></label>
-                    <input type="range" id="fadeResistance" min="0.8" max="0.99" step="0.01" value="0.95">
-                    <p class="setting-description">How slowly particles fade (higher is slower).</p>
-                </div>
-                <div class="setting">
-                    <label for="globalSpeed">Global Animation Speed: <span id="globalSpeedValue">1</span></label>
-                    <input type="range" id="globalSpeed" min="0.1" max="2" step="0.1" value="1">
-                    <p class="setting-description">Overall speed of all animations.</p>
+                    <p class="setting-description">How quickly the app responds to sudden sounds.</p>
                 </div>
                 <div class="setting toggle-setting">
                     <label for="testSoundEnabled">Test Firework Sounds:</label>
@@ -253,29 +137,167 @@
                         <input type="checkbox" id="testSoundEnabled" checked>
                         <span class="slider round"></span>
                     </label>
-                    <p class="setting-description">Enable launch and burst sounds for test fireworks.</p>
+                    <p class="setting-description">Play realistic launch and explosion sounds when testing fireworks.</p>
                 </div>
                 <div class="setting">
                     <label for="testSoundVolume">Sound Volume: <span id="testSoundVolumeValue">0.3</span></label>
                     <input type="range" id="testSoundVolume" min="0" max="1" step="0.05" value="0.3">
-                    <p class="setting-description">Volume for test firework sound effects.</p>
+                    <p class="setting-description">Volume level for firework sound effects.</p>
                 </div>
             </div>
 
-            <!-- Colors Tab Pane -->
+            <!-- Fireworks Tab Pane -->
+            <div class="tab-pane" id="fireworks-tab" data-tab-content="fireworks">
+                <h4>🎆 Fireworks Settings</h4>
+                <div class="setting">
+                    <label for="fireworkSize">Firework Size: <span id="fireworkSizeValue">1.0</span></label>
+                    <input type="range" id="fireworkSize" min="0.5" max="5.0" step="0.1" value="1.0">
+                    <p class="setting-description">Controls how big fireworks and uploaded images appear during explosions.</p>
+                </div>
+                <div class="setting toggle-setting">
+                    <label for="randomFireworkSize">Random Firework Sizes:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="randomFireworkSize">
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Each firework will have a different random size for more variety.</p>
+                </div>
+                <div class="setting" id="randomSizeRange" style="display: none;">
+                    <label for="randomSizeMin">Smallest Size: <span id="randomSizeMinValue">0.5</span></label>
+                    <input type="range" id="randomSizeMin" min="0.5" max="2.0" step="0.1" value="0.5">
+                    <p class="setting-description">Minimum size for random fireworks.</p>
+                </div>
+                <div class="setting" id="randomSizeMaxSetting" style="display: none;">
+                    <label for="randomSizeMax">Largest Size: <span id="randomSizeMaxValue">2.0</span></label>
+                    <input type="range" id="randomSizeMax" min="2.0" max="5.0" step="0.1" value="2.0">
+                    <p class="setting-description">Maximum size for random fireworks.</p>
+                </div>
+                <div class="setting">
+                    <label for="launchHeight">Launch Power: <span id="launchHeightValue">10</span></label>
+                    <input type="range" id="launchHeight" min="10" max="100" step="10" value="10">
+                    <p class="setting-description">How high and fast fireworks are launched into the sky.</p>
+                </div>
+                <div class="setting">
+                    <label for="maxFireworks">Max Fireworks on Screen: <span id="maxFireworksValue">15</span></label>
+                    <input type="range" id="maxFireworks" min="1" max="50" step="1" value="15">
+                    <p class="setting-description">Maximum number of fireworks that can be active at the same time.</p>
+                </div>
+                <div class="setting">
+                    <label for="fireworkGravity">Gravity Strength: <span id="gravityValue">0.02</span></label>
+                    <input type="range" id="fireworkGravity" min="0.01" max="0.2" step="0.005" value="0.02">
+                    <p class="setting-description">How quickly fireworks fall back down (higher = faster falling).</p>
+                </div>
+                <div class="setting">
+                    <label for="smokeTrailIntensity">Smoke Trail: <span id="smokeTrailValue">0.3</span></label>
+                    <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.3">
+                    <p class="setting-description">Intensity of the smoke trail behind rising fireworks.</p>
+                </div>
+            </div>
+
+            <!-- Visual Effects Tab Pane -->
+            <div class="tab-pane" id="effects-tab" data-tab-content="effects">
+                <h4>✨ Visual Effects Settings</h4>
+                <div class="setting">
+                    <label for="globalSpeed">Animation Speed: <span id="globalSpeedValue">1</span></label>
+                    <input type="range" id="globalSpeed" min="0.1" max="2" step="0.1" value="1">
+                    <p class="setting-description">Overall speed of all animations (higher = faster, lower = slower motion).</p>
+                </div>
+                <div class="setting">
+                    <label for="particleCount">Explosion Particles: <span id="particleCountValue">100</span></label>
+                    <input type="range" id="particleCount" min="10" max="500" step="10" value="100">
+                    <p class="setting-description">Number of sparkly particles created when fireworks explode.</p>
+                </div>
+                <div class="setting">
+                    <label for="particleLifespan">Particle Duration: <span id="particleLifespanValue">60</span> frames</label>
+                    <input type="range" id="particleLifespan" min="20" max="200" step="5" value="60">
+                    <p class="setting-description">How long explosion particles stay visible before fading away.</p>
+                </div>
+                <div class="setting">
+                    <label for="particleMinSize">Smallest Particles: <span id="particleMinSizeValue">1</span></label>
+                    <input type="range" id="particleMinSize" min="0.5" max="5" step="0.1" value="1">
+                    <p class="setting-description">Minimum size of individual explosion particles.</p>
+                </div>
+                <div class="setting">
+                    <label for="particleMaxSize">Largest Particles: <span id="particleMaxSizeValue">3</span></label>
+                    <input type="range" id="particleMaxSize" min="1" max="10" step="0.1" value="3">
+                    <p class="setting-description">Maximum size of individual explosion particles.</p>
+                </div>
+                <div class="setting toggle-setting">
+                    <label for="useMultiColor">Colorful Particles:</label>
+                    <label class="switch">
+                         <input type="checkbox" id="useMultiColor">
+                         <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Use multiple colors for particles instead of single-color explosions.</p>
+                </div>
+                <div class="setting toggle-setting">
+                    <label for="glowEffect">Glow Effect:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="glowEffect">
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Adds a beautiful glowing aura around fireworks and particles.</p>
+                </div>
+                <div class="setting">
+                    <label for="fadeResistance">Particle Fade Speed: <span id="fadeResistanceValue">0.95</span></label>
+                    <input type="range" id="fadeResistance" min="0.8" max="0.99" step="0.01" value="0.95">
+                    <p class="setting-description">How quickly particles fade away (higher = slower fading, longer lasting).</p>
+                </div>
+            </div>
+
+            <!-- Images Tab Pane -->
+            <div class="tab-pane" id="images-tab" data-tab-content="images">
+                <h4>🖼️ Image Settings</h4>
+                <div class="setting toggle-setting">
+                    <label for="backgroundRemovalEnabled">Auto Remove Backgrounds:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="backgroundRemovalEnabled" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Automatically remove white/solid backgrounds from uploaded firework images.</p>
+                </div>
+                <div class="setting toggle-setting">
+                    <label for="imageRotation">Spinning Images:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="imageRotation">
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Make uploaded images spin and rotate during firework explosions.</p>
+                </div>
+                <div class="setting">
+                    <label for="imageGravity">Image Gravity: <span id="imageGravityValue">1.0</span></label>
+                    <input type="range" id="imageGravity" min="0" max="3" step="0.1" value="1.0">
+                    <p class="setting-description">How fast images fall after exploding (0 = float forever, higher = fall faster).</p>
+                </div>
+                <div class="setting">
+                    <label for="bgOpacity">Background Image Opacity: <span id="bgOpacityValue">0.8</span></label>
+                    <input type="range" id="bgOpacity" min="0" max="1" step="0.05" value="0.8">
+                    <p class="setting-description">How see-through the background slideshow images are (0 = invisible, 1 = solid).</p>
+                </div>
+                <div class="setting">
+                    <label for="bgTransitionTime">Background Transition: <span id="bgTransitionValue">2</span> sec</label>
+                    <input type="range" id="bgTransitionTime" min="0.5" max="5" step="0.5" value="2">
+                    <p class="setting-description">How long it takes for background images to fade from one to the next.</p>
+                </div>
+                <div class="setting">
+                    <label for="bgDisplayTime">Background Duration: <span id="bgDisplayValue">5</span> sec</label>
+                    <input type="range" id="bgDisplayTime" min="2" max="20" step="1" value="5">
+                    <p class="setting-description">How long each background image is shown before changing to the next.</p>
+                </div>
+            </div>
             <div class="tab-pane" id="colors-tab" data-tab-content="colors">
-                <h4>Color Settings</h4>
+                <h4>🎨 Colors & Themes</h4>
                 <div class="setting">
                     <label for="colorTheme">Color Theme:</label>
                     <select id="colorTheme">
-                        <option value="Vivid" selected>Vivid</option>
-                        <option value="Pastel">Pastel</option>
-                        <option value="Neon">Neon</option>
-                        <option value="Earthy">Earthy</option>
-                        <option value="Monochrome">Monochrome</option>
-                        <option value="Custom">Custom</option>
+                        <option value="Vivid" selected>🌈 Vivid (Bright & Bold)</option>
+                        <option value="Pastel">🌸 Pastel (Soft & Gentle)</option>
+                        <option value="Neon">⚡ Neon (Electric & Glowing)</option>
+                        <option value="Earthy">🍂 Earthy (Natural & Warm)</option>
+                        <option value="Monochrome">⚫ Monochrome (Black & White)</option>
+                        <option value="Custom">🎨 Custom (Your Own Colors)</option>
                     </select>
-                    <p class="setting-description">Select a predefined color theme or create a custom one.</p>
+                    <p class="setting-description">Choose a color style for your fireworks and particles.</p>
                 </div>
                 <div class="setting">
                     <label for="colorIntensity">Color Intensity: <span id="colorIntensityValue">1</span></label>
@@ -295,25 +317,6 @@
                 </div>
             </div>
 
-            <!-- Background Settings Tab Pane (existing) -->
-            <div class="tab-pane" id="backgroundCtrl-tab" data-tab-content="backgroundCtrl">
-                <h4>Background Effects Settings</h4>
-                <div class="setting">
-                    <label for="bgOpacity">Background Opacity: <span id="bgOpacityValue">0.5</span></label>
-                    <input type="range" id="bgOpacity" min="0" max="1" step="0.05" value="0.5">
-                    <p class="setting-description">Controls the transparency of the background images. 0 is fully transparent, 1 is fully opaque.</p>
-                </div>
-                <div class="setting">
-                    <label for="bgTransitionTime">Transition Time (sec): <span id="bgTransitionValue">2</span></label>
-                    <input type="range" id="bgTransitionTime" min="0.5" max="5" step="0.5" value="2">
-                    <p class="setting-description">How long it takes for one background image to fade into the next.</p>
-                </div>
-                <div class="setting">
-                    <label for="bgDisplayTime">Display Duration (sec): <span id="bgDisplayValue">5</span></label>
-                    <input type="range" id="bgDisplayTime" min="2" max="20" step="1" value="5">
-                    <p class="setting-description">How long each background image is shown before transitioning to the next.</p>
-                </div>
-            </div>
         </div>
         
         <!-- Control Buttons -->

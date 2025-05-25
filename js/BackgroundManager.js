@@ -1,10 +1,18 @@
 /**
  * BackgroundManager handles multiple background images with smooth transitions
+ * Now uses dedicated backgroundCanvas for proper layering
  */
 class BackgroundManager {
-    constructor(canvas, ctx) {
-        this.canvas = canvas;
-        this.ctx = ctx;
+    constructor() {
+        this.canvas = document.getElementById('backgroundCanvas');
+        if (!this.canvas) {
+            console.error('Background canvas not found!');
+            return;
+        }
+        
+        this.ctx = this.canvas.getContext('2d');
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
         this.backgroundImages = [];
         this.currentIndex = 0;
         this.nextIndex = 0;
@@ -12,9 +20,26 @@ class BackgroundManager {
         this.transitionDuration = 2000; // transition duration in ms
         this.displayDuration = 5000; // how long to display each image (ms)
         this.lastUpdateTime = 0;
+        this.lastDrawTime = 0; // Add frame rate limiting
         this.isTransitioning = false;
         this.isActive = false;
-        this.opacity = 0.5; // background opacity (adjust as needed)
+        this.opacity = 0.8; // background opacity (increased for better visibility)
+        this.animationFrameId = null; // To store the requestAnimationFrame ID
+        this.timeSinceLastTransition = 0; // Time accumulator for displayDuration
+        
+        // Default background color if no images
+        this.defaultBackground = '#000000';
+        this.backgroundImages = [];
+        this.currentIndex = 0;
+        this.nextIndex = 0;
+        this.transitionProgress = 0;
+        this.transitionDuration = 2000; // transition duration in ms
+        this.displayDuration = 5000; // how long to display each image (ms)
+        this.lastUpdateTime = 0;
+        this.lastDrawTime = 0; // Add frame rate limiting
+        this.isTransitioning = false;
+        this.isActive = false;
+        this.opacity = 0.8; // background opacity (increased for better visibility)
         this.animationFrameId = null; // To store the requestAnimationFrame ID
         this.timeSinceLastTransition = 0; // Time accumulator for displayDuration
         
@@ -28,6 +53,7 @@ class BackgroundManager {
      */
     addBackgroundImage(image) {
         this.backgroundImages.push(image);
+        
         // Start the background cycle if it's the first image and not already active
         if (this.backgroundImages.length > 0 && !this.isActive) { // Ensure it starts if images exist
             this.startIndependentLoop(); // Changed from this.start()
@@ -104,6 +130,16 @@ class BackgroundManager {
                 this.animationFrameId = null;
                 return; // Stop the loop if not active
             }
+            
+            // Limit to 30 FPS for background to reduce glitching
+            const now = performance.now();
+            if (!this.lastDrawTime) this.lastDrawTime = now;
+            if (now - this.lastDrawTime < 33) { // ~30 FPS
+                this.animationFrameId = requestAnimationFrame(loop);
+                return;
+            }
+            this.lastDrawTime = now;
+            
             this.update(timestamp);
             this.draw();
             this.animationFrameId = requestAnimationFrame(loop);
@@ -166,6 +202,13 @@ class BackgroundManager {
      * Draw the current background
      */
     draw() {
+        if (!this.canvas || !this.ctx) {
+            return;
+        }
+        
+        // Clear the canvas first to prevent glitching
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
         if (this.backgroundImages.length === 0) {
             // Draw default black background
             this.ctx.fillStyle = this.defaultBackground;
@@ -175,6 +218,9 @@ class BackgroundManager {
         
         // Save context state
         this.ctx.save();
+        
+        // Set global alpha for background
+        this.ctx.globalAlpha = this.opacity;
         
         // Set global alpha for background
         this.ctx.globalAlpha = this.opacity;
@@ -201,7 +247,9 @@ class BackgroundManager {
      */
     drawImage(image, opacity) {
         // Skip if image not loaded
-        if (!image.complete) return;
+        if (!image.complete) {
+            return;
+        }
         
         this.ctx.globalAlpha = this.opacity * opacity;
         

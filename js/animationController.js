@@ -11,7 +11,7 @@ class AnimationController {
     this.ctx = this.canvas.getContext("2d");
     this.isActive = false;
     this.lastTime = 0;
-    this.fireworks = []; // Track active fireworks
+    this.fireworks = [];
     
     // Set up for double-buffer technique
     this.copyCanvas = null;
@@ -28,7 +28,8 @@ class AnimationController {
     const particleAndEffectSettings = { ...(initialSettings.particles || {}), ...(initialSettings.effects || {}) };
     this.particleManager = new ParticleManager(this.ctx, this.colorManager, particleAndEffectSettings);
     this.fireworkManager = new FireworkManager(this.ctx, this.colorManager, this.particleManager, initialSettings.fireworks || {});
-    this.backgroundManager = new BackgroundManager(this.canvas, this.ctx);
+    // Note: BackgroundManager is handled by DirectBackgroundUploader and connected via main.js
+    this.backgroundManager = null; // Will be set by main.js after DirectBackgroundUploader initializes
     // Note: BackgroundManager settings are handled differently due to window.backgroundSystem
 
     // Resize handling
@@ -36,9 +37,8 @@ class AnimationController {
     window.addEventListener("resize", this.resizeHandler);
     this.handleResize();
     
-    // Initial clear of the canvas with plain black
-    this.ctx.fillStyle = '#000000';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    // Initial clear of the canvas (transparent to show background)
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
   
   /**
@@ -69,9 +69,15 @@ class AnimationController {
    * Handle window resize
    */
   handleResize() {
-    // Resize main canvas
+    // Resize main firework canvas
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
+    
+    // Resize background canvas
+    if (this.backgroundManager && this.backgroundManager.canvas) {
+      this.backgroundManager.canvas.width = window.innerWidth;
+      this.backgroundManager.canvas.height = window.innerHeight;
+    }
     
     // Resize copy canvas if it exists
     if (this.copyCanvas) {
@@ -187,8 +193,8 @@ class AnimationController {
         this.copyCanvas.height = this.canvas.height;
         this.copyCtx = this.copyCanvas.getContext('2d');
         
-        this.copyCtx.fillStyle = 'black';
-        this.copyCtx.fillRect(0, 0, this.copyCanvas.width, this.copyCanvas.height);
+        // Keep copy canvas transparent
+        this.copyCtx.clearRect(0, 0, this.copyCanvas.width, this.copyCanvas.height);
       }
       
       // Step 1: Save the current canvas state to our copy canvas
@@ -196,10 +202,8 @@ class AnimationController {
       this.copyCtx.clearRect(0, 0, this.copyCanvas.width, this.copyCanvas.height);
       this.copyCtx.drawImage(this.canvas, 0, 0);
       
-      // Step 2: Clear the main canvas completely
+      // Step 2: Clear the main canvas completely (transparent)
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.fillStyle = '#000000';
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       
       // Step 4: Draw the previous frame back with reduced alpha for trails
       this.ctx.globalAlpha = 0.80; // Keep 80% of previous frame for trails

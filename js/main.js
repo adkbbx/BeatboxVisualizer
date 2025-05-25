@@ -227,37 +227,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const bgDisplayValue = document.getElementById('bgDisplayValue');
 
     if (bgOpacitySlider && bgOpacityValue) {
+        // Initialize slider position to match the actual value
+        bgOpacitySlider.value = '0.8';
+        bgOpacityValue.textContent = '0.8';
+        
         bgOpacitySlider.addEventListener('input', () => {
             bgOpacityValue.textContent = bgOpacitySlider.value;
-            if (animationController.backgroundManager && typeof animationController.backgroundManager.updateSettings === 'function') {
-                animationController.backgroundManager.updateSettings({ opacity: parseFloat(bgOpacitySlider.value) });
-            } else if (window.backgroundSystem && typeof window.backgroundSystem.updateBackgroundSettings === 'function') {
-                // Fallback for older structure if direct access fails
-                window.backgroundSystem.updateBackgroundSettings(); 
+            if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+                window.backgroundSystem.backgroundManager.updateSettings({ opacity: parseFloat(bgOpacitySlider.value) });
             }
         });
     }
 
     if (bgTransitionTimeSlider && bgTransitionValue) {
+        // Initialize slider position to match the actual value
+        bgTransitionTimeSlider.value = '2';
+        bgTransitionValue.textContent = '2';
+        
         bgTransitionTimeSlider.addEventListener('input', () => {
             bgTransitionValue.textContent = bgTransitionTimeSlider.value;
-            if (animationController.backgroundManager && typeof animationController.backgroundManager.updateSettings === 'function') {
+            if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
                 // Convert seconds to milliseconds for BackgroundManager
-                animationController.backgroundManager.updateSettings({ transitionDuration: parseFloat(bgTransitionTimeSlider.value) * 1000 });
-            } else if (window.backgroundSystem && typeof window.backgroundSystem.updateBackgroundSettings === 'function') {
-                window.backgroundSystem.updateBackgroundSettings();
+                window.backgroundSystem.backgroundManager.updateSettings({ transitionDuration: parseFloat(bgTransitionTimeSlider.value) * 1000 });
             }
         });
     }
 
     if (bgDisplayTimeSlider && bgDisplayValue) {
+        // Initialize slider position to match the actual value
+        bgDisplayTimeSlider.value = '5';
+        bgDisplayValue.textContent = '5';
+        
         bgDisplayTimeSlider.addEventListener('input', () => {
             bgDisplayValue.textContent = bgDisplayTimeSlider.value;
-            if (animationController.backgroundManager && typeof animationController.backgroundManager.updateSettings === 'function') {
+            if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
                 // Convert seconds to milliseconds for BackgroundManager
-                animationController.backgroundManager.updateSettings({ displayDuration: parseFloat(bgDisplayTimeSlider.value) * 1000 });
-            } else if (window.backgroundSystem && typeof window.backgroundSystem.updateBackgroundSettings === 'function') {
-                window.backgroundSystem.updateBackgroundSettings();
+                window.backgroundSystem.backgroundManager.updateSettings({ displayDuration: parseFloat(bgDisplayTimeSlider.value) * 1000 });
             }
         });
     }

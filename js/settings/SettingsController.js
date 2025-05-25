@@ -115,12 +115,32 @@ class SettingsController {
     });
     
     // Effect settings
+    this.setupToggleControl('backgroundRemovalEnabled', value => {
+      this.updateEffectSettings({ backgroundRemovalEnabled: value });
+    });
+    
+    this.setupToggleControl('imageRotation', value => {
+      this.updateEffectSettings({ imageRotation: value });
+    });
+    
     this.setupToggleControl('glowEffect', value => {
       this.updateEffectSettings({ glowEnabled: value });
     });
     
+    this.setupToggleControl('testSoundEnabled', value => {
+      this.updateEffectSettings({ testSoundEnabled: value });
+    });
+    
     this.setupRangeControl('fadeResistance', 'fadeResistanceValue', value => {
       this.updateEffectSettings({ fadeResistance: value });
+    });
+    
+    this.setupRangeControl('imageGravity', 'imageGravityValue', value => {
+      this.updateEffectSettings({ imageGravity: value });
+    });
+    
+    this.setupRangeControl('testSoundVolume', 'testSoundVolumeValue', value => {
+      this.updateEffectSettings({ testSoundVolume: value });
     });
     
     this.setupRangeControl('globalSpeed', 'globalSpeedValue', value => {
@@ -479,11 +499,16 @@ class SettingsController {
     this.updateRangeControl('particleMaxSize', 'particleMaxSizeValue', particleSettings.maxSize);
     
     this.updateRangeControl('fadeResistance', 'fadeResistanceValue', effectSettings.fadeResistance);
+    this.updateRangeControl('imageGravity', 'imageGravityValue', effectSettings.imageGravity);
+    this.updateRangeControl('testSoundVolume', 'testSoundVolumeValue', effectSettings.testSoundVolume);
     this.updateRangeControl('globalSpeed', 'globalSpeedValue', animationSettings.globalSpeed);
     
     this.updateRangeControl('colorIntensity', 'colorIntensityValue', colorSettings.intensity);
     
     // Update toggle controls
+    this.updateToggleControl('backgroundRemovalEnabled', effectSettings.backgroundRemovalEnabled);
+    this.updateToggleControl('imageRotation', effectSettings.imageRotation);
+    this.updateToggleControl('testSoundEnabled', effectSettings.testSoundEnabled);
     this.updateToggleControl('useMultiColor', particleSettings.useMultiColor);
     this.updateToggleControl('glowEffect', effectSettings.glowEnabled);
     this.updateToggleControl('randomFireworkSize', fireworkSettings.randomSize);

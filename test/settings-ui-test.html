@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings UI Test</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/settings.css">
+    <style>
+        body {
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .open-settings-btn {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎆 Settings Panel UI Test</h1>
+        <p>Click the button below to test the new settings panel layout</p>
+        <button class="open-settings-btn" onclick="openSettings()">Open Settings Panel</button>
+    </div>
+
+    <!-- Settings panel (copy from main index.html) -->
+    <div id="settingsPanel" class="settings-panel" style="display: none;">
+        <h2>Fireworks Settings</h2>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-navigation" role="tablist">
+            <button class="tab-button active" data-tab="audio" role="tab">🎤 Audio</button>
+            <button class="tab-button" data-tab="fireworks" role="tab">🎆 Fireworks</button>
+            <button class="tab-button" data-tab="effects" role="tab">✨ Effects</button>
+            <button class="tab-button" data-tab="images" role="tab">🖼️ Images</button>
+            <button class="tab-button" data-tab="colors" role="tab">🎨 Colors</button>
+        </div>
+        
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Audio & Sound Tab -->
+            <div class="tab-pane active" id="audio-tab" data-tab-content="audio">
+                <h4>🎤 Audio & Sound Settings</h4>
+                <div class="setting">
+                    <label>Microphone Sensitivity: <span>2.0</span></label>
+                    <input type="range" min="0.5" max="4" step="0.1" value="2.0">
+                    <p class="setting-description">How sensitive the microphone is to your voice and sounds.</p>
+                </div>
+                <div class="setting toggle-setting">
+                    <label>Test Firework Sounds:</label>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Play realistic launch and explosion sounds when testing fireworks.</p>
+                </div>
+            </div>
+            
+            <!-- Fireworks Tab -->
+            <div class="tab-pane" id="fireworks-tab" data-tab-content="fireworks">
+                <h4>🎆 Fireworks Settings</h4>
+                <div class="setting">
+                    <label>Firework Size: <span>1.0</span></label>
+                    <input type="range" min="0.5" max="5.0" step="0.1" value="1.0">
+                    <p class="setting-description">Controls how big fireworks and uploaded images appear during explosions.</p>
+                </div>
+                <div class="setting">
+                    <label>Launch Power: <span>10</span></label>
+                    <input type="range" min="10" max="100" step="10" value="10">
+                    <p class="setting-description">How high and fast fireworks are launched into the sky.</p>
+                </div>
+            </div>
+            
+            <!-- Visual Effects Tab -->
+            <div class="tab-pane" id="effects-tab" data-tab-content="effects">
+                <h4>✨ Visual Effects Settings</h4>
+                <div class="setting">
+                    <label>Animation Speed: <span>1</span></label>
+                    <input type="range" min="0.1" max="2" step="0.1" value="1">
+                    <p class="setting-description">Overall speed of all animations (higher = faster, lower = slower motion).</p>
+                </div>
+                <div class="setting">
+                    <label>Explosion Particles: <span>100</span></label>
+                    <input type="range" min="10" max="500" step="10" value="100">
+                    <p class="setting-description">Number of sparkly particles created when fireworks explode.</p>
+                </div>
+            </div>
+            
+            <!-- Images Tab -->
+            <div class="tab-pane" id="images-tab" data-tab-content="images">
+                <h4>🖼️ Image Settings</h4>
+                <div class="setting toggle-setting">
+                    <label>Auto Remove Backgrounds:</label>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="setting-description">Automatically remove white/solid backgrounds from uploaded firework images.</p>
+                </div>
+                <div class="setting">
+                    <label>Background Image Opacity: <span>0.8</span></label>
+                    <input type="range" min="0" max="1" step="0.05" value="0.8">
+                    <p class="setting-description">How see-through the background slideshow images are (0 = invisible, 1 = solid).</p>
+                </div>
+            </div>
+            
+            <!-- Colors Tab -->
+            <div class="tab-pane" id="colors-tab" data-tab-content="colors">
+                <h4>🎨 Colors & Themes</h4>
+                <div class="setting">
+                    <label>Color Theme:</label>
+                    <select>
+                        <option selected>🌈 Vivid (Bright & Bold)</option>
+                        <option>🌸 Pastel (Soft & Gentle)</option>
+                        <option>⚡ Neon (Electric & Glowing)</option>
+                        <option>🍂 Earthy (Natural & Warm)</option>
+                        <option>⚫ Monochrome (Black & White)</option>
+                        <option>🎨 Custom (Your Own Colors)</option>
+                    </select>
+                    <p class="setting-description">Choose a color style for your fireworks and particles.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control Buttons -->
+        <div class="settings-controls">
+            <button class="settings-btn" onclick="closeSettings()">
+                <span class="icon">✓</span>
+                <span class="text">Close Settings</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function openSettings() {
+            document.getElementById('settingsPanel').style.display = 'block';
+        }
+        
+        function closeSettings() {
+            document.getElementById('settingsPanel').style.display = 'none';
+        }
+        
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and panes
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding pane
+                    const targetPane = document.getElementById(targetTab + '-tab');
+                    if (targetPane) {
+                        targetPane.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

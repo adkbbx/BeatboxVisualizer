@@ -3,11 +3,13 @@ import BackgroundManager from './BackgroundManager.js';
 
 export class DirectBackgroundUploader {
     constructor() {
-        // Create background manager
-        this.backgroundManager = new BackgroundManager(
-            document.getElementById('animationCanvas'),
-            document.getElementById('animationCanvas').getContext('2d')
-        );
+        // Create background manager - now uses its own background canvas
+        this.backgroundManager = new BackgroundManager();
+        
+        if (!this.backgroundManager.canvas) {
+            console.error('Failed to initialize BackgroundManager - no canvas available');
+            return;
+        }
         
         this.backgrounds = [];
         
