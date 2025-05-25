@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/uploaders.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/mobile-responsive.css">
+    <link rel="stylesheet" href="css/presets.css">
     
 </head>
 <body>
@@ -45,6 +46,7 @@
             <div class="uploader-tab-navigation">
                 <button class="uploader-tab-button active" data-uploader-tab="firework">Firework Images</button>
                 <button class="uploader-tab-button" data-uploader-tab="background">Background Images</button>
+                <button class="uploader-tab-button" data-uploader-tab="presets">Presets</button>
             </div>
             
             <div class="uploader-tab-content">
@@ -76,6 +78,43 @@
                         </div>
                         
                         <div class="preview-container" id="bgPreviewContainer"></div>
+                    </div>
+                </div>
+                
+                <div class="uploader-tab-pane" id="presets-tab">
+                    <div class="preset-container">
+                        <div class="preset-actions">
+                            <button id="discoverPresets" class="button">🔍 Discover Presets</button>
+                            <button id="loadExternalPreset" class="button">📁 Load Preset Folder</button>
+                            <button id="clearAllImages" class="button secondary">🗑️ Clear All</button>
+                        </div>
+                        
+                        <div class="preset-sections">
+                            <!-- Empty state shown initially -->
+                            <div id="presetEmptyState" class="preset-empty-state">
+                                <div class="empty-state-content">
+                                    <div class="empty-state-icon">📦</div>
+                                    <h4>No Presets Loaded</h4>
+                                    <p>Click "Discover Presets" to scan your /presets/ folder and find available preset collections.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Built-in Presets Section (hidden initially) -->
+                            <div class="preset-section" id="defaultPresetsSection" style="display: none;">
+                                <h4>📦 Discovered Presets</h4>
+                                <div id="defaultPresetsContainer" class="presets-grid">
+                                    <!-- Discovered presets will be populated here -->
+                                </div>
+                            </div>
+                            
+                            <!-- External Presets Section -->
+                            <div class="preset-section" id="externalPresetsSection" style="display: none;">
+                                <h4>📁 Loaded Presets</h4>
+                                <div id="externalPresetsContainer" class="presets-grid">
+                                    <!-- External presets will be populated here -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -338,8 +377,10 @@
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/direct-image-uploader.js"></script>
     <script type="module" src="js/direct-background-uploader.js"></script>
+    <script type="module" src="js/ClearManager.js"></script>
+    <script type="module" src="js/PresetManager.js"></script>
+    <script type="module" src="js/PresetUI.js"></script>
     <script src="js/tab-switcher.js"></script>
-    <!-- <script src="js/swatch-fix.js"></script> -->
     <script src="js/settings-swatch-fix.js"></script>
     
     <script>

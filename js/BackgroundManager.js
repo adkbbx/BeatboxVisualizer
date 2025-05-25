@@ -6,7 +6,6 @@ class BackgroundManager {
     constructor() {
         this.canvas = document.getElementById('backgroundCanvas');
         if (!this.canvas) {
-            console.error('Background canvas not found!');
             return;
         }
         
@@ -86,7 +85,23 @@ class BackgroundManager {
      */
     clearBackgroundImages() {
         this.backgroundImages = [];
+        this.currentIndex = 0;
+        this.nextIndex = 0;
+        this.isTransitioning = false;
+        this.transitionProgress = 0;
         this.stop();
+        
+        // Clear the canvas to remove any remaining background
+        if (this.canvas && this.ctx) {
+            // Ensure canvas is properly sized
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            // Draw default black background
+            this.ctx.fillStyle = this.defaultBackground;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
     }
     
     /**

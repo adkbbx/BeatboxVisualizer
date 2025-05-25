@@ -7,7 +7,6 @@ export class DirectBackgroundUploader {
         this.backgroundManager = new BackgroundManager();
         
         if (!this.backgroundManager.canvas) {
-            console.error('Failed to initialize BackgroundManager - no canvas available');
             return;
         }
         
@@ -27,8 +26,6 @@ export class DirectBackgroundUploader {
         const selectButton = document.getElementById('selectBgFiles');
         
         if (!dropZone || !fileInput || !selectButton) {
-            // List all elements with IDs starting with "bg" to help debug
-            const allElements = document.querySelectorAll('[id^="bg"]');
             return;
         }
 
@@ -129,13 +126,10 @@ export class DirectBackgroundUploader {
         img.src = background.image.src;
         img.alt = background.filename;
         
-        // Create an unmissable delete button with inline styles
+        // Create an unmissable delete button
         const removeButton = document.createElement('button');
         removeButton.innerHTML = '&#10005;'; // X symbol
         removeButton.className = 'remove-background';
-        
-        // Apply direct inline styles to ensure visibility
-        // Removed inline style assignments for the button
         
         removeButton.addEventListener('click', (e) => {
             e.stopPropagation(); // Prevent any parent handlers from firing
@@ -156,13 +150,9 @@ export class DirectBackgroundUploader {
         });
         
         previewDiv.appendChild(img);
-        // previewDiv.appendChild(name); // Removed to hide file name
         previewDiv.appendChild(removeButton);
         
         container.appendChild(previewDiv);
-        
-        // Force a reflow to ensure all styles are applied
-        previewDiv.offsetHeight;
     }
     
     truncateFilename(filename) {

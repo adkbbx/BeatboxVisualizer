@@ -22,8 +22,6 @@ export class DirectImageUploader {
         const selectButton = document.getElementById('selectFiles');
         
         if (!dropZone || !fileInput || !selectButton) {
-            // List all relevant elements to help debug
-            const allElements = document.querySelectorAll('[id]');
             return;
         }
 
@@ -95,7 +93,6 @@ export class DirectImageUploader {
     addPreview(canvas, dominantColor, imageId) {
         const previewContainer = document.getElementById('previewContainer');
         if (!previewContainer) {
-            console.error('Preview container not found');
             return;
         }
         
@@ -140,9 +137,6 @@ export class DirectImageUploader {
         
         // Add preview to container
         previewContainer.appendChild(preview);
-        
-        // Force a reflow to ensure all styles are applied
-        // preview.offsetHeight; // Removed forced reflow, likely unnecessary now
     }
 
     showError(message) {

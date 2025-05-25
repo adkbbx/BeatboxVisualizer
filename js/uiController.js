@@ -210,7 +210,7 @@ class UIController {
                         return;
                     }
                     
-                    // Debug logging for audio levels
+            
                     
                     // For loud sounds, burst all fireworks
                     if (category === 'loud') {
