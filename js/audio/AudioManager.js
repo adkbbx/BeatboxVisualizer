@@ -240,15 +240,23 @@ class AudioManager {
      * Update audio settings
      */
     updateSettings(settings) {
-        if (this.audioAnalyzer) {
-            this.audioAnalyzer.updateSettings(settings);
+        // Store settings for later use if audioAnalyzer isn't initialized yet
+        if (settings) {
+            this.initialAudioSettings = { ...this.initialAudioSettings, ...settings };
         }
         
-        // Update sustained sound detector with the same settings
-        if (this.sustainedSoundDetector) {
-            this.sustainedSoundDetector.updateSettings({
-                loudThreshold: settings.loudThreshold || this.audioAnalyzer.loudThreshold
-            });
+        // Only update audioAnalyzer if it exists (microphone has been started)
+        if (this.audioAnalyzer) {
+            this.audioAnalyzer.updateSettings(settings);
+            
+            // Update sustained sound detector with the same settings
+            if (this.sustainedSoundDetector) {
+                this.sustainedSoundDetector.updateSettings({
+                    loudThreshold: settings.loudThreshold || this.audioAnalyzer.loudThreshold
+                });
+            }
+        } else {
+    
         }
     }
     

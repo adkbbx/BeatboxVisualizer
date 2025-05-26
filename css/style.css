@@ -148,6 +148,30 @@ button:disabled {
     background-color: #27ae60;
 }
 
+#startMicrophone.active {
+    background-color: #e74c3c;
+    color: #ffffff;
+    animation: pulse 2s infinite;
+}
+
+#startMicrophone.active:hover {
+    background-color: #c0392b;
+}
+
+#startMicrophone:disabled {
+    background-color: #555555 !important;
+    color: #888888 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
 #stopMicrophone {
     background-color: #e74c3c;
     color: #ffffff;
@@ -269,6 +293,34 @@ button:disabled {
 #audioStatus.inactive::before {
     background-color: #e74c3c;
     box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+#audioStatus.starting::before {
+    background-color: #f39c12;
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+    animation: spin 1s linear infinite;
+}
+
+#audioStatus.stopping::before {
+    background-color: #f39c12;
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+}
+
+#audioStatus.error::before {
+    background-color: #e74c3c;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
 }
 
 /* Animation Canvas - both layers */

@@ -4,6 +4,7 @@ import UIController from './uiController.js';
 import initializePanelControls from './panel-controls.js';
 import AnimationSettingsManager from './settings/AnimationSettingsManager.js';
 import ColorManager from './ColorManager.js';
+import LaunchControlsManager from './LaunchControlsManager.js';
 
 /**
  * Main application entry point
@@ -44,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create animation controller and pass the pre-configured ColorManager and other initial settings
     const animationController = new AnimationController('animationCanvas', colorManager, allInitialAnimCtrlSettings);
     
+    // Make animation controller globally accessible for Launch Controls
+    window.animationController = animationController;
+    
     // Set canvas to full window size
     const canvas = document.getElementById('animationCanvas');
     canvas.width = window.innerWidth;
@@ -57,6 +61,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Create UI controller and connect components
     const uiController = new UIController(audioManager, animationController);
+    
+    // Make UI controller globally accessible
+    window.uiController = uiController;
+    
+    // Initialize Launch Controls after animation controller is ready
+    setTimeout(() => {
+        const launchSpreadElement = document.getElementById('launchSpread');
+        
+        if (launchSpreadElement && window.animationController?.fireworkManager) {
+            try {
+                window.launchControlsManager = new LaunchControlsManager();
+            } catch (error) {
+                console.error('❌ Failed to initialize Launch Controls Manager:', error);
+            }
+        }
+    }, 1000);
     
     // Connect the direct uploaders to the animation controller
     window.addEventListener('directUploadersInitialized', () => {
@@ -169,54 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Setup test sound settings
-    const testSoundEnabledToggle = document.getElementById('testSoundEnabled');
-    const testSoundVolumeSlider = document.getElementById('testSoundVolume');
-    const testSoundVolumeValue = document.getElementById('testSoundVolumeValue');
-
-    if (testSoundEnabledToggle) {
-        // Default to enabled
-        testSoundEnabledToggle.checked = true;
-        
-        // Store the setting
-        testSoundEnabledToggle.addEventListener('change', () => {
-            const enabled = testSoundEnabledToggle.checked;
-            localStorage.setItem('testSoundEnabled', enabled);
-            
-            // Update the test firework manager if available
-            if (animationController.fireworkManager && 
-                animationController.fireworkManager.testFireworkManager) {
-                animationController.fireworkManager.testFireworkManager.setSoundEnabled(enabled);
-            }
-        });
-        
-        // Load saved setting
-        const savedSoundSetting = localStorage.getItem('testSoundEnabled');
-        if (savedSoundSetting !== null) {
-            testSoundEnabledToggle.checked = savedSoundSetting === 'true';
-        }
-    }
-
-    if (testSoundVolumeSlider && testSoundVolumeValue) {
-        testSoundVolumeSlider.addEventListener('input', () => {
-            const volume = parseFloat(testSoundVolumeSlider.value);
-            testSoundVolumeValue.textContent = volume.toFixed(2);
-            localStorage.setItem('testSoundVolume', volume);
-            
-            // Update the test firework manager if available
-            if (animationController.fireworkManager && 
-                animationController.fireworkManager.testFireworkManager) {
-                animationController.fireworkManager.testFireworkManager.setSoundVolume(volume);
-            }
-        });
-        
-        // Load saved volume
-        const savedVolume = localStorage.getItem('testSoundVolume');
-        if (savedVolume !== null) {
-            testSoundVolumeSlider.value = savedVolume;
-            testSoundVolumeValue.textContent = parseFloat(savedVolume).toFixed(2);
-        }
-    }
+    // Test sound settings are now handled by SettingsController
 
     // Setup listeners for background settings in the settings panel
     const bgOpacitySlider = document.getElementById('bgOpacity');

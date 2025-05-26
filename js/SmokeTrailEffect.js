@@ -22,7 +22,10 @@ class SmokeTrailEffect {
      * Create simple smoke trail behind a firework
      */
     createSmokeTrail(firework) {
-        if (!this.settings.enabled || Math.random() > this.settings.frequency) return;
+        // Use intensity to control frequency and opacity
+        const adjustedFrequency = this.settings.frequency * this.settings.opacity;
+        
+        if (!this.settings.enabled || this.settings.opacity <= 0 || Math.random() > adjustedFrequency) return;
         
         // Simple trail calculation
         const trailLength = 2 + Math.random() * 3;
@@ -46,16 +49,19 @@ class SmokeTrailEffect {
         g = Math.min(255, Math.floor(g * this.settings.colorDarkening) + this.settings.brightening);
         b = Math.min(255, Math.floor(b * this.settings.colorDarkening) + this.settings.brightening + 5);
         
-        const radius = this.settings.minSize + Math.random() * (this.settings.maxSize - this.settings.minSize);
+        // Scale size based on intensity
+        const baseRadius = this.settings.minSize + Math.random() * (this.settings.maxSize - this.settings.minSize);
+        const radius = baseRadius * (0.5 + this.settings.opacity * 0.5); // Scale from 50% to 100% based on intensity
         
-        // Simple gradient
+        // Simple gradient with intensity-adjusted opacity
         const gradient = this.ctx.createRadialGradient(
             trailX + offsetX, trailY + offsetY, 0,
             trailX + offsetX, trailY + offsetY, radius
         );
         
-        gradient.addColorStop(0, `rgba(${r + 10}, ${g + 5}, ${b}, ${this.settings.opacity * 0.8})`);
-        gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${this.settings.opacity * 0.5})`);
+        const finalOpacity = this.settings.opacity * 0.8; // Use intensity directly for opacity
+        gradient.addColorStop(0, `rgba(${r + 10}, ${g + 5}, ${b}, ${finalOpacity})`);
+        gradient.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${finalOpacity * 0.6})`);
         gradient.addColorStop(1, `rgba(${r - 10}, ${g - 10}, ${b - 10}, 0)`);
         
         // Draw simple smoke particle

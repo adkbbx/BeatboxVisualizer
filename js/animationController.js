@@ -242,9 +242,10 @@ class AnimationController {
   
   /**
    * Launch a new firework
+   * @param {number} duration - The duration of the sustained sound, used to calculate launch parameters.
    */
-  launchFirework() {
-    this.fireworkManager.launchFirework();
+  launchFirework(duration) {
+    this.fireworkManager.launchFirework(duration);
   }
 
   /**
@@ -269,11 +270,21 @@ class AnimationController {
    * @returns {string} - A unique ID for the firework
    */
   applySustainedSound(volume, duration) {
+    // Ensure animation is running
+    if (!this.isActive) {
+      this.start();
+    }
+    
     // Launch a new firework with duration
-    this.fireworkManager.launchFirework(duration);
+    try {
+      this.fireworkManager.launchFirework(duration);
+    } catch (error) {
+      console.error(`❌ Error launching firework:`, error);
+      return null;
+    }
     
     // Generate a unique ID for this firework
-    const fireworkId = `firework_${Date.now()}`;
+    const fireworkId = `firework_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     // Store the firework reference
     this.fireworks.push({

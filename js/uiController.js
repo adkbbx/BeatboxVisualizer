@@ -194,6 +194,7 @@ class UIController {
     
     /**
      * Start microphone and animation
+     * @returns {Promise<boolean>} - True if successful, false if failed
      */
     async startMicrophone() {
         try {
@@ -220,24 +221,31 @@ class UIController {
                 
                 // Set up sustained sound detection for launching fireworks
                 this.audioManager.onSustainedSound((volume, duration) => {
-                    // Only respond to significant volume
-                    if (volume < 0.05) return null;
-                    
-                    // Launch a new firework and get its ID
-                    const fireworkId = this.animationController.applySustainedSound(volume, duration);
-                    
-                    if (fireworkId) {
-                        this.activeSustainedSounds++;
-                        this.fireworksActive = true;
+                    // Only respond to significant volume (use same threshold as SustainedSoundDetector)
+                    if (volume < this.audioManager.sustainedSoundDetector.sustainedSoundThreshold) {
+                        return null; // Return null if not launching, as expected by SustainedSoundDetector
                     }
                     
-                    return fireworkId;
+                    // Launch a new firework directly, passing the duration
+                    this.animationController.launchFirework(duration);
+                    
+                    this.fireworksActive = true; // Assume a firework is active upon launch
+                    
+                    // Generate and return a unique ID for SustainedSoundDetector to track this event
+                    const fireworkId = `sustained_fw_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    this.activeSustainedSounds++; // Increment here as we are processing a new sound event
+                    return fireworkId; 
                 });
                 
                 this.audioManager.onSustainedSoundEnd((id) => {
-                    // Deactivate the firework
-                    this.animationController.deactivateFirework(id);
-                    this.activeSustainedSounds--;
+                    // Deactivate the firework or handle the end of the sustained sound event
+                    if (id) { 
+                       // If AnimationController's deactivateFirework was for visual cleanup of a tracked firework,
+                       // and we're not tracking them the same way, this might not be needed or might need adjustment.
+                       // For now, let's assume it's a general signal that a sustained sound event tied to 'id' ended.
+                       // this.animationController.deactivateFirework(id); // Potentially re-evaluate this line's necessity
+                    }
+                    this.activeSustainedSounds--; 
                     
                     if (this.activeSustainedSounds <= 0) {
                         this.activeSustainedSounds = 0;
@@ -255,17 +263,22 @@ class UIController {
                 this.audioStatus.className = 'active';
                 this.audioStatus.parentElement.classList.add('active');
                 this.updateMicrophoneState(true);
+                
+                return true;
             } else {
                 this.audioStatus.textContent = 'Microphone Access Denied';
                 this.audioStatus.className = 'inactive';
                 this.audioStatus.parentElement.classList.add('inactive');
                 this.updateMicrophoneState(false);
+                return false;
             }
         } catch (error) {
+            console.error('❌ Error starting microphone:', error);
             this.audioStatus.textContent = 'Microphone Error';
             this.audioStatus.className = 'inactive';
             this.audioStatus.parentElement.classList.add('inactive');
             this.updateMicrophoneState(false);
+            return false;
         }
     }
     

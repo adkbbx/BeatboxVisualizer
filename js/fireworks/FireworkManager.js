@@ -19,16 +19,24 @@ class FireworkManager {
         
         // Default settings, can be overridden by initialFireworkSettings
         const defaultSettings = {
-            gravity: 0.02,
+            gravity: 0.035,
             maxFireworks: 20,
-            launchHeightFactor: 0.05,
+            launchHeightFactor: 60, // Changed from 0.05 to match HTML slider default
             smokeTrailIntensity: 0.3,
             fireworkSize: 1.0,
             randomSize: false,
             randomSizeMin: 0.5,
             randomSizeMax: 2.0,
             sequentialExplosionDelay: 500,
-            loudSoundTriggerCooldown: 250
+            loudSoundTriggerCooldown: 250,
+            
+            // NEW: Launch control settings with proper defaults
+            launchSpread: 20,
+            launchSpreadMode: 'range',
+            launchAngleMin: 60,
+            launchAngleMax: 120,
+            launchAngleMode: 'range',
+            launchAngleFixed: 90
         };
 
         this.settings = { ...defaultSettings, ...initialFireworkSettings };
@@ -79,7 +87,7 @@ class FireworkManager {
     }
 
     /**
-     * Launch a new firework
+     * Launch a new firework with enhanced position and angle controls
      * @param {number} duration - Duration of the sustained sound in milliseconds
      */
     launchFirework(duration = 250) {
@@ -90,17 +98,17 @@ class FireworkManager {
         // Clean up old exploded fireworks
         this.cleanupOldFireworks();
         
-        // Get launch parameters
+        // Get enhanced launch parameters (now includes angle)
         const params = this.fireworkFactory.calculateLaunchParameters(duration);
         
         // Get a color and image ID from the image system
         const { fireworkColor, selectedCustomImageId } = this.fireworkFactory.getFireworkColor();
         
-        // Create the firework
+        // Create the firework with the new angle-based system
         const firework = this.fireworkFactory.createFirework(
             params.startX, params.startY,
             params.targetX, params.targetY,
-            fireworkColor
+            fireworkColor, params.launchAngle  // NEW: Pass the calculated launch angle
         );
         
         // Set additional properties
@@ -304,8 +312,10 @@ class FireworkManager {
                 // Draw the firework
                 firework.draw(this.ctx, this.colorManager);
                 
-                // Add smoke trail effect
-                this.smokeTrailEffect.createSmokeTrail(firework);
+                // Add smoke trail effect only if intensity > 0
+                if (this.settings.smokeTrailIntensity > 0 && this.smokeTrailEffect) {
+                    this.smokeTrailEffect.createSmokeTrail(firework);
+                }
             }
         }
         

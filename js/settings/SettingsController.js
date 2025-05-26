@@ -3,6 +3,7 @@
  */
 import SettingsTabs from './SettingsTabs.js';
 import AnimationSettingsManager from './AnimationSettingsManager.js';
+import { DEFAULT_SETTINGS } from './DefaultSettings.js';
 
 class SettingsController {
   constructor(panelId, animationController, audioManager, colorManager) {
@@ -34,19 +35,36 @@ class SettingsController {
   initializeEventListeners() {
     // Audio settings
     this.setupRangeControl('sensitivitySlider', 'sensitivityValue', value => {
-      this.audioManager.updateSettings({ sensitivity: value });
+      this.updateAudioSettings({ sensitivity: value });
     });
     
     this.setupRangeControl('thresholdLow', 'thresholdLowValue', value => {
-      this.audioManager.updateSettings({ quietThreshold: value });
+      this.updateAudioSettings({ quietThreshold: value });
     });
     
     this.setupRangeControl('thresholdHigh', 'thresholdHighValue', value => {
-      this.audioManager.updateSettings({ loudThreshold: value });
+      this.updateAudioSettings({ loudThreshold: value });
     });
     
     this.setupRangeControl('suddenThreshold', 'suddenThresholdValue', value => {
-      this.audioManager.updateSettings({ suddenThreshold: value });
+      this.updateAudioSettings({ suddenThreshold: value });
+    });
+    
+    // Test sound settings (now handled by SettingsController)
+    this.setupToggleControl('testSoundEnabled', value => {
+      this.updateAudioSettings({ testSoundEnabled: value });
+      // Update test firework manager
+      if (this.animationController?.fireworkManager?.testFireworkManager) {
+        this.animationController.fireworkManager.testFireworkManager.setSoundEnabled(value);
+      }
+    });
+    
+    this.setupRangeControl('testSoundVolume', 'testSoundVolumeValue', value => {
+      this.updateAudioSettings({ testSoundVolume: value });
+      // Update test firework manager
+      if (this.animationController?.fireworkManager?.testFireworkManager) {
+        this.animationController.fireworkManager.testFireworkManager.setSoundVolume(value);
+      }
     });
     
     // Firework settings
@@ -60,6 +78,27 @@ class SettingsController {
     
     this.setupRangeControl('launchHeight', 'launchHeightValue', value => {
       this.updateFireworkSettings({ launchHeightFactor: value });
+    });
+    
+    // Random launch power toggle
+    this.setupToggleControl('randomLaunchPower', isChecked => {
+      this.updateFireworkSettings({ randomLaunchPower: isChecked });
+      // Show/hide random launch power range controls
+      const rangeControls = document.getElementById('randomLaunchPowerRange');
+      const maxRangeControls = document.getElementById('randomLaunchPowerMaxSetting');
+      if (rangeControls && maxRangeControls) {
+        rangeControls.style.display = isChecked ? 'block' : 'none';
+        maxRangeControls.style.display = isChecked ? 'block' : 'none';
+      }
+    });
+    
+    // Random launch power range controls
+    this.setupRangeControl('randomLaunchPowerMin', 'randomLaunchPowerMinValue', value => {
+      this.updateFireworkSettings({ randomLaunchPowerMin: value });
+    });
+    
+    this.setupRangeControl('randomLaunchPowerMax', 'randomLaunchPowerMaxValue', value => {
+      this.updateFireworkSettings({ randomLaunchPowerMax: value });
     });
     
     this.setupRangeControl('smokeTrailIntensity', 'smokeTrailValue', value => {
@@ -127,20 +166,27 @@ class SettingsController {
       this.updateEffectSettings({ glowEnabled: value });
     });
     
-    this.setupToggleControl('testSoundEnabled', value => {
-      this.updateEffectSettings({ testSoundEnabled: value });
-    });
-    
     this.setupRangeControl('fadeResistance', 'fadeResistanceValue', value => {
       this.updateEffectSettings({ fadeResistance: value });
     });
     
     this.setupRangeControl('imageGravity', 'imageGravityValue', value => {
       this.updateEffectSettings({ imageGravity: value });
+      // Also update global variable for CustomImage
+      window.imageGravityMultiplier = value;
     });
     
-    this.setupRangeControl('testSoundVolume', 'testSoundVolumeValue', value => {
-      this.updateEffectSettings({ testSoundVolume: value });
+    // Background settings
+    this.setupRangeControl('bgOpacity', 'bgOpacityValue', value => {
+      this.updateBackgroundSettings({ opacity: value });
+    });
+    
+    this.setupRangeControl('bgTransitionTime', 'bgTransitionValue', value => {
+      this.updateBackgroundSettings({ transitionTime: value });
+    });
+    
+    this.setupRangeControl('bgDisplayTime', 'bgDisplayValue', value => {
+      this.updateBackgroundSettings({ displayTime: value });
     });
     
     this.setupRangeControl('globalSpeed', 'globalSpeedValue', value => {
@@ -222,6 +268,49 @@ class SettingsController {
     });
   }
   
+  // Update audio settings (handles both audio analysis and test sound settings)
+  updateAudioSettings(settings) {
+    // Update AudioManager for audio analysis settings
+    if (this.audioManager && (settings.sensitivity !== undefined || settings.quietThreshold !== undefined || 
+        settings.loudThreshold !== undefined || settings.suddenThreshold !== undefined)) {
+      this.audioManager.updateSettings(settings);
+    }
+    
+    // Update UI controls immediately
+    if (settings.sensitivity !== undefined) {
+      this.updateRangeControl('sensitivitySlider', 'sensitivityValue', settings.sensitivity);
+    }
+    if (settings.quietThreshold !== undefined) {
+      this.updateRangeControl('thresholdLow', 'thresholdLowValue', settings.quietThreshold);
+    }
+    if (settings.loudThreshold !== undefined) {
+      this.updateRangeControl('thresholdHigh', 'thresholdHighValue', settings.loudThreshold);
+    }
+    if (settings.suddenThreshold !== undefined) {
+      this.updateRangeControl('suddenThreshold', 'suddenThresholdValue', settings.suddenThreshold);
+    }
+    if (settings.testSoundEnabled !== undefined) {
+      this.updateToggleControl('testSoundEnabled', settings.testSoundEnabled);
+    }
+    if (settings.testSoundVolume !== undefined) {
+      this.updateRangeControl('testSoundVolume', 'testSoundVolumeValue', settings.testSoundVolume);
+    }
+    
+    // Save audio settings to localStorage for persistence
+    try {
+      let savedAudioSettings = {};
+      const existingSettings = localStorage.getItem('vibecoding-settings');
+      if (existingSettings) {
+        savedAudioSettings = JSON.parse(existingSettings);
+      }
+      
+      const updatedAudioSettings = { ...savedAudioSettings, ...settings };
+      localStorage.setItem('vibecoding-settings', JSON.stringify(updatedAudioSettings));
+    } catch (error) {
+      console.error('[SettingsController] Failed to save audio settings:', error);
+    }
+  }
+  
   // Update settings in FireworkManager
   updateFireworkSettings(settings) {
     // Save to settings manager
@@ -293,6 +382,32 @@ class SettingsController {
       }
       if (settings.customColors !== undefined) {
         this.colorManager.setCustomColors(settings.customColors);
+      }
+    }
+  }
+  
+  // Update background settings
+  updateBackgroundSettings(settings) {
+    // Update UI controls immediately
+    if (settings.opacity !== undefined) {
+      this.updateRangeControl('bgOpacity', 'bgOpacityValue', settings.opacity);
+      // Update background manager
+      if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+        window.backgroundSystem.backgroundManager.updateSettings({ opacity: settings.opacity });
+      }
+    }
+    if (settings.transitionTime !== undefined) {
+      this.updateRangeControl('bgTransitionTime', 'bgTransitionValue', settings.transitionTime);
+      // Update background manager (convert to milliseconds)
+      if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+        window.backgroundSystem.backgroundManager.updateSettings({ transitionDuration: settings.transitionTime * 1000 });
+      }
+    }
+    if (settings.displayTime !== undefined) {
+      this.updateRangeControl('bgDisplayTime', 'bgDisplayValue', settings.displayTime);
+      // Update background manager (convert to milliseconds)
+      if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+        window.backgroundSystem.backgroundManager.updateSettings({ displayDuration: settings.displayTime * 1000 });
       }
     }
   }
@@ -433,47 +548,69 @@ class SettingsController {
   // Reset settings for the current active tab
   resetCurrentTabSettings() {
     const activeTab = this.tabs.activeTab;
-    
-    // Get default settings from settings manager
-    const defaultSettings = new AnimationSettingsManager().settings;
-    
+
     switch(activeTab) {
       case 'audio':
-        // Reset audio settings
-        const audioDefaults = {
-          sensitivity: 1.5,
-          quietThreshold: 0.06,
-          loudThreshold: 0.4,
-          suddenThreshold: 0.15
-        };
-        this.audioManager.updateSettings(audioDefaults);
+        this.updateAudioSettings(DEFAULT_SETTINGS.audio);
         break;
       case 'fireworks':
-        this.updateFireworkSettings(defaultSettings.fireworks);
-        break;
-      case 'particles':
-        this.updateParticleSettings(defaultSettings.particles);
+        this.updateFireworkSettings(DEFAULT_SETTINGS.fireworks);
+        
+        // Also reset Launch Controls Manager if it exists
+        if (window.launchControlsManager) {
+          window.launchControlsManager.applyPreset('classic');
+          
+          const presetSelect = document.getElementById('launchPreset');
+          if (presetSelect) {
+            presetSelect.value = 'classic';
+            const presetDescription = document.getElementById('presetDescription');
+            if (presetDescription) {
+              presetDescription.textContent = window.launchControlsManager.presets['classic'].description;
+            }
+          }
+        }
         break;
       case 'effects':
-        this.updateEffectSettings(defaultSettings.effects);
+        // Effects tab contains particle settings and other effects
+        this.updateParticleSettings(DEFAULT_SETTINGS.particles);
+        this.updateEffectSettings(DEFAULT_SETTINGS.effects);
         break;
       case 'colors':
-        this.updateColorSettings(defaultSettings.colors);
+        this.updateColorSettings(DEFAULT_SETTINGS.colors);
+        break;
+      case 'images':
+        this.updateEffectSettings(DEFAULT_SETTINGS.effects);
+        this.updateBackgroundSettings(DEFAULT_SETTINGS.background);
         break;
     }
-    
+
     // Update UI to reflect default settings
     this.updateUIFromSettings();
   }
   
   // Update UI controls to reflect current settings
   updateUIFromSettings() {
-    // Get all settings
+    
+    // Get all settings from AnimationSettingsManager
     const fireworkSettings = this.settingsManager.getSettings('fireworks');
     const particleSettings = this.settingsManager.getSettings('particles');
     const effectSettings = this.settingsManager.getSettings('effects');
     const animationSettings = this.settingsManager.getSettings('animation');
     const colorSettings = this.settingsManager.getSettings('colors');
+    
+    // Load audio settings from localStorage (separate storage)
+    let audioSettings = { ...DEFAULT_SETTINGS.audio };
+    
+    try {
+      const savedAudioSettings = localStorage.getItem('vibecoding-settings');
+      if (savedAudioSettings) {
+        const parsedAudioSettings = JSON.parse(savedAudioSettings);
+        audioSettings = { ...audioSettings, ...parsedAudioSettings };
+      }
+    } catch (error) {
+      console.error('[SettingsController] Failed to load audio settings:', error);
+    }
+
     
     // Update ColorManager instance with all loaded color settings
     if (this.colorManager) {
@@ -484,7 +621,14 @@ class SettingsController {
         }
     }
 
-    // Update range controls
+    // Update audio range controls
+    this.updateRangeControl('sensitivitySlider', 'sensitivityValue', audioSettings.sensitivity);
+    this.updateRangeControl('thresholdLow', 'thresholdLowValue', audioSettings.quietThreshold);
+    this.updateRangeControl('thresholdHigh', 'thresholdHighValue', audioSettings.loudThreshold);
+    this.updateRangeControl('suddenThreshold', 'suddenThresholdValue', audioSettings.suddenThreshold);
+    this.updateRangeControl('testSoundVolume', 'testSoundVolumeValue', audioSettings.testSoundVolume);
+
+    // Update other range controls
     this.updateRangeControl('fireworkGravity', 'gravityValue', fireworkSettings.gravity);
     this.updateRangeControl('maxFireworks', 'maxFireworksValue', fireworkSettings.maxFireworks);
     this.updateRangeControl('launchHeight', 'launchHeightValue', fireworkSettings.launchHeightFactor);
@@ -492,6 +636,8 @@ class SettingsController {
     this.updateRangeControl('fireworkSize', 'fireworkSizeValue', fireworkSettings.fireworkSize);
     this.updateRangeControl('randomSizeMin', 'randomSizeMinValue', fireworkSettings.randomSizeMin);
     this.updateRangeControl('randomSizeMax', 'randomSizeMaxValue', fireworkSettings.randomSizeMax);
+    this.updateRangeControl('randomLaunchPowerMin', 'randomLaunchPowerMinValue', fireworkSettings.randomLaunchPowerMin);
+    this.updateRangeControl('randomLaunchPowerMax', 'randomLaunchPowerMaxValue', fireworkSettings.randomLaunchPowerMax);
     
     this.updateRangeControl('particleCount', 'particleCountValue', particleSettings.count);
     this.updateRangeControl('particleLifespan', 'particleLifespanValue', particleSettings.lifespan * 60);
@@ -503,15 +649,21 @@ class SettingsController {
     this.updateRangeControl('testSoundVolume', 'testSoundVolumeValue', effectSettings.testSoundVolume);
     this.updateRangeControl('globalSpeed', 'globalSpeedValue', animationSettings.globalSpeed);
     
+    // Update background controls with defaults
+    this.updateRangeControl('bgOpacity', 'bgOpacityValue', DEFAULT_SETTINGS.background.opacity);
+    this.updateRangeControl('bgTransitionTime', 'bgTransitionValue', DEFAULT_SETTINGS.background.transitionTime);
+    this.updateRangeControl('bgDisplayTime', 'bgDisplayValue', DEFAULT_SETTINGS.background.displayTime);
+    
     this.updateRangeControl('colorIntensity', 'colorIntensityValue', colorSettings.intensity);
     
     // Update toggle controls
     this.updateToggleControl('backgroundRemovalEnabled', effectSettings.backgroundRemovalEnabled);
     this.updateToggleControl('imageRotation', effectSettings.imageRotation);
-    this.updateToggleControl('testSoundEnabled', effectSettings.testSoundEnabled);
+    this.updateToggleControl('testSoundEnabled', audioSettings.testSoundEnabled);
     this.updateToggleControl('useMultiColor', particleSettings.useMultiColor);
     this.updateToggleControl('glowEffect', effectSettings.glowEnabled);
     this.updateToggleControl('randomFireworkSize', fireworkSettings.randomSize);
+    this.updateToggleControl('randomLaunchPower', fireworkSettings.randomLaunchPower);
     
     // Show/hide random size range controls based on toggle state
     const rangeControls = document.getElementById('randomSizeRange');
@@ -519,6 +671,14 @@ class SettingsController {
     if (rangeControls && maxRangeControls) {
       rangeControls.style.display = fireworkSettings.randomSize ? 'block' : 'none';
       maxRangeControls.style.display = fireworkSettings.randomSize ? 'block' : 'none';
+    }
+    
+    // Show/hide random launch power range controls based on toggle state
+    const launchPowerRangeControls = document.getElementById('randomLaunchPowerRange');
+    const launchPowerMaxRangeControls = document.getElementById('randomLaunchPowerMaxSetting');
+    if (launchPowerRangeControls && launchPowerMaxRangeControls) {
+      launchPowerRangeControls.style.display = fireworkSettings.randomLaunchPower ? 'block' : 'none';
+      launchPowerMaxRangeControls.style.display = fireworkSettings.randomLaunchPower ? 'block' : 'none';
     }
     
     // Update select controls

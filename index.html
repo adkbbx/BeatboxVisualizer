@@ -161,8 +161,8 @@
                     <p class="setting-description">How quiet your voice can be to still launch fireworks.</p>
                 </div>
                 <div class="setting">
-                    <label for="thresholdHigh">Burst Sensitivity: <span id="thresholdHighValue">0.4</span></label>
-                    <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.05" value="0.4">
+                    <label for="thresholdHigh">Burst Sensitivity: <span id="thresholdHighValue">0.3</span></label>
+                    <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.05" value="0.3">
                     <p class="setting-description">How loud you need to be to explode all fireworks at once.</p>
                 </div>
                 <div class="setting">
@@ -188,48 +188,209 @@
             <!-- Fireworks Tab Pane -->
             <div class="tab-pane" id="fireworks-tab" data-tab-content="fireworks">
                 <h4>🎆 Fireworks Settings</h4>
-                <div class="setting">
-                    <label for="fireworkSize">Firework Size: <span id="fireworkSizeValue">1.0</span></label>
-                    <input type="range" id="fireworkSize" min="0.5" max="5.0" step="0.1" value="1.0">
-                    <p class="setting-description">Controls how big fireworks and uploaded images appear during explosions.</p>
+                
+                <!-- Launch Controls Section -->
+                <div class="settings-section launch-controls-section">
+                    <h4 class="section-title">🚀 Launch Controls</h4>
+                    
+                    <!-- Launch Position Settings -->
+                    <div class="setting-group">
+                        <h5 class="group-title">🎯 Launch Position</h5>
+                        
+                        <div class="setting">
+                            <label for="launchSpreadMode">Position Mode:</label>
+                            <select id="launchSpreadMode" class="setting-select">
+                                <option value="center">Center Only</option>
+                                <option value="range" selected>Range from Center</option>
+                                <option value="random">Random Across Screen</option>
+                            </select>
+                            <p class="setting-description">How fireworks are positioned along the bottom of the screen</p>
+                        </div>
+                        
+                        <div class="setting" id="launchSpreadSetting">
+                            <label for="launchSpread">Launch Spread: <span id="launchSpreadValue">20</span>%</label>
+                            <input type="range" id="launchSpread" min="0" max="100" step="5" value="20" class="setting-slider">
+                            <div class="range-labels">
+                                <span>Center Only</span>
+                                <span>Full Width</span>
+                            </div>
+                            <p class="setting-description">Width of the launch zone (0% = center point, 100% = entire screen width)</p>
+                        </div>
+                    </div>
+
+                    <!-- Launch Angle Settings -->
+                    <div class="setting-group">
+                        <h5 class="group-title">📐 Launch Angle</h5>
+                        
+                        <div class="setting">
+                            <label for="launchAngleMode">Angle Mode:</label>
+                            <select id="launchAngleMode" class="setting-select">
+                                <option value="range" selected>Angle Range</option>
+                                <option value="fixed">Fixed Angle</option>
+                                <option value="random">Random Angle</option>
+                            </select>
+                            <p class="setting-description">How launch angles are determined</p>
+                        </div>
+                        
+                        <div class="setting" id="launchAngleRangeSetting">
+                            <label for="launchAngleCenter">Center Angle: <span id="launchAngleCenterValue">90</span>°</label>
+                            <input type="range" id="launchAngleCenter" min="45" max="135" step="5" value="90" class="setting-slider">
+                            <div class="range-labels">
+                                <span>45° (Right)</span>
+                                <span>90° (Up)</span>
+                                <span>135° (Left)</span>
+                            </div>
+                            <p class="setting-description">The main direction fireworks will launch toward</p>
+                        </div>
+                        
+                        <div class="setting" id="launchAngleSpreadSetting">
+                            <label for="launchAngleSpread">Angle Spread: <span id="launchAngleSpreadValue">30</span>°</label>
+                            <input type="range" id="launchAngleSpread" min="0" max="45" step="5" value="30" class="setting-slider">
+                            <div class="range-labels">
+                                <span>0° (Precise)</span>
+                                <span>45° (Wide Variety)</span>
+                            </div>
+                            <p class="setting-description">How much angles can vary from the center (±spread)</p>
+                        </div>
+                        
+                        <div class="setting" id="launchAngleFixedSetting" style="display: none;">
+                            <label for="launchAngleFixed">Fixed Angle: <span id="launchAngleFixedValue">90</span>°</label>
+                            <input type="range" id="launchAngleFixed" min="45" max="165" step="5" value="90" class="setting-slider">
+                            <div class="range-labels">
+                                <span>45° (Right)</span>
+                                <span>90° (Straight Up)</span>
+                                <span>135° (Left)</span>
+                            </div>
+                            <p class="setting-description">Fixed launch angle for all fireworks</p>
+                        </div>
+                    </div>
+
+                    <!-- Launch Power Settings -->
+                    <div class="setting-group">
+                        <h5 class="group-title">🚀 Launch Power</h5>
+                        
+                        <div class="setting">
+                            <label for="launchHeight">Launch Power: <span id="launchHeightValue">60</span>%</label>
+                            <input type="range" id="launchHeight" min="10" max="100" step="5" value="60" class="setting-slider">
+                            <div class="range-labels">
+                                <span>10% (Low)</span>
+                                <span>100% (High)</span>
+                            </div>
+                            <p class="setting-description">How high fireworks reach (10% = 10% of screen height, 100% = 90% of screen height)</p>
+                        </div>
+                        
+                        <div class="setting toggle-setting">
+                            <label for="randomLaunchPower">Random Launch Power:</label>
+                            <label class="switch">
+                                <input type="checkbox" id="randomLaunchPower" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <p class="setting-description">Each firework will have a different random launch power for more variety.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomLaunchPowerRange" style="display: none;">
+                            <label for="randomLaunchPowerMin">Minimum Power: <span id="randomLaunchPowerMinValue">30</span>%</label>
+                            <input type="range" id="randomLaunchPowerMin" min="10" max="80" step="5" value="30" class="setting-slider">
+                            <div class="range-labels">
+                                <span>10% (Very Low)</span>
+                                <span>80% (High)</span>
+                            </div>
+                            <p class="setting-description">Minimum launch power for random fireworks.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomLaunchPowerMaxSetting" style="display: none;">
+                            <label for="randomLaunchPowerMax">Maximum Power: <span id="randomLaunchPowerMaxValue">90</span>%</label>
+                            <input type="range" id="randomLaunchPowerMax" min="20" max="100" step="5" value="90" class="setting-slider">
+                            <div class="range-labels">
+                                <span>20% (Low)</span>
+                                <span>100% (Maximum)</span>
+                            </div>
+                            <p class="setting-description">Maximum launch power for random fireworks.</p>
+                        </div>
+                    </div>
+
+                    <!-- Launch Presets -->
+                    <div class="setting-group">
+                        <h5 class="group-title">⚡ Quick Presets</h5>
+                        
+                        <div class="setting">
+                            <label for="launchPreset">Launch Pattern:</label>
+                            <select id="launchPreset" class="setting-select">
+                                <option value="">-- Select Preset --</option>
+                                <option value="classic">🎆 Classic (Center, Slight Spread)</option>
+                                <option value="wide-celebration">🎉 Wide Celebration (Full Screen)</option>
+                                <option value="fountain">⛲ Fountain (Center, Wide Angles)</option>
+                                <option value="rocket-straight">🚀 Straight Rockets (Vertical Only)</option>
+                                <option value="left-cascade">↖️ Left Cascade</option>
+                                <option value="right-cascade">↗️ Right Cascade</option>
+                                <option value="chaos">🌪️ Chaos Mode (Random Everything)</option>
+                            </select>
+                            <p class="setting-description" id="presetDescription">Choose a preset to quickly configure launch settings</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="setting toggle-setting">
-                    <label for="randomFireworkSize">Random Firework Sizes:</label>
-                    <label class="switch">
-                        <input type="checkbox" id="randomFireworkSize">
-                        <span class="slider round"></span>
-                    </label>
-                    <p class="setting-description">Each firework will have a different random size for more variety.</p>
+                
+                <!-- Firework Appearance Section -->
+                <div class="settings-section">
+                    <h4 class="section-title">✨ Firework Appearance</h4>
+                    
+                    <div class="setting-group">
+                        <h5 class="group-title">📏 Size Settings</h5>
+                        
+                        <div class="setting">
+                            <label for="fireworkSize">Firework Size: <span id="fireworkSizeValue">1.0</span></label>
+                            <input type="range" id="fireworkSize" min="0.5" max="5.0" step="0.1" value="1.0">
+                            <p class="setting-description">Controls how big fireworks and uploaded images appear during explosions.</p>
+                        </div>
+                        
+                        <div class="setting toggle-setting">
+                            <label for="randomFireworkSize">Random Firework Sizes:</label>
+                            <label class="switch">
+                                <input type="checkbox" id="randomFireworkSize">
+                                <span class="slider round"></span>
+                            </label>
+                            <p class="setting-description">Each firework will have a different random size for more variety.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomSizeRange" style="display: none;">
+                            <label for="randomSizeMin">Smallest Size: <span id="randomSizeMinValue">0.5</span></label>
+                            <input type="range" id="randomSizeMin" min="0.5" max="2.0" step="0.1" value="0.5">
+                            <p class="setting-description">Minimum size for random fireworks.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomSizeMaxSetting" style="display: none;">
+                            <label for="randomSizeMax">Largest Size: <span id="randomSizeMaxValue">2.0</span></label>
+                            <input type="range" id="randomSizeMax" min="2.0" max="5.0" step="0.1" value="2.0">
+                            <p class="setting-description">Maximum size for random fireworks.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="setting" id="randomSizeRange" style="display: none;">
-                    <label for="randomSizeMin">Smallest Size: <span id="randomSizeMinValue">0.5</span></label>
-                    <input type="range" id="randomSizeMin" min="0.5" max="2.0" step="0.1" value="0.5">
-                    <p class="setting-description">Minimum size for random fireworks.</p>
-                </div>
-                <div class="setting" id="randomSizeMaxSetting" style="display: none;">
-                    <label for="randomSizeMax">Largest Size: <span id="randomSizeMaxValue">2.0</span></label>
-                    <input type="range" id="randomSizeMax" min="2.0" max="5.0" step="0.1" value="2.0">
-                    <p class="setting-description">Maximum size for random fireworks.</p>
-                </div>
-                <div class="setting">
-                    <label for="launchHeight">Launch Power: <span id="launchHeightValue">10</span></label>
-                    <input type="range" id="launchHeight" min="10" max="100" step="10" value="10">
-                    <p class="setting-description">How high and fast fireworks are launched into the sky.</p>
-                </div>
-                <div class="setting">
-                    <label for="maxFireworks">Max Fireworks on Screen: <span id="maxFireworksValue">15</span></label>
-                    <input type="range" id="maxFireworks" min="1" max="50" step="1" value="15">
-                    <p class="setting-description">Maximum number of fireworks that can be active at the same time.</p>
-                </div>
-                <div class="setting">
-                    <label for="fireworkGravity">Gravity Strength: <span id="gravityValue">0.02</span></label>
-                    <input type="range" id="fireworkGravity" min="0.01" max="0.2" step="0.005" value="0.02">
-                    <p class="setting-description">How quickly fireworks fall back down (higher = faster falling).</p>
-                </div>
-                <div class="setting">
-                    <label for="smokeTrailIntensity">Smoke Trail: <span id="smokeTrailValue">0.3</span></label>
-                    <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.3">
-                    <p class="setting-description">Intensity of the smoke trail behind rising fireworks.</p>
+                
+                <!-- Physics & Behavior Section -->
+                <div class="settings-section">
+                    <h4 class="section-title">⚙️ Physics & Behavior</h4>
+                    
+                    <div class="setting-group">
+                        <h5 class="group-title">🌍 Physics Settings</h5>
+                        
+                        <div class="setting">
+                            <label for="maxFireworks">Max Fireworks on Screen: <span id="maxFireworksValue">15</span></label>
+                            <input type="range" id="maxFireworks" min="1" max="50" step="1" value="15">
+                            <p class="setting-description">Maximum number of fireworks that can be active at the same time.</p>
+                        </div>
+                        
+                        <div class="setting">
+                            <label for="fireworkGravity">Gravity Strength: <span id="gravityValue">0.035</span></label>
+                            <input type="range" id="fireworkGravity" min="0.01" max="0.2" step="0.005" value="0.035">
+                            <p class="setting-description">How quickly fireworks fall back down (higher = faster falling).</p>
+                        </div>
+                        
+                        <div class="setting">
+                            <label for="smokeTrailIntensity">Smoke Trail: <span id="smokeTrailValue">0.3</span></label>
+                            <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.3">
+                            <p class="setting-description">Intensity of the smoke trail behind rising fireworks.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -9,12 +9,22 @@ class AnimationSettingsManager {
       fireworks: {
         gravity: 0.02,
         maxFireworks: 20,
-        launchHeightFactor: 0.15,
+        launchHeightFactor: 10, // Changed from 0.15 to match HTML slider default
         smokeTrailIntensity: 0.3,
         fireworkSize: 1.0,
         randomSize: false,
         randomSizeMin: 0.5,
-        randomSizeMax: 2.0
+        randomSizeMax: 2.0,
+        
+        // NEW: Launch Position Settings
+        launchSpread: 20,           // 0-100: percentage of screen width
+        launchSpreadMode: 'range',  // 'range', 'random', 'center'
+        
+        // NEW: Launch Angle Settings  
+        launchAngleMin: 60,         // 45-165 degrees
+        launchAngleMax: 120,        // 45-165 degrees
+        launchAngleMode: 'range',   // 'range', 'random', 'fixed'
+        launchAngleFixed: 90        // Fixed angle when mode is 'fixed'
       },
       particles: {
         count: 120,
