@@ -8,8 +8,8 @@ export const DEFAULT_SETTINGS = {
   audio: {
     sensitivity: 1.5,
     quietThreshold: 0.06,
-    loudThreshold: 0.3,
-    suddenThreshold: 0.15,
+    loudThreshold: 0.18, // Lowered for better bubble sensitivity
+    suddenThreshold: 0.12, // Slightly lowered for quicker response
     testSoundEnabled: true,
     testSoundVolume: 0.3
   },
@@ -33,6 +33,34 @@ export const DEFAULT_SETTINGS = {
     launchAngleMax: 120,
     launchAngleMode: 'range',
     launchAngleFixed: 90
+  },
+
+  bubbles: {
+    gravity: 0.015,
+    maxBubbles: 15,
+    riseSpeed: 2.0,
+    riseSpeedVariation: 0.5,
+    bubbleSize: 1.0,
+    randomSize: false,
+    randomSizeMin: 0.5,
+    randomSizeMax: 2.0,
+    launchSpread: 30,
+    launchSpreadMode: 'range',
+    bubbleClusterSize: 3,
+    clusterSpread: 20,
+    randomRiseSpeed: false,
+    randomRiseSpeedMin: 1.0,
+    randomRiseSpeedMax: 4.0,
+    autoPopHeight: 0.2,
+    randomPopHeight: false,
+    randomPopHeightMin: 0.15,
+    randomPopHeightMax: 0.40,
+    wobbleIntensity: 1.0,
+    buoyancy: 0.98,
+    sequentialPopDelay: 300,
+    sequentialPopExplosionDelay: 400,
+    loudSoundTriggerCooldown: 250,
+    popSensitivity: 0.8
   },
 
   particles: {

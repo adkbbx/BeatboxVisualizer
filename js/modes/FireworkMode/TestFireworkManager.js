@@ -1,7 +1,7 @@
 /**
  * TestFireworkManager handles test button fireworks that auto-explode at target
  */
-import SoundEffects from './SoundEffects.js';
+import SoundEffects from '../../SoundEffects.js';
 
 class TestFireworkManager {
     constructor(fireworkManager) {

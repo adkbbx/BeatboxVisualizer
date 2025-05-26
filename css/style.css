@@ -199,6 +199,8 @@ button:disabled {
     background-color: #2980b9;
 }
 
+/* Old mode selector styles removed - now using minimal toggle */
+
 /* Visualization Container */
 .visualization-container {
     display: flex;
@@ -536,19 +538,182 @@ footer {
     }
 }
 
+/* Mobile Mode Toggle - Above control panel */
+.mobile-mode-toggle {
+    display: none; /* Hidden on desktop */
+    text-align: center;
+    margin: 8px 0 12px 0; /* Reduced margins, especially top */
+    padding: 5px; /* Reduced padding */
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
+}
+
 @media (max-width: 767px) {
-    .control-panel {
-        flex-wrap: wrap;
+    .mobile-mode-toggle {
+        display: block;
+        /* Ensure it's not cut off by viewport */
+        min-height: 60px; /* Minimum height to contain the toggle */
+        overflow: visible; /* Ensure toggle is fully visible */
     }
     
-    button {
-        min-width: 45%;
+    /* Ensure app container has enough top padding for mobile toggle */
+    .app-container {
+        padding-top: 16px !important;
+    }
+    
+    /* Mobile toggle styling - larger than desktop */
+    .mode-toggle.mobile-toggle {
+        /* Positioning */
+        position: relative;
+        margin: 0 auto;
+        z-index: 11;
+        
+        /* Larger sizing for mobile */
+        width: 80px;
+        height: 40px;
+        
+        /* Visual styling */
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        
+        /* Enhanced styling for mobile */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        
+        /* Touch-friendly */
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+        touch-action: manipulation;
+        
+        /* Interaction */
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        pointer-events: auto;
+        
+        /* Flexbox layout */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 8px;
+        
+        /* Smooth transitions */
+        transition: all 0.25s ease;
+    }
+    
+    .mode-toggle.mobile-toggle:hover {
+        background: rgba(0, 0, 0, 0.8);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    .mode-toggle.mobile-toggle:active {
+        background: rgba(0, 0, 0, 0.9);
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Mobile toggle mode options */
+    .mode-toggle.mobile-toggle .mode-option {
+        /* Sizing for mobile */
+        width: 24px;
+        height: 24px;
+        
+        /* Typography */
+        font-size: 16px;
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+        
+        /* Centering */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        /* Visual state */
+        opacity: 0.6;
+        transition: all 0.25s ease;
+        
+        /* Interaction */
+        cursor: pointer;
+        pointer-events: auto;
+        
+        /* Layering - above slider */
+        position: relative;
+        z-index: 12;
+        
+        /* Accessibility */
+        border-radius: 12px;
+    }
+    
+    .mode-toggle.mobile-toggle .mode-option:hover {
+        opacity: 0.8;
+    }
+    
+    .mode-toggle.mobile-toggle .mode-option.active {
+        opacity: 1;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    }
+    
+    /* Mobile toggle slider */
+    .mode-toggle.mobile-toggle .mode-slider {
+        /* Positioning */
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        
+        /* Sizing for mobile - smaller to fit within frame */
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        
+        /* Visual styling */
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        box-shadow: 
+            0 3px 6px rgba(0, 0, 0, 0.3),
+            0 2px 4px rgba(0, 0, 0, 0.2);
+        
+        /* Animation */
+        transition: all 0.3s ease;
+        
+        /* Layering - behind emojis */
+        z-index: 1;
+    }
+    
+    /* Mobile bubble mode state */
+    .mode-toggle.mobile-toggle.bubble-mode .mode-slider {
+        /* Move to right side - adjusted for smaller slider */
+        transform: translateX(42px);
+        
+        /* Change color */
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    }
+}
+
+/* Mobile Control Panel - 2x2 Grid */
+@media (max-width: 767px) {
+    .control-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 12px;
+        max-width: 400px;
+        margin: 0 auto;
+        margin-top: 0; /* Remove extra margin since toggle container has padding */
+    }
+    
+    .control-panel button {
+        min-width: unset;
+        width: 100%;
+        min-height: 60px;
     }
     
     #animationCanvas, #backgroundCanvas {
         height: 350px;
     }
 }
+
+
 
 /* Add a subtle animation to the entire app */
 @keyframes fadeIn {
@@ -582,4 +747,312 @@ footer {
 #togglePanels:hover {
     background-color: #7f8c8d !important;
     color: #ffffff !important;
+}
+
+/* Desktop Toggle - Integrated into tab navigation */
+.mode-toggle.desktop-toggle {
+    /* Positioning within tab navigation */
+    position: relative;
+    margin-left: auto;
+    z-index: 1;
+    
+    /* Compact sizing for tab header */
+    width: 60px;
+    height: 30px;
+    
+    /* Visual styling */
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    
+    /* Subtle styling to blend with tabs */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    
+    /* Interaction */
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    
+    /* Simple flexbox layout */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px;
+    
+    /* Smooth transitions */
+    transition: all 0.25s ease;
+}
+
+/* Hide desktop toggle on mobile */
+@media (max-width: 768px) {
+    .mode-toggle.desktop-toggle {
+        display: none;
+    }
+}
+
+/* Hide mobile mode toggle on desktop */
+@media (min-width: 769px) {
+    .mobile-mode-toggle {
+        display: none;
+    }
+}
+
+/* Tab navigation integration */
+.uploader-tab-navigation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.uploader-tab-navigation .mode-toggle.desktop-toggle {
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.mode-toggle.desktop-toggle:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.mode-toggle.desktop-toggle:active {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+/* Desktop toggle mode options */
+.mode-toggle.desktop-toggle .mode-option {
+    /* Sizing for desktop */
+    width: 18px;
+    height: 18px;
+    
+    /* Typography */
+    font-size: 12px;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+    
+    /* Centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Visual state */
+    opacity: 0.6;
+    transition: all 0.25s ease;
+    
+    /* Interaction */
+    cursor: pointer;
+    
+    /* Layering - above slider */
+    position: relative;
+    z-index: 3;
+    
+    /* Accessibility */
+    border-radius: 9px;
+}
+
+.mode-toggle.desktop-toggle .mode-option:hover {
+    opacity: 0.8;
+}
+
+.mode-toggle.desktop-toggle .mode-option.active {
+    opacity: 1;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+/* Desktop toggle slider */
+.mode-toggle.desktop-toggle .mode-slider {
+    /* Positioning */
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    
+    /* Sizing for desktop */
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    
+    /* Visual styling */
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        0 1px 2px rgba(0, 0, 0, 0.1);
+    
+    /* Animation */
+    transition: all 0.3s ease;
+    
+    /* Layering - behind emojis */
+    z-index: 1;
+}
+
+/* Desktop bubble mode state */
+.mode-toggle.desktop-toggle.bubble-mode .mode-slider {
+    /* Move to right side */
+    transform: translateX(30px);
+    
+    /* Change color */
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+/* Mobile responsive design - CHOOSE YOUR PREFERRED OPTION */
+
+/* OPTION 1: Top Center (Current) */
+@media (max-width: 768px) {
+    .mode-toggle {
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+        
+        /* Smaller sizing */
+        width: 60px;
+        height: 32px;
+        border-radius: 16px;
+        padding: 0 5px;
+    }
+}
+
+/* OPTION 2: Top Left Corner - Uncomment to use */
+/*
+@media (max-width: 768px) {
+    .mode-toggle {
+        top: 10px;
+        left: 10px;
+        right: auto;
+        transform: none;
+        
+        width: 60px;
+        height: 32px;
+        border-radius: 16px;
+        padding: 0 5px;
+    }
+}
+*/
+
+/* OPTION 3: Top Right Corner (same as desktop) - Uncomment to use */
+/*
+@media (max-width: 768px) {
+    .mode-toggle {
+        top: 10px;
+        right: 10px;
+        left: auto;
+        transform: none;
+        
+        width: 60px;
+        height: 32px;
+        border-radius: 16px;
+        padding: 0 5px;
+    }
+}
+*/
+
+/* OPTION 4: Bottom Center (floating) - Uncomment to use */
+/*
+@media (max-width: 768px) {
+    .mode-toggle {
+        top: auto;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+        
+        width: 60px;
+        height: 32px;
+        border-radius: 16px;
+        padding: 0 5px;
+    }
+}
+*/
+
+/* OPTION 5: Bottom Right Corner - Uncomment to use */
+/*
+@media (max-width: 768px) {
+    .mode-toggle {
+        top: auto;
+        bottom: 20px;
+        right: 15px;
+        left: auto;
+        transform: none;
+        
+        width: 60px;
+        height: 32px;
+        border-radius: 16px;
+        padding: 0 5px;
+    }
+}
+*/
+
+/* Small screens - applies to whichever option you choose above */
+@media (max-width: 480px) {
+    .mode-toggle {
+        width: 55px;
+        height: 28px;
+        border-radius: 14px;
+        padding: 0 4px;
+    }
+    
+    .mode-option {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+    }
+    
+    .mode-slider {
+        width: 25px;
+        height: 25px;
+        border-radius: 12px;
+    }
+    
+    .mode-toggle.bubble-mode .mode-slider {
+        transform: translateX(26px);
+    }
+}
+
+/* Accessibility enhancements */
+.mode-toggle:focus-visible {
+    outline: 3px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+.mode-option:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 1px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .mode-toggle {
+        background: #000000;
+        border: 3px solid #ffffff;
+    }
+    
+    .mode-slider {
+        box-shadow: 0 0 0 2px #ffffff;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .mode-toggle,
+    .mode-option,
+    .mode-slider {
+        transition: none;
+    }
+    
+    .mode-option:hover,
+    .mode-option.active {
+        transform: none;
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: light) {
+    .mode-toggle {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(0, 0, 0, 0.2);
+        color: #000000;
+    }
+    
+    .mode-option.active {
+        text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
 }

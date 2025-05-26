@@ -57,6 +57,10 @@ class SettingsController {
       if (this.animationController?.fireworkManager?.testFireworkManager) {
         this.animationController.fireworkManager.testFireworkManager.setSoundEnabled(value);
       }
+      // Update test bubble manager
+      if (this.animationController?.bubbleManager?.testBubbleManager) {
+        this.animationController.bubbleManager.testBubbleManager.setSoundEnabled(value);
+      }
     });
     
     this.setupRangeControl('testSoundVolume', 'testSoundVolumeValue', value => {
@@ -64,6 +68,10 @@ class SettingsController {
       // Update test firework manager
       if (this.animationController?.fireworkManager?.testFireworkManager) {
         this.animationController.fireworkManager.testFireworkManager.setSoundVolume(value);
+      }
+      // Update test bubble manager
+      if (this.animationController?.bubbleManager?.testBubbleManager) {
+        this.animationController.bubbleManager.testBubbleManager.setSoundVolume(value);
       }
     });
     

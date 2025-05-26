@@ -12,6 +12,8 @@ class SoundEffects {
         // Audio buffers for sounds
         this.launchBuffer = null;
         this.burstBuffer = null;
+        this.bubbleLaunchBuffer = null;
+        this.bubblePopBuffer = null;
         this.useCustomSounds = false;
     }
 
@@ -65,7 +67,29 @@ class SoundEffects {
             // No custom burst sound found, will use synthesized
         }
 
-        this.useCustomSounds = !!(this.launchBuffer || this.burstBuffer);
+        try {
+            // Try to load bubble launch sound
+            const bubbleLaunchResponse = await fetch('sounds/bubble_launch.mp3');
+            if (bubbleLaunchResponse.ok) {
+                const bubbleLaunchData = await bubbleLaunchResponse.arrayBuffer();
+                this.bubbleLaunchBuffer = await this.audioContext.decodeAudioData(bubbleLaunchData);
+            }
+        } catch (error) {
+            // No custom bubble launch sound found, will use synthesized
+        }
+
+        try {
+            // Try to load bubble pop sound
+            const bubblePopResponse = await fetch('sounds/bubble_pop.mp3');
+            if (bubblePopResponse.ok) {
+                const bubblePopData = await bubblePopResponse.arrayBuffer();
+                this.bubblePopBuffer = await this.audioContext.decodeAudioData(bubblePopData);
+            }
+        } catch (error) {
+            // No custom bubble pop sound found, will use synthesized
+        }
+
+        this.useCustomSounds = !!(this.launchBuffer || this.burstBuffer || this.bubbleLaunchBuffer || this.bubblePopBuffer);
     }
 
     /**
@@ -173,6 +197,91 @@ class SoundEffects {
         gain.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.2);
         
         noise.start(currentTime);
+    }
+
+    /**
+     * Play bubble launch sound
+     */
+    async playBubbleLaunchSound() {
+        if (!this.initialized) {
+            await this.initialize();
+        }
+        
+        if (!this.audioContext) {
+            return;
+        }
+
+        if (this.bubbleLaunchBuffer) {
+            this.playBuffer(this.bubbleLaunchBuffer);
+        } else {
+            this.playSynthBubbleLaunch();
+        }
+    }
+
+    /**
+     * Play bubble pop sound
+     */
+    async playBubblePopSound() {
+        if (!this.initialized) {
+            await this.initialize();
+        }
+        
+        if (!this.audioContext) {
+            return;
+        }
+
+        if (this.bubblePopBuffer) {
+            this.playBuffer(this.bubblePopBuffer);
+        } else {
+            this.playSynthBubblePop();
+        }
+    }
+
+    /**
+     * Simple synthesized bubble launch sound
+     */
+    playSynthBubbleLaunch() {
+        const currentTime = this.audioContext.currentTime;
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+        
+        // Gentle bubbling sound
+        osc.frequency.setValueAtTime(150, currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, currentTime + 0.3);
+        osc.frequency.exponentialRampToValueAtTime(200, currentTime + 0.6);
+        
+        gain.gain.setValueAtTime(0, currentTime);
+        gain.gain.linearRampToValueAtTime(this.masterVolume * 0.3, currentTime + 0.1);
+        gain.gain.linearRampToValueAtTime(this.masterVolume * 0.2, currentTime + 0.4);
+        gain.gain.linearRampToValueAtTime(0, currentTime + 0.6);
+        
+        osc.start(currentTime);
+        osc.stop(currentTime + 0.6);
+    }
+
+    /**
+     * Simple synthesized bubble pop sound
+     */
+    playSynthBubblePop() {
+        const currentTime = this.audioContext.currentTime;
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+        
+        // Quick pop sound
+        osc.frequency.setValueAtTime(800, currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, currentTime + 0.1);
+        
+        gain.gain.setValueAtTime(this.masterVolume * 0.4, currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, currentTime + 0.1);
+        
+        osc.start(currentTime);
+        osc.stop(currentTime + 0.1);
     }
 
     /**

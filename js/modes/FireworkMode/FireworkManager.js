@@ -2,9 +2,9 @@
  * Manages firework effects and animations
  * Refactored to use separate modules for firework creation and management
  */
-import SmokeTrailEffect from '../SmokeTrailEffect.js';
+import SmokeTrailEffect from '../../SmokeTrailEffect.js';
 import FireworkFactory from './FireworkFactory.js';
-import TestFireworkManager from '../TestFireworkManager.js';
+import TestFireworkManager from './TestFireworkManager.js';
 
 class FireworkManager {
     constructor(ctx, colorManager, particleManager, initialFireworkSettings = null) {

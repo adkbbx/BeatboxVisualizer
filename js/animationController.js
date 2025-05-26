@@ -1,6 +1,7 @@
-import ParticleManager from './particles/ParticleManager.js';
-import FireworkManager from './fireworks/FireworkManager.js';
+import ParticleManager from './modes/FireworkMode/ParticleManager.js';
+import FireworkManager from './modes/FireworkMode/FireworkManager.js';
 import BackgroundManager from './BackgroundManager.js';
+import BubbleManager from './modes/BubbleMode/BubbleManager.js';
 
 /**
  * Main animation controller that coordinates all animation components
@@ -12,6 +13,9 @@ class AnimationController {
     this.isActive = false;
     this.lastTime = 0;
     this.fireworks = [];
+    
+    // Mode management
+    this.currentMode = 'firework'; // Default mode
     
     // Set up for double-buffer technique
     this.copyCanvas = null;
@@ -28,6 +32,7 @@ class AnimationController {
     const particleAndEffectSettings = { ...(initialSettings.particles || {}), ...(initialSettings.effects || {}) };
     this.particleManager = new ParticleManager(this.ctx, this.colorManager, particleAndEffectSettings);
     this.fireworkManager = new FireworkManager(this.ctx, this.colorManager, this.particleManager, initialSettings.fireworks || {});
+    this.bubbleManager = null; // Will be initialized when bubble mode is first used
     // Note: BackgroundManager is handled by DirectBackgroundUploader and connected via main.js
     this.backgroundManager = null; // Will be set by main.js after DirectBackgroundUploader initializes
     // Note: BackgroundManager settings are handled differently due to window.backgroundSystem
@@ -42,6 +47,26 @@ class AnimationController {
   }
   
   /**
+   * Switch animation mode
+   * @param {string} newMode - The mode to switch to ('firework' or 'bubble')
+   */
+  switchMode(newMode) {
+    if (this.currentMode === newMode) return;
+    
+    this.currentMode = newMode;
+    
+    // Initialize bubble manager if switching to bubble mode and it doesn't exist
+    if (newMode === 'bubble' && !this.bubbleManager) {
+      this.bubbleManager = new BubbleManager(this.ctx, this.colorManager, this.particleManager);
+      
+      // Update sound effects if audio is ready
+      if (this.audioReady && this.bubbleManager) {
+        this.bubbleManager.updateSoundEffects();
+      }
+    }
+  }
+  
+  /**
    * Update animation settings
    */
   updateSettings(settings) {
@@ -53,6 +78,10 @@ class AnimationController {
     // Forward settings to managers
     if (settings.fireworks && this.fireworkManager) {
       this.fireworkManager.updateSettings(settings.fireworks);
+    }
+    
+    if (settings.bubbles && this.bubbleManager) {
+      this.bubbleManager.updateSettings(settings.bubbles);
     }
     
     if (settings.particles && this.particleManager) {
@@ -210,8 +239,13 @@ class AnimationController {
       this.ctx.drawImage(this.copyCanvas, 0, 0);
       this.ctx.globalAlpha = 1.0; // Reset alpha for drawing new elements
 
-      // Update all components with adjusted deltaTime
-      this.fireworkManager.updateFireworks(deltaTime);
+      // Update all components with adjusted deltaTime based on current mode
+      if (this.currentMode === 'firework') {
+        this.fireworkManager.updateFireworks(deltaTime);
+      } else if (this.currentMode === 'bubble' && this.bubbleManager) {
+        this.bubbleManager.updateBubbles(deltaTime);
+      }
+      
       this.particleManager.updateParticles(deltaTime);
       
       // Reset context settings
@@ -219,9 +253,14 @@ class AnimationController {
       this.ctx.shadowBlur = 0;
       this.ctx.globalAlpha = 1.0;
       
-      // Draw scene components
+      // Draw scene components based on current mode
       this.particleManager.drawParticles();
-      this.fireworkManager.drawFireworks();
+      
+      if (this.currentMode === 'firework') {
+        this.fireworkManager.drawFireworks();
+      } else if (this.currentMode === 'bubble' && this.bubbleManager) {
+        this.bubbleManager.drawBubbles();
+      }
 
       // Update and render custom images
       if (window.imageSystem) {
@@ -241,18 +280,26 @@ class AnimationController {
   }
   
   /**
-   * Launch a new firework
+   * Launch a new animation (firework or bubble based on current mode)
    * @param {number} duration - The duration of the sustained sound, used to calculate launch parameters.
    */
   launchFirework(duration) {
-    this.fireworkManager.launchFirework(duration);
+    if (this.currentMode === 'firework') {
+      this.fireworkManager.launchFirework(duration);
+    } else if (this.currentMode === 'bubble' && this.bubbleManager) {
+      this.bubbleManager.launchBubble(duration);
+    }
   }
 
   /**
-   * Explode all active fireworks
+   * Explode all active animations (fireworks or bubbles based on current mode)
    */
   explodeAllFireworks() {
-    this.fireworkManager.explodeAllFireworks();
+    if (this.currentMode === 'firework') {
+      this.fireworkManager.explodeAllFireworks();
+    } else if (this.currentMode === 'bubble' && this.bubbleManager) {
+      this.bubbleManager.popAllBubbles();
+    }
   }
 
   /**
@@ -275,11 +322,15 @@ class AnimationController {
       this.start();
     }
     
-    // Launch a new firework with duration
+    // Launch a new animation with duration
     try {
-      this.fireworkManager.launchFirework(duration);
+      if (this.currentMode === 'firework') {
+        this.fireworkManager.launchFirework(duration);
+      } else if (this.currentMode === 'bubble' && this.bubbleManager) {
+        this.bubbleManager.launchBubble(duration);
+      }
     } catch (error) {
-      console.error(`❌ Error launching firework:`, error);
+      console.error(`❌ Error launching ${this.currentMode}:`, error);
       return null;
     }
     
@@ -315,8 +366,12 @@ class AnimationController {
    */
   applyVolume(volume, category) {
     if (category === 'loud') {
-      // For loud sounds, explode all active fireworks
-      this.fireworkManager.explodeAllFireworks();
+      // For loud sounds, explode all active animations
+      if (this.currentMode === 'firework') {
+        this.fireworkManager.explodeAllFireworks();
+      } else if (this.currentMode === 'bubble' && this.bubbleManager) {
+        this.bubbleManager.popAllBubbles();
+      }
     }
   }
 }

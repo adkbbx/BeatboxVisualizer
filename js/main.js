@@ -5,6 +5,7 @@ import initializePanelControls from './panel-controls.js';
 import AnimationSettingsManager from './settings/AnimationSettingsManager.js';
 import ColorManager from './ColorManager.js';
 import LaunchControlsManager from './LaunchControlsManager.js';
+import ModeManager from './modes/ModeManager.js';
 
 /**
  * Main application entry point
@@ -21,6 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsManager = new AnimationSettingsManager();
     const initialAudioSettings = settingsManager.getSettings('audio');
     const audioManager = new AudioManager(initialAudioSettings);
+    
+    // Make audio manager globally accessible
+    window.audioManager = audioManager;
     
     // Initialize Settings Manager to load settings first
     const initialColorSettings = settingsManager.getSettings('colors');
@@ -64,6 +68,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Make UI controller globally accessible
     window.uiController = uiController;
+    
+    // Create and initialize mode manager
+    const modeManager = new ModeManager(animationController);
+    
+    // Make mode manager globally accessible
+    window.modeManager = modeManager;
+    
+    // Initialize mode-aware UI on page load
+    setTimeout(() => {
+        modeManager.updateModeUI(modeManager.getCurrentMode());
+    }, 100);
     
     // Initialize Launch Controls after animation controller is ready
     setTimeout(() => {
@@ -239,7 +254,503 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Setup bubble settings handlers
+    setupBubbleSettings();
 });
+
+/**
+ * Setup bubble settings event handlers
+ */
+function setupBubbleSettings() {
+    // Bubble size settings
+    const bubbleSizeSlider = document.getElementById('bubbleSize');
+    const bubbleSizeValue = document.getElementById('bubbleSizeValue');
+    if (bubbleSizeSlider && bubbleSizeValue) {
+        bubbleSizeSlider.addEventListener('input', () => {
+            bubbleSizeValue.textContent = bubbleSizeSlider.value;
+            updateBubbleManagerSettings({ bubbleSize: parseFloat(bubbleSizeSlider.value) });
+        });
+    }
+
+    // Random bubble size toggle
+    const randomBubbleSizeToggle = document.getElementById('randomBubbleSize');
+    const randomBubbleSizeRange = document.getElementById('randomBubbleSizeRange');
+    const randomBubbleSizeMaxSetting = document.getElementById('randomBubbleSizeMaxSetting');
+    
+    if (randomBubbleSizeToggle && randomBubbleSizeRange && randomBubbleSizeMaxSetting) {
+        randomBubbleSizeToggle.addEventListener('change', () => {
+            const isEnabled = randomBubbleSizeToggle.checked;
+            randomBubbleSizeRange.style.display = isEnabled ? 'block' : 'none';
+            randomBubbleSizeMaxSetting.style.display = isEnabled ? 'block' : 'none';
+            updateBubbleManagerSettings({ randomSize: isEnabled });
+        });
+    }
+
+    // Random bubble size min/max
+    const randomBubbleSizeMin = document.getElementById('randomBubbleSizeMin');
+    const randomBubbleSizeMinValue = document.getElementById('randomBubbleSizeMinValue');
+    if (randomBubbleSizeMin && randomBubbleSizeMinValue) {
+        randomBubbleSizeMin.addEventListener('input', () => {
+            randomBubbleSizeMinValue.textContent = randomBubbleSizeMin.value;
+            updateBubbleManagerSettings({ randomSizeMin: parseFloat(randomBubbleSizeMin.value) });
+        });
+    }
+
+    const randomBubbleSizeMax = document.getElementById('randomBubbleSizeMax');
+    const randomBubbleSizeMaxValue = document.getElementById('randomBubbleSizeMaxValue');
+    if (randomBubbleSizeMax && randomBubbleSizeMaxValue) {
+        randomBubbleSizeMax.addEventListener('input', () => {
+            randomBubbleSizeMaxValue.textContent = randomBubbleSizeMax.value;
+            updateBubbleManagerSettings({ randomSizeMax: parseFloat(randomBubbleSizeMax.value) });
+        });
+    }
+
+    // Bubble cluster size
+    const bubbleClusterSizeSlider = document.getElementById('bubbleClusterSize');
+    const bubbleClusterSizeValue = document.getElementById('bubbleClusterSizeValue');
+    if (bubbleClusterSizeSlider && bubbleClusterSizeValue) {
+        bubbleClusterSizeSlider.addEventListener('input', () => {
+            bubbleClusterSizeValue.textContent = bubbleClusterSizeSlider.value;
+            updateBubbleManagerSettings({ bubbleClusterSize: parseInt(bubbleClusterSizeSlider.value) });
+        });
+    }
+
+    // Bubble launch spread
+    const bubbleLaunchSpreadSlider = document.getElementById('bubbleLaunchSpread');
+    const bubbleLaunchSpreadValue = document.getElementById('bubbleLaunchSpreadValue');
+    if (bubbleLaunchSpreadSlider && bubbleLaunchSpreadValue) {
+        bubbleLaunchSpreadSlider.addEventListener('input', () => {
+            bubbleLaunchSpreadValue.textContent = bubbleLaunchSpreadSlider.value;
+            updateBubbleManagerSettings({ launchSpread: parseInt(bubbleLaunchSpreadSlider.value) });
+        });
+    }
+
+    // Bubble rise speed
+    const bubbleRiseSpeedSlider = document.getElementById('bubbleRiseSpeed');
+    const bubbleRiseSpeedValue = document.getElementById('bubbleRiseSpeedValue');
+    if (bubbleRiseSpeedSlider && bubbleRiseSpeedValue) {
+        bubbleRiseSpeedSlider.addEventListener('input', () => {
+            bubbleRiseSpeedValue.textContent = bubbleRiseSpeedSlider.value;
+            updateBubbleManagerSettings({ riseSpeed: parseFloat(bubbleRiseSpeedSlider.value) });
+        });
+    }
+
+    // Bubble auto-pop height
+    const bubbleAutoPopHeightSlider = document.getElementById('bubbleAutoPopHeight');
+    const bubbleAutoPopHeightValue = document.getElementById('bubbleAutoPopHeightValue');
+    if (bubbleAutoPopHeightSlider && bubbleAutoPopHeightValue) {
+        bubbleAutoPopHeightSlider.addEventListener('input', () => {
+            bubbleAutoPopHeightValue.textContent = bubbleAutoPopHeightSlider.value;
+            updateBubbleManagerSettings({ autoPopHeight: parseFloat(bubbleAutoPopHeightSlider.value) / 100 });
+        });
+    }
+
+    // Max bubbles
+    const maxBubblesSlider = document.getElementById('maxBubbles');
+    const maxBubblesValue = document.getElementById('maxBubblesValue');
+    if (maxBubblesSlider && maxBubblesValue) {
+        maxBubblesSlider.addEventListener('input', () => {
+            maxBubblesValue.textContent = maxBubblesSlider.value;
+            updateBubbleManagerSettings({ maxBubbles: parseInt(maxBubblesSlider.value) });
+        });
+    }
+
+    // Bubble gravity
+    const bubbleGravitySlider = document.getElementById('bubbleGravity');
+    const bubbleGravityValue = document.getElementById('bubbleGravityValue');
+    if (bubbleGravitySlider && bubbleGravityValue) {
+        bubbleGravitySlider.addEventListener('input', () => {
+            bubbleGravityValue.textContent = bubbleGravitySlider.value;
+            updateBubbleManagerSettings({ gravity: parseFloat(bubbleGravitySlider.value) });
+        });
+    }
+
+    // Launch spread mode
+    const bubbleLaunchSpreadModeSelect = document.getElementById('bubbleLaunchSpreadMode');
+    if (bubbleLaunchSpreadModeSelect) {
+        bubbleLaunchSpreadModeSelect.addEventListener('change', () => {
+            updateBubbleManagerSettings({ launchSpreadMode: bubbleLaunchSpreadModeSelect.value });
+        });
+    }
+
+    // Cluster spread
+    const bubbleClusterSpreadSlider = document.getElementById('bubbleClusterSpread');
+    const bubbleClusterSpreadValue = document.getElementById('bubbleClusterSpreadValue');
+    if (bubbleClusterSpreadSlider && bubbleClusterSpreadValue) {
+        bubbleClusterSpreadSlider.addEventListener('input', () => {
+            bubbleClusterSpreadValue.textContent = bubbleClusterSpreadSlider.value;
+            updateBubbleManagerSettings({ clusterSpread: parseInt(bubbleClusterSpreadSlider.value) });
+        });
+    }
+
+    // Random rise speed toggle
+    const randomBubbleRiseSpeedToggle = document.getElementById('randomBubbleRiseSpeed');
+    const randomRiseSpeedRange = document.getElementById('randomRiseSpeedRange');
+    const randomRiseSpeedMaxSetting = document.getElementById('randomRiseSpeedMaxSetting');
+    
+    if (randomBubbleRiseSpeedToggle && randomRiseSpeedRange && randomRiseSpeedMaxSetting) {
+        randomBubbleRiseSpeedToggle.addEventListener('change', () => {
+            const isEnabled = randomBubbleRiseSpeedToggle.checked;
+            randomRiseSpeedRange.style.display = isEnabled ? 'block' : 'none';
+            randomRiseSpeedMaxSetting.style.display = isEnabled ? 'block' : 'none';
+            updateBubbleManagerSettings({ randomRiseSpeed: isEnabled });
+        });
+    }
+
+    // Random rise speed min/max
+    const randomRiseSpeedMin = document.getElementById('randomRiseSpeedMin');
+    const randomRiseSpeedMinValue = document.getElementById('randomRiseSpeedMinValue');
+    if (randomRiseSpeedMin && randomRiseSpeedMinValue) {
+        randomRiseSpeedMin.addEventListener('input', () => {
+            randomRiseSpeedMinValue.textContent = randomRiseSpeedMin.value;
+            updateBubbleManagerSettings({ randomRiseSpeedMin: parseFloat(randomRiseSpeedMin.value) });
+        });
+    }
+
+    const randomRiseSpeedMax = document.getElementById('randomRiseSpeedMax');
+    const randomRiseSpeedMaxValue = document.getElementById('randomRiseSpeedMaxValue');
+    if (randomRiseSpeedMax && randomRiseSpeedMaxValue) {
+        randomRiseSpeedMax.addEventListener('input', () => {
+            randomRiseSpeedMaxValue.textContent = randomRiseSpeedMax.value;
+            updateBubbleManagerSettings({ randomRiseSpeedMax: parseFloat(randomRiseSpeedMax.value) });
+        });
+    }
+
+    // Random pop height toggle (NEW FEATURE)
+    const randomBubblePopHeightToggle = document.getElementById('randomBubblePopHeight');
+    const randomPopHeightRange = document.getElementById('randomPopHeightRange');
+    const randomPopHeightMaxSetting = document.getElementById('randomPopHeightMaxSetting');
+    
+    if (randomBubblePopHeightToggle && randomPopHeightRange && randomPopHeightMaxSetting) {
+        randomBubblePopHeightToggle.addEventListener('change', () => {
+            const isEnabled = randomBubblePopHeightToggle.checked;
+            randomPopHeightRange.style.display = isEnabled ? 'block' : 'none';
+            randomPopHeightMaxSetting.style.display = isEnabled ? 'block' : 'none';
+            updateBubbleManagerSettings({ randomPopHeight: isEnabled });
+        });
+    }
+
+    // Random pop height min/max (NEW FEATURE)
+    const randomPopHeightMin = document.getElementById('randomPopHeightMin');
+    const randomPopHeightMinValue = document.getElementById('randomPopHeightMinValue');
+    if (randomPopHeightMin && randomPopHeightMinValue) {
+        randomPopHeightMin.addEventListener('input', () => {
+            randomPopHeightMinValue.textContent = randomPopHeightMin.value;
+            updateBubbleManagerSettings({ randomPopHeightMin: parseFloat(randomPopHeightMin.value) / 100 });
+        });
+    }
+
+    const randomPopHeightMax = document.getElementById('randomPopHeightMax');
+    const randomPopHeightMaxValue = document.getElementById('randomPopHeightMaxValue');
+    if (randomPopHeightMax && randomPopHeightMaxValue) {
+        randomPopHeightMax.addEventListener('input', () => {
+            randomPopHeightMaxValue.textContent = randomPopHeightMax.value;
+            updateBubbleManagerSettings({ randomPopHeightMax: parseFloat(randomPopHeightMax.value) / 100 });
+        });
+    }
+
+    // Wobble intensity
+    const bubbleWobbleSlider = document.getElementById('bubbleWobble');
+    const bubbleWobbleValue = document.getElementById('bubbleWobbleValue');
+    if (bubbleWobbleSlider && bubbleWobbleValue) {
+        bubbleWobbleSlider.addEventListener('input', () => {
+            bubbleWobbleValue.textContent = bubbleWobbleSlider.value;
+            updateBubbleManagerSettings({ wobbleIntensity: parseFloat(bubbleWobbleSlider.value) });
+        });
+    }
+
+    // Buoyancy
+    const bubbleBuoyancySlider = document.getElementById('bubbleBuoyancy');
+    const bubbleBuoyancyValue = document.getElementById('bubbleBuoyancyValue');
+    if (bubbleBuoyancySlider && bubbleBuoyancyValue) {
+        bubbleBuoyancySlider.addEventListener('input', () => {
+            bubbleBuoyancyValue.textContent = bubbleBuoyancySlider.value;
+            updateBubbleManagerSettings({ buoyancy: parseFloat(bubbleBuoyancySlider.value) });
+        });
+    }
+
+    // Bubble presets
+    const bubblePresetSelect = document.getElementById('bubblePreset');
+    const bubblePresetDescription = document.getElementById('bubblePresetDescription');
+    if (bubblePresetSelect && bubblePresetDescription) {
+        bubblePresetSelect.addEventListener('change', () => {
+            const preset = bubblePresetSelect.value;
+            if (preset) {
+                applyBubblePreset(preset);
+                updateBubblePresetDescription(preset, bubblePresetDescription);
+            }
+        });
+    }
+}
+
+/**
+ * Update bubble manager settings
+ * @param {Object} settings - Settings to update
+ */
+function updateBubbleManagerSettings(settings) {
+    if (window.animationController && window.animationController.bubbleManager) {
+        window.animationController.bubbleManager.updateSettings(settings);
+    }
+}
+
+/**
+ * Apply bubble preset settings
+ * @param {string} preset - Preset name
+ */
+function applyBubblePreset(preset) {
+    const presets = {
+        gentle: {
+            bubbleClusterSize: 2,
+            riseSpeed: 1.5,
+            launchSpread: 20,
+            launchSpreadMode: 'range',
+            clusterSpread: 15,
+            randomRiseSpeed: false,
+            randomPopHeight: false,
+            autoPopHeight: 0.25
+        },
+        celebration: {
+            bubbleClusterSize: 6,
+            riseSpeed: 3.5,
+            launchSpread: 60,
+            launchSpreadMode: 'range',
+            clusterSpread: 40,
+            randomRiseSpeed: true,
+            randomRiseSpeedMin: 2.0,
+            randomRiseSpeedMax: 4.5,
+            randomPopHeight: true,
+            randomPopHeightMin: 0.15,
+            randomPopHeightMax: 0.35
+        },
+        fountain: {
+            bubbleClusterSize: 5,
+            riseSpeed: 2.5,
+            launchSpread: 15,
+            launchSpreadMode: 'center',
+            clusterSpread: 25,
+            randomRiseSpeed: true,
+            randomRiseSpeedMin: 1.5,
+            randomRiseSpeedMax: 3.5,
+            randomPopHeight: false,
+            autoPopHeight: 0.20
+        },
+        stream: {
+            bubbleClusterSize: 1,
+            riseSpeed: 2.0,
+            launchSpread: 5,
+            launchSpreadMode: 'center',
+            clusterSpread: 5,
+            randomRiseSpeed: false,
+            randomPopHeight: false,
+            autoPopHeight: 0.15
+        },
+        chaos: {
+            bubbleClusterSize: 8,
+            riseSpeed: 3.0,
+            launchSpread: 100,
+            launchSpreadMode: 'random',
+            clusterSpread: 80,
+            randomRiseSpeed: true,
+            randomRiseSpeedMin: 0.5,
+            randomRiseSpeedMax: 5.0,
+            randomPopHeight: true,
+            randomPopHeightMin: 0.10,
+            randomPopHeightMax: 0.45
+        },
+        peaceful: {
+            bubbleClusterSize: 3,
+            riseSpeed: 1.0,
+            launchSpread: 40,
+            launchSpreadMode: 'range',
+            clusterSpread: 30,
+            randomRiseSpeed: true,
+            randomRiseSpeedMin: 0.8,
+            randomRiseSpeedMax: 1.5,
+            randomPopHeight: true,
+            randomPopHeightMin: 0.20,
+            randomPopHeightMax: 0.40
+        },
+        party: {
+            bubbleClusterSize: 7,
+            riseSpeed: 4.0,
+            launchSpread: 80,
+            launchSpreadMode: 'random',
+            clusterSpread: 50,
+            randomRiseSpeed: true,
+            randomRiseSpeedMin: 3.0,
+            randomRiseSpeedMax: 5.0,
+            randomPopHeight: true,
+            randomPopHeightMin: 0.10,
+            randomPopHeightMax: 0.30
+        }
+    };
+
+    const settings = presets[preset];
+    if (settings) {
+        // Apply the preset settings
+        updateBubbleManagerSettings(settings);
+        
+        // Update UI elements to reflect the new settings
+        updateBubbleUIFromSettings(settings);
+    }
+}
+
+/**
+ * Update bubble preset description
+ * @param {string} preset - Preset name
+ * @param {HTMLElement} descriptionElement - Description element
+ */
+function updateBubblePresetDescription(preset, descriptionElement) {
+    const descriptions = {
+        gentle: "Small clusters of bubbles that rise slowly and pop at moderate heights",
+        celebration: "Large clusters with varied speeds and random pop heights for festive effects",
+        fountain: "Bubbles launch from center like a fountain with varied rise speeds",
+        stream: "Single bubbles in a steady stream rising from the center",
+        chaos: "Random everything - clusters, positions, speeds, and pop heights",
+        peaceful: "Slow, spread-out bubbles with gentle random variations",
+        party: "Fast, energetic bubbles launching everywhere with quick pops"
+    };
+
+    if (descriptions[preset]) {
+        descriptionElement.textContent = descriptions[preset];
+    }
+}
+
+/**
+ * Update bubble UI elements from settings
+ * @param {Object} settings - Settings object
+ */
+function updateBubbleUIFromSettings(settings) {
+    // Update cluster size
+    if (settings.bubbleClusterSize !== undefined) {
+        const slider = document.getElementById('bubbleClusterSize');
+        const value = document.getElementById('bubbleClusterSizeValue');
+        if (slider && value) {
+            slider.value = settings.bubbleClusterSize;
+            value.textContent = settings.bubbleClusterSize;
+        }
+    }
+
+    // Update rise speed
+    if (settings.riseSpeed !== undefined) {
+        const slider = document.getElementById('bubbleRiseSpeed');
+        const value = document.getElementById('bubbleRiseSpeedValue');
+        if (slider && value) {
+            slider.value = settings.riseSpeed;
+            value.textContent = settings.riseSpeed;
+        }
+    }
+
+    // Update launch spread
+    if (settings.launchSpread !== undefined) {
+        const slider = document.getElementById('bubbleLaunchSpread');
+        const value = document.getElementById('bubbleLaunchSpreadValue');
+        if (slider && value) {
+            slider.value = settings.launchSpread;
+            value.textContent = settings.launchSpread;
+        }
+    }
+
+    // Update launch spread mode
+    if (settings.launchSpreadMode !== undefined) {
+        const select = document.getElementById('bubbleLaunchSpreadMode');
+        if (select) {
+            select.value = settings.launchSpreadMode;
+        }
+    }
+
+    // Update cluster spread
+    if (settings.clusterSpread !== undefined) {
+        const slider = document.getElementById('bubbleClusterSpread');
+        const value = document.getElementById('bubbleClusterSpreadValue');
+        if (slider && value) {
+            slider.value = settings.clusterSpread;
+            value.textContent = settings.clusterSpread;
+        }
+    }
+
+    // Update random rise speed toggle and values
+    if (settings.randomRiseSpeed !== undefined) {
+        const toggle = document.getElementById('randomBubbleRiseSpeed');
+        const range = document.getElementById('randomRiseSpeedRange');
+        const maxSetting = document.getElementById('randomRiseSpeedMaxSetting');
+        
+        if (toggle) {
+            toggle.checked = settings.randomRiseSpeed;
+            if (range && maxSetting) {
+                range.style.display = settings.randomRiseSpeed ? 'block' : 'none';
+                maxSetting.style.display = settings.randomRiseSpeed ? 'block' : 'none';
+            }
+        }
+    }
+
+    // Update random rise speed min/max
+    if (settings.randomRiseSpeedMin !== undefined) {
+        const slider = document.getElementById('randomRiseSpeedMin');
+        const value = document.getElementById('randomRiseSpeedMinValue');
+        if (slider && value) {
+            slider.value = settings.randomRiseSpeedMin;
+            value.textContent = settings.randomRiseSpeedMin;
+        }
+    }
+
+    if (settings.randomRiseSpeedMax !== undefined) {
+        const slider = document.getElementById('randomRiseSpeedMax');
+        const value = document.getElementById('randomRiseSpeedMaxValue');
+        if (slider && value) {
+            slider.value = settings.randomRiseSpeedMax;
+            value.textContent = settings.randomRiseSpeedMax;
+        }
+    }
+
+    // Update random pop height toggle and values
+    if (settings.randomPopHeight !== undefined) {
+        const toggle = document.getElementById('randomBubblePopHeight');
+        const range = document.getElementById('randomPopHeightRange');
+        const maxSetting = document.getElementById('randomPopHeightMaxSetting');
+        
+        if (toggle) {
+            toggle.checked = settings.randomPopHeight;
+            if (range && maxSetting) {
+                range.style.display = settings.randomPopHeight ? 'block' : 'none';
+                maxSetting.style.display = settings.randomPopHeight ? 'block' : 'none';
+            }
+        }
+    }
+
+    // Update random pop height min/max
+    if (settings.randomPopHeightMin !== undefined) {
+        const slider = document.getElementById('randomPopHeightMin');
+        const value = document.getElementById('randomPopHeightMinValue');
+        if (slider && value) {
+            const percentage = Math.round(settings.randomPopHeightMin * 100);
+            slider.value = percentage;
+            value.textContent = percentage;
+        }
+    }
+
+    if (settings.randomPopHeightMax !== undefined) {
+        const slider = document.getElementById('randomPopHeightMax');
+        const value = document.getElementById('randomPopHeightMaxValue');
+        if (slider && value) {
+            const percentage = Math.round(settings.randomPopHeightMax * 100);
+            slider.value = percentage;
+            value.textContent = percentage;
+        }
+    }
+
+    // Update auto-pop height
+    if (settings.autoPopHeight !== undefined) {
+        const slider = document.getElementById('bubbleAutoPopHeight');
+        const value = document.getElementById('bubbleAutoPopHeightValue');
+        if (slider && value) {
+            const percentage = Math.round(settings.autoPopHeight * 100);
+            slider.value = percentage;
+            value.textContent = percentage;
+        }
+    }
+}
 
 /**
  * Check if the browser supports the required APIs

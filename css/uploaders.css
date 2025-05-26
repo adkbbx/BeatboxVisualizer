@@ -10,6 +10,9 @@
     margin-bottom: 20px;
     max-width: 600px;
     margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 /* Tab navigation */
@@ -17,6 +20,7 @@
     display: flex;
     background-color: #202020;
     border-bottom: none;
+    flex: 0 0 auto;
 }
 
 /* Tab button styling */
@@ -56,11 +60,18 @@
 /* Tab content */
 .uploader-tab-content {
     padding: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    min-height: 0;
 }
 
 .uploader-tab-pane {
     display: none;
     padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .uploader-tab-pane.active {

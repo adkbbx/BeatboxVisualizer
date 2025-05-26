@@ -83,7 +83,7 @@ function initializePanelControls(uiControllerInstance) {
             togglePanels();
         }
 
-        // Handle Space bar for test firework launch
+        // Handle Space bar for test launch (mode-aware)
         if (event.code === 'Space' && 
             !event.ctrlKey && 
             !event.altKey && 
@@ -92,9 +92,16 @@ function initializePanelControls(uiControllerInstance) {
             event.preventDefault();
             keysPressed.space = true;
             
-            // Launch test firework if uiController is available
-            if (uiControllerInstance && typeof uiControllerInstance.launchTestFirework === 'function') {
-                uiControllerInstance.launchTestFirework();
+            // Launch test based on current mode
+            if (uiControllerInstance) {
+                // Use the same mode detection as the test button
+                const currentMode = window.modeManager ? window.modeManager.getCurrentMode() : uiControllerInstance.animationController?.currentMode;
+                
+                if (currentMode === 'bubble' && typeof uiControllerInstance.launchTestBubble === 'function') {
+                    uiControllerInstance.launchTestBubble();
+                } else if (typeof uiControllerInstance.launchTestFirework === 'function') {
+                    uiControllerInstance.launchTestFirework();
+                }
             }
         }
     });

@@ -41,6 +41,12 @@
   justify-content: space-between;
   gap: 2px;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tab-navigation::-webkit-scrollbar {
+  display: none;
 }
 .tab-button {
   background: transparent;

@@ -95,7 +95,12 @@ class UIEventHandlers {
         const testButton = document.getElementById('testFirework');
         if (testButton) {
             testButton.addEventListener('click', () => {
-                this.uiController.launchTestFirework();
+                // Check current mode and launch appropriate test
+                if (window.modeManager && window.modeManager.getCurrentMode() === 'bubble') {
+                    this.uiController.launchTestBubble();
+                } else {
+                    this.uiController.launchTestFirework();
+                }
             });
         }
 

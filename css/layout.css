@@ -55,6 +55,10 @@ body {
 .uploader-tabs-container {
     grid-area: uploader;
     pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
 }
 /* Dual Canvas Layer System */
 .canvas-container {
@@ -157,10 +161,13 @@ body {
 
 /* Tab pane height management */
 .uploader-tab-pane {
-    max-height: 75vh;
+    height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
     z-index: 5;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Upload container styling */
@@ -230,15 +237,17 @@ body {
         max-height: none !important;
         overflow-y: auto;
         overflow-x: hidden;
+        padding: 12px !important;
     }
     
     .background-upload-container,
     .image-upload-container {
-        padding: 12px;
-        height: 100%;
+        padding: 0 !important;
+        height: auto !important;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        overflow: visible !important;
+        min-height: 0;
     }
     
     .button, button {

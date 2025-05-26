@@ -257,6 +257,14 @@ class UIController {
                 this.audioManager.start();
                 this.animationController.start();
                 
+                // Update sound effects in bubble manager if it exists
+                if (this.animationController.bubbleManager) {
+                    this.animationController.bubbleManager.updateSoundEffects();
+                }
+                
+                // Store a flag that audio is ready for when bubble manager is created later
+                this.animationController.audioReady = true;
+                
                 // Update UI
                 this.startButton.disabled = false;
                 this.audioStatus.textContent = 'Microphone Active';
@@ -335,6 +343,28 @@ class UIController {
             await this.animationController.fireworkManager.launchTestFirework();
         } else {
             console.error('[UIController] FireworkManager not available');
+        }
+    }
+
+    /**
+     * Launch a test bubble
+     */
+    async launchTestBubble() {
+        // Ensure animation is running
+        if (!this.animationController.isActive) {
+            this.animationController.start();
+        }
+        
+        // Initialize bubble manager if not already done
+        if (!this.animationController.bubbleManager) {
+            this.animationController.switchMode('bubble');
+        }
+        
+        // Launch test bubble through bubble manager
+        if (this.animationController.bubbleManager) {
+            await this.animationController.bubbleManager.launchTestBubble();
+        } else {
+            console.error('[UIController] BubbleManager not available');
         }
     }
 }

@@ -4,6 +4,7 @@
  */
 import AudioAnalyzer from './AudioAnalyzer.js';
 import SustainedSoundDetector from './SustainedSoundDetector.js';
+import SoundEffects from '../SoundEffects.js';
 
 class AudioManager {
     constructor(initialSettings = null) {
@@ -23,6 +24,9 @@ class AudioManager {
         this.audioAnalyzer = null;
         this.sustainedSoundDetector = new SustainedSoundDetector();
         this.initialAudioSettings = initialSettings;
+        
+        // Create sound effects instance
+        this.soundEffects = new SoundEffects();
         
         // Added property for loudSound cooldown
         this.lastLoudSoundTime = 0;
@@ -81,6 +85,9 @@ class AudioManager {
                     loudThreshold: this.audioAnalyzer.loudThreshold
                 });
             }
+            
+            // Initialize sound effects
+            await this.soundEffects.initialize();
             
             return true;
         } catch (error) {
@@ -255,8 +262,11 @@ class AudioManager {
                     loudThreshold: settings.loudThreshold || this.audioAnalyzer.loudThreshold
                 });
             }
-        } else {
-    
+        }
+        
+        // Update sound effects volume if provided
+        if (this.soundEffects && settings && typeof settings.volume !== 'undefined') {
+            this.soundEffects.setVolume(settings.volume);
         }
     }
     

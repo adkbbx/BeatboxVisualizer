@@ -21,32 +21,55 @@
     <canvas id="backgroundCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;"></canvas>
     <canvas id="animationCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; background: transparent;"></canvas>
     
+
+
     <div class="app-container" style="z-index: 10; background: transparent !important;">
+        <!-- Mode Toggle for Mobile - Above control panel -->
+        <div class="mobile-mode-toggle">
+            <div class="mode-toggle mobile-toggle" tabindex="0" role="switch" aria-label="Toggle between fireworks and bubbles mode">
+                <div id="fireworkModeMobile" class="mode-option active" data-mode="firework" title="Fireworks Mode" tabindex="0">🎆</div>
+                <div id="bubbleModeMobile" class="mode-option" data-mode="bubble" title="Bubbles Mode" tabindex="0">🫧</div>
+                <div class="mode-slider" aria-hidden="true"></div>
+            </div>
+        </div>
+        
         <div class="control-panel">
             <button id="startMicrophone" class="mic-button">
                 <span class="icon">🎤</span>
                 <span class="text">Start</span>
             </button>
+            
             <button id="testFirework" class="test-button">
                 <span class="icon">🎆</span>
                 <span class="text">Test</span>
             </button>
+            
             <button id="toggleSettings">
                 <span class="icon">⚙️</span>
                 <span class="text">Settings</span>
             </button>
+            
             <button id="togglePanels">
                 <span class="icon">👁️</span>
                 <span class="text">Hide</span>
             </button>
+            
+
         </div>
         
         <!-- Tabbed Uploader Interface -->
         <div class="uploader-tabs-container">
             <div class="uploader-tab-navigation">
-                <button class="uploader-tab-button active" data-uploader-tab="firework">Firework Images</button>
+                <button class="uploader-tab-button active" data-uploader-tab="firework">Animation Images</button>
                 <button class="uploader-tab-button" data-uploader-tab="background">Background Images</button>
                 <button class="uploader-tab-button" data-uploader-tab="presets">Presets</button>
+                
+                <!-- Mode Toggle for Desktop - integrated into tab header -->
+                <div class="mode-toggle desktop-toggle" tabindex="0" role="switch" aria-label="Toggle between fireworks and bubbles mode">
+                    <div id="fireworkModeDesktop" class="mode-option active" data-mode="firework" title="Fireworks Mode" tabindex="0">🎆</div>
+                    <div id="bubbleModeDesktop" class="mode-option" data-mode="bubble" title="Bubbles Mode" tabindex="0">🫧</div>
+                    <div class="mode-slider" aria-hidden="true"></div>
+                </div>
             </div>
             
             <div class="uploader-tab-content">
@@ -59,6 +82,7 @@
                                 <p>or</p>
                                 <button id="selectFiles" class="button">Select Files</button>
                                 <p class="file-types">Supported: JPG, PNG, GIF (max 5MB)</p>
+                                <p class="file-description">Images will appear during firework explosions and bubble pops</p>
                             </div>
                         </div>
                         <div class="preview-container" id="previewContainer"></div>
@@ -126,20 +150,21 @@
             </div>
             <div id="audioStatus">Audio status: inactive</div>
             <div class="mic-test">
-                <p>Make LOUDER, SUSTAINED sounds to launch fireworks. Keep making sound to keep them rising. VERY LOUD sounds will BURST all active fireworks! 🔊</p>
-                <div id="micDetection" class="mic-detection">Make LOUDER, SUSTAINED sound to start fireworks</div>
+                <p>Make LOUDER, SUSTAINED sounds to launch animations. Keep making sound to keep them rising. VERY LOUD sounds will trigger all active animations! 🔊</p>
+                <div id="micDetection" class="mic-detection">Make LOUDER, SUSTAINED sound to start animations</div>
             </div>
         </div>
     </div>
     
     <!-- Settings panel with tabs -->
     <div id="settingsPanel" class="settings-panel" style="display: none;">
-        <h2>Fireworks Settings</h2>
+        <h2>Animation Settings</h2>
         
         <!-- Tab Navigation -->
         <div class="tab-navigation" role="tablist">
             <button class="tab-button" data-tab="audio" role="tab">🎤 Audio</button>
             <button class="tab-button" data-tab="fireworks" role="tab">🎆 Fireworks</button>
+            <button class="tab-button" data-tab="bubbles" role="tab">🫧 Bubbles</button>
             <button class="tab-button" data-tab="effects" role="tab">✨ Effects</button>
             <button class="tab-button" data-tab="images" role="tab">🖼️ Images</button>
             <button class="tab-button" data-tab="colors" role="tab">🎨 Colors</button>
@@ -161,9 +186,9 @@
                     <p class="setting-description">How quiet your voice can be to still launch fireworks.</p>
                 </div>
                 <div class="setting">
-                    <label for="thresholdHigh">Burst Sensitivity: <span id="thresholdHighValue">0.3</span></label>
-                    <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.05" value="0.3">
-                    <p class="setting-description">How loud you need to be to explode all fireworks at once.</p>
+                    <label for="thresholdHigh">Burst Sensitivity: <span id="thresholdHighValue">0.18</span></label>
+                    <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.05" value="0.18">
+                    <p class="setting-description">How loud you need to be to explode all bubbles at once.</p>
                 </div>
                 <div class="setting">
                     <label for="suddenThreshold">Quick Response: <span id="suddenThresholdValue">0.12</span></label>
@@ -171,17 +196,17 @@
                     <p class="setting-description">How quickly the app responds to sudden sounds.</p>
                 </div>
                 <div class="setting toggle-setting">
-                    <label for="testSoundEnabled">Test Firework Sounds:</label>
+                    <label for="testSoundEnabled">Test Animation Sounds:</label>
                     <label class="switch">
                         <input type="checkbox" id="testSoundEnabled" checked>
                         <span class="slider round"></span>
                     </label>
-                    <p class="setting-description">Play realistic launch and explosion sounds when testing fireworks.</p>
+                    <p class="setting-description">Play realistic launch and explosion sounds when testing animations (fireworks/bubbles).</p>
                 </div>
                 <div class="setting">
                     <label for="testSoundVolume">Sound Volume: <span id="testSoundVolumeValue">0.3</span></label>
                     <input type="range" id="testSoundVolume" min="0" max="1" step="0.05" value="0.3">
-                    <p class="setting-description">Volume level for firework sound effects.</p>
+                    <p class="setting-description">Volume level for animation sound effects.</p>
                 </div>
             </div>
 
@@ -389,6 +414,251 @@
                             <label for="smokeTrailIntensity">Smoke Trail: <span id="smokeTrailValue">0.3</span></label>
                             <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.3">
                             <p class="setting-description">Intensity of the smoke trail behind rising fireworks.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bubbles Tab Pane -->
+            <div class="tab-pane" id="bubbles-tab" data-tab-content="bubbles">
+                <h4>🫧 Bubble Settings</h4>
+                
+                <!-- Launch Controls Section -->
+                <div class="settings-section launch-controls-section">
+                    <h4 class="section-title">🚀 Launch Controls</h4>
+                    
+                    <!-- Launch Position Settings -->
+                    <div class="setting-group">
+                        <h5 class="group-title">🎯 Launch Position</h5>
+                        
+                        <div class="setting">
+                            <label for="bubbleLaunchSpreadMode">Position Mode:</label>
+                            <select id="bubbleLaunchSpreadMode" class="setting-select">
+                                <option value="center">Center Only</option>
+                                <option value="range" selected>Range from Center</option>
+                                <option value="random">Random Across Screen</option>
+                            </select>
+                            <p class="setting-description">How bubbles are positioned along the bottom of the screen</p>
+                        </div>
+                        
+                        <div class="setting" id="bubbleLaunchSpreadSetting">
+                            <label for="bubbleLaunchSpread">Launch Spread: <span id="bubbleLaunchSpreadValue">30</span>%</label>
+                            <input type="range" id="bubbleLaunchSpread" min="0" max="100" step="5" value="30" class="setting-slider">
+                            <div class="range-labels">
+                                <span>Center Only</span>
+                                <span>Full Width</span>
+                            </div>
+                            <p class="setting-description">Width of the launch zone (0% = center point, 100% = entire screen width)</p>
+                        </div>
+                    </div>
+
+                    <!-- Cluster Settings -->
+                    <div class="setting-group">
+                        <h5 class="group-title">🫧 Cluster Settings</h5>
+                        
+                        <div class="setting">
+                            <label for="bubbleClusterSize">Bubbles per Launch: <span id="bubbleClusterSizeValue">3</span></label>
+                            <input type="range" id="bubbleClusterSize" min="1" max="8" step="1" value="3" class="setting-slider">
+                            <div class="range-labels">
+                                <span>1 (Single)</span>
+                                <span>8 (Large Cluster)</span>
+                            </div>
+                            <p class="setting-description">Number of bubbles created each time you launch</p>
+                        </div>
+                        
+                        <div class="setting">
+                            <label for="bubbleClusterSpread">Cluster Spread: <span id="bubbleClusterSpreadValue">20</span>px</label>
+                            <input type="range" id="bubbleClusterSpread" min="5" max="100" step="5" value="20" class="setting-slider">
+                            <div class="range-labels">
+                                <span>5px (Tight)</span>
+                                <span>100px (Wide)</span>
+                            </div>
+                            <p class="setting-description">How spread out bubbles are within each cluster</p>
+                        </div>
+                    </div>
+
+                    <!-- Rise Speed Settings -->
+                    <div class="setting-group">
+                        <h5 class="group-title">⬆️ Rise Speed</h5>
+                        
+                        <div class="setting">
+                            <label for="bubbleRiseSpeed">Base Rise Speed: <span id="bubbleRiseSpeedValue">2.0</span></label>
+                            <input type="range" id="bubbleRiseSpeed" min="0.5" max="5.0" step="0.1" value="2.0" class="setting-slider">
+                            <div class="range-labels">
+                                <span>0.5 (Slow Float)</span>
+                                <span>5.0 (Fast Rise)</span>
+                            </div>
+                            <p class="setting-description">Base speed at which bubbles float upward</p>
+                        </div>
+                        
+                        <div class="setting toggle-setting">
+                            <label for="randomBubbleRiseSpeed">Random Rise Speeds:</label>
+                            <label class="switch">
+                                <input type="checkbox" id="randomBubbleRiseSpeed">
+                                <span class="slider round"></span>
+                            </label>
+                            <p class="setting-description">Each bubble will have a different random rise speed for more variety.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomRiseSpeedRange" style="display: none;">
+                            <label for="randomRiseSpeedMin">Minimum Speed: <span id="randomRiseSpeedMinValue">1.0</span></label>
+                            <input type="range" id="randomRiseSpeedMin" min="0.5" max="3.0" step="0.1" value="1.0" class="setting-slider">
+                            <div class="range-labels">
+                                <span>0.5 (Very Slow)</span>
+                                <span>3.0 (Fast)</span>
+                            </div>
+                            <p class="setting-description">Minimum rise speed for random bubbles.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomRiseSpeedMaxSetting" style="display: none;">
+                            <label for="randomRiseSpeedMax">Maximum Speed: <span id="randomRiseSpeedMaxValue">4.0</span></label>
+                            <input type="range" id="randomRiseSpeedMax" min="2.0" max="5.0" step="0.1" value="4.0" class="setting-slider">
+                            <div class="range-labels">
+                                <span>2.0 (Moderate)</span>
+                                <span>5.0 (Very Fast)</span>
+                            </div>
+                            <p class="setting-description">Maximum rise speed for random bubbles.</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Presets -->
+                    <div class="setting-group">
+                        <h5 class="group-title">⚡ Quick Presets</h5>
+                        
+                        <div class="setting">
+                            <label for="bubblePreset">Bubble Pattern:</label>
+                            <select id="bubblePreset" class="setting-select">
+                                <option value="">-- Select Preset --</option>
+                                <option value="gentle">🫧 Gentle (Small Clusters, Slow Rise)</option>
+                                <option value="celebration">🎉 Celebration (Large Clusters, Fast Rise)</option>
+                                <option value="fountain">⛲ Fountain (Center, Many Bubbles)</option>
+                                <option value="stream">🌊 Stream (Single Line, Steady)</option>
+                                <option value="chaos">🌪️ Chaos Mode (Random Everything)</option>
+                                <option value="peaceful">🕊️ Peaceful (Slow, Spread Out)</option>
+                                <option value="party">🎊 Party (Fast, Everywhere)</option>
+                            </select>
+                            <p class="setting-description" id="bubblePresetDescription">Choose a preset to quickly configure bubble settings</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bubble Appearance Section -->
+                <div class="settings-section">
+                    <h4 class="section-title">✨ Bubble Appearance</h4>
+                    
+                    <div class="setting-group">
+                        <h5 class="group-title">📏 Size Settings</h5>
+                        
+                        <div class="setting">
+                            <label for="bubbleSize">Bubble Size: <span id="bubbleSizeValue">1.0</span></label>
+                            <input type="range" id="bubbleSize" min="0.5" max="3.0" step="0.1" value="1.0">
+                            <p class="setting-description">Controls how big bubbles and uploaded images appear during pops.</p>
+                        </div>
+                        
+                        <div class="setting toggle-setting">
+                            <label for="randomBubbleSize">Random Bubble Sizes:</label>
+                            <label class="switch">
+                                <input type="checkbox" id="randomBubbleSize">
+                                <span class="slider round"></span>
+                            </label>
+                            <p class="setting-description">Each bubble will have a different random size for more variety.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomBubbleSizeRange" style="display: none;">
+                            <label for="randomBubbleSizeMin">Smallest Size: <span id="randomBubbleSizeMinValue">0.5</span></label>
+                            <input type="range" id="randomBubbleSizeMin" min="0.5" max="2.0" step="0.1" value="0.5">
+                            <p class="setting-description">Minimum size for random bubbles.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomBubbleSizeMaxSetting" style="display: none;">
+                            <label for="randomBubbleSizeMax">Largest Size: <span id="randomBubbleSizeMaxValue">2.0</span></label>
+                            <input type="range" id="randomBubbleSizeMax" min="2.0" max="5.0" step="0.1" value="2.0">
+                            <p class="setting-description">Maximum size for random bubbles.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pop Behavior Section -->
+                <div class="settings-section">
+                    <h4 class="section-title">💥 Pop Behavior</h4>
+                    
+                    <div class="setting-group">
+                        <h5 class="group-title">🎯 Pop Height Settings</h5>
+                        
+                        <div class="setting">
+                            <label for="bubbleAutoPopHeight">Auto-Pop Height: <span id="bubbleAutoPopHeightValue">20</span>%</label>
+                            <input type="range" id="bubbleAutoPopHeight" min="10" max="50" step="5" value="20" class="setting-slider">
+                            <div class="range-labels">
+                                <span>10% (High in Sky)</span>
+                                <span>50% (Low in Sky)</span>
+                            </div>
+                            <p class="setting-description">Height from top where bubbles automatically pop (lower = higher in sky)</p>
+                        </div>
+                        
+                        <div class="setting toggle-setting">
+                            <label for="randomBubblePopHeight">Random Pop Heights:</label>
+                            <label class="switch">
+                                <input type="checkbox" id="randomBubblePopHeight">
+                                <span class="slider round"></span>
+                            </label>
+                            <p class="setting-description">Each bubble will pop at a different random height for more variety.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomPopHeightRange" style="display: none;">
+                            <label for="randomPopHeightMin">Minimum Height: <span id="randomPopHeightMinValue">15</span>%</label>
+                            <input type="range" id="randomPopHeightMin" min="10" max="30" step="5" value="15" class="setting-slider">
+                            <div class="range-labels">
+                                <span>10% (Very High)</span>
+                                <span>30% (Moderate)</span>
+                            </div>
+                            <p class="setting-description">Minimum pop height for random bubbles.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomPopHeightMaxSetting" style="display: none;">
+                            <label for="randomPopHeightMax">Maximum Height: <span id="randomPopHeightMaxValue">40</span>%</label>
+                            <input type="range" id="randomPopHeightMax" min="25" max="50" step="5" value="40" class="setting-slider">
+                            <div class="range-labels">
+                                <span>25% (High)</span>
+                                <span>50% (Low in Sky)</span>
+                            </div>
+                            <p class="setting-description">Maximum pop height for random bubbles.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h5 class="group-title">⚙️ Pop Settings</h5>
+                        
+                        <div class="setting">
+                            <label for="maxBubbles">Max Bubbles on Screen: <span id="maxBubblesValue">15</span></label>
+                            <input type="range" id="maxBubbles" min="5" max="50" step="1" value="15">
+                            <p class="setting-description">Maximum number of bubbles that can be active at the same time.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Physics & Behavior Section -->
+                <div class="settings-section">
+                    <h4 class="section-title">⚙️ Physics & Behavior</h4>
+                    
+                    <div class="setting-group">
+                        <h5 class="group-title">🌍 Physics Settings</h5>
+                        
+                        <div class="setting">
+                            <label for="bubbleGravity">Bubble Gravity: <span id="bubbleGravityValue">0.015</span></label>
+                            <input type="range" id="bubbleGravity" min="0.005" max="0.05" step="0.005" value="0.015">
+                            <p class="setting-description">How much gravity affects bubbles (higher = fall faster).</p>
+                        </div>
+                        
+                        <div class="setting">
+                            <label for="bubbleWobble">Wobble Intensity: <span id="bubbleWobbleValue">1.0</span></label>
+                            <input type="range" id="bubbleWobble" min="0" max="3.0" step="0.1" value="1.0">
+                            <p class="setting-description">How much bubbles wobble as they float (0 = straight up).</p>
+                        </div>
+                        
+                        <div class="setting">
+                            <label for="bubbleBuoyancy">Buoyancy: <span id="bubbleBuoyancyValue">0.98</span></label>
+                            <input type="range" id="bubbleBuoyancy" min="0.9" max="1.0" step="0.01" value="0.98">
+                            <p class="setting-description">How well bubbles resist gravity (higher = float better).</p>
                         </div>
                     </div>
                 </div>
