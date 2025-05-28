@@ -117,7 +117,7 @@ class SettingsController {
       this.updateFireworkSettings({ fireworkSize: value });
     });
     
-    // Random size toggle
+    // Random firework size toggle
     this.setupToggleControl('randomFireworkSize', isChecked => {
       this.updateFireworkSettings({ randomSize: isChecked });
       // Show/hide random size range controls
@@ -129,7 +129,7 @@ class SettingsController {
       }
     });
     
-    // Random size range controls
+    // Random firework size range controls
     this.setupRangeControl('randomSizeMin', 'randomSizeMinValue', value => {
       this.updateFireworkSettings({ randomSizeMin: value });
     });
@@ -137,6 +137,143 @@ class SettingsController {
     this.setupRangeControl('randomSizeMax', 'randomSizeMaxValue', value => {
       this.updateFireworkSettings({ randomSizeMax: value });
     });
+
+    // Bubble settings
+    this.setupRangeControl('bubbleSize', 'bubbleSizeValue', value => {
+      this.updateBubbleSettings({ bubbleSize: parseFloat(value) });
+    });
+
+    this.setupRangeControl('bubbleClusterSize', 'bubbleClusterSizeValue', value => {
+      this.updateBubbleSettings({ bubbleClusterSize: parseInt(value) });
+    });
+
+    // Random bubble cluster size toggle
+    this.setupToggleControl('randomBubbleClusterSize', isChecked => {
+      this.updateBubbleSettings({ randomClusterSize: isChecked });
+      // Show/hide random cluster size range controls
+      const rangeControls = document.getElementById('randomClusterSizeRange');
+      const maxRangeControls = document.getElementById('randomClusterSizeMaxSetting');
+      if (rangeControls && maxRangeControls) {
+        rangeControls.style.display = isChecked ? 'block' : 'none';
+        maxRangeControls.style.display = isChecked ? 'block' : 'none';
+      }
+    });
+
+    // Random cluster size range controls
+    this.setupRangeControl('randomClusterSizeMin', 'randomClusterSizeMinValue', value => {
+      this.updateBubbleSettings({ randomClusterSizeMin: parseInt(value) });
+    });
+
+    this.setupRangeControl('randomClusterSizeMax', 'randomClusterSizeMaxValue', value => {
+      this.updateBubbleSettings({ randomClusterSizeMax: parseInt(value) });
+    });
+
+    this.setupRangeControl('bubbleLaunchSpread', 'bubbleLaunchSpreadValue', value => {
+      this.updateBubbleSettings({ launchSpread: parseInt(value) });
+    });
+
+    this.setupRangeControl('bubbleRiseSpeed', 'bubbleRiseSpeedValue', value => {
+      this.updateBubbleSettings({ riseSpeed: parseFloat(value) });
+    });
+
+    this.setupRangeControl('bubbleAutoPopHeight', 'bubbleAutoPopHeightValue', value => {
+      // Convert from inverted percentage (10-100) to normalized value (0.1-1.0)
+      // Higher slider value = higher in sky = higher normalized value
+      this.updateBubbleSettings({ autoPopHeight: parseFloat(value) / 100 });
+    });
+
+    this.setupRangeControl('maxBubbles', 'maxBubblesValue', value => {
+      this.updateBubbleSettings({ maxBubbles: parseInt(value) });
+    });
+
+    this.setupRangeControl('bubbleGravity', 'bubbleGravityValue', value => {
+      this.updateBubbleSettings({ gravity: parseFloat(value) });
+    });
+
+    this.setupRangeControl('bubbleClusterSpread', 'bubbleClusterSpreadValue', value => {
+      this.updateBubbleSettings({ clusterSpread: parseInt(value) });
+    });
+
+    this.setupRangeControl('randomRiseSpeedMin', 'randomRiseSpeedMinValue', value => {
+      this.updateBubbleSettings({ randomRiseSpeedMin: parseFloat(value) });
+    });
+
+    this.setupRangeControl('randomRiseSpeedMax', 'randomRiseSpeedMaxValue', value => {
+      this.updateBubbleSettings({ randomRiseSpeedMax: parseFloat(value) });
+    });
+
+    this.setupRangeControl('randomPopHeightMin', 'randomPopHeightMinValue', value => {
+      // Convert from inverted percentage (10-100) to normalized value (0.1-1.0)
+      // Higher slider value = higher in sky = higher normalized value
+      this.updateBubbleSettings({ randomPopHeightMin: parseFloat(value) / 100 });
+    });
+
+    this.setupRangeControl('randomPopHeightMax', 'randomPopHeightMaxValue', value => {
+      // Convert from inverted percentage (10-100) to normalized value (0.1-1.0)
+      // Higher slider value = higher in sky = higher normalized value
+      this.updateBubbleSettings({ randomPopHeightMax: parseFloat(value) / 100 });
+    });
+
+    this.setupRangeControl('bubbleWobble', 'bubbleWobbleValue', value => {
+      this.updateBubbleSettings({ wobbleIntensity: parseFloat(value) });
+    });
+
+    this.setupRangeControl('bubbleBuoyancy', 'bubbleBuoyancyValue', value => {
+      this.updateBubbleSettings({ buoyancy: parseFloat(value) });
+    });
+
+    // Random bubble size toggle
+    this.setupToggleControl('randomBubbleSize', isChecked => {
+      this.updateBubbleSettings({ randomSize: isChecked });
+      // Show/hide random bubble size range controls
+      const rangeControls = document.getElementById('randomBubbleSizeRange');
+      const maxRangeControls = document.getElementById('randomBubbleSizeMaxSetting');
+      if (rangeControls && maxRangeControls) {
+        rangeControls.style.display = isChecked ? 'block' : 'none';
+        maxRangeControls.style.display = isChecked ? 'block' : 'none';
+      }
+    });
+
+    // Random bubble size range controls
+    this.setupRangeControl('randomBubbleSizeMin', 'randomBubbleSizeMinValue', value => {
+      this.updateBubbleSettings({ randomSizeMin: parseFloat(value) });
+    });
+
+    this.setupRangeControl('randomBubbleSizeMax', 'randomBubbleSizeMaxValue', value => {
+      this.updateBubbleSettings({ randomSizeMax: parseFloat(value) });
+    });
+
+    // Random bubble rise speed toggle
+    this.setupToggleControl('randomBubbleRiseSpeed', isChecked => {
+      this.updateBubbleSettings({ randomRiseSpeed: isChecked });
+      // Show/hide random rise speed range controls
+      const rangeControls = document.getElementById('randomRiseSpeedRange');
+      const maxRangeControls = document.getElementById('randomRiseSpeedMaxSetting');
+      if (rangeControls && maxRangeControls) {
+        rangeControls.style.display = isChecked ? 'block' : 'none';
+        maxRangeControls.style.display = isChecked ? 'block' : 'none';
+      }
+    });
+
+    // Random bubble pop height toggle
+    this.setupToggleControl('randomBubblePopHeight', isChecked => {
+      this.updateBubbleSettings({ randomPopHeight: isChecked });
+      // Show/hide random pop height range controls
+      const rangeControls = document.getElementById('randomPopHeightRange');
+      const maxRangeControls = document.getElementById('randomPopHeightMaxSetting');
+      if (rangeControls && maxRangeControls) {
+        rangeControls.style.display = isChecked ? 'block' : 'none';
+        maxRangeControls.style.display = isChecked ? 'block' : 'none';
+      }
+    });
+
+    // Bubble launch spread mode
+    const bubbleLaunchSpreadModeSelect = document.getElementById('bubbleLaunchSpreadMode');
+    if (bubbleLaunchSpreadModeSelect) {
+      bubbleLaunchSpreadModeSelect.addEventListener('change', () => {
+        this.updateBubbleSettings({ launchSpreadMode: bubbleLaunchSpreadModeSelect.value });
+      });
+    }
     
     // Particle settings
     this.setupRangeControl('particleCount', 'particleCountValue', value => {
@@ -327,6 +464,20 @@ class SettingsController {
     // Update FireworkManager
     if (this.animationController && this.animationController.fireworkManager) {
       this.animationController.fireworkManager.updateSettings(settings);
+    }
+    
+    // Check for performance issues
+    this.monitorPerformanceSettings();
+  }
+  
+  // Update settings in BubbleManager
+  updateBubbleSettings(settings) {
+    // Save to settings manager
+    this.settingsManager.updateSettings('bubbles', settings);
+    
+    // Update BubbleManager
+    if (this.animationController && this.animationController.bubbleManager) {
+      this.animationController.bubbleManager.updateSettings(settings);
     }
     
     // Check for performance issues
@@ -578,6 +729,9 @@ class SettingsController {
           }
         }
         break;
+      case 'bubbles':
+        this.updateBubbleSettings(DEFAULT_SETTINGS.bubbles);
+        break;
       case 'effects':
         // Effects tab contains particle settings and other effects
         this.updateParticleSettings(DEFAULT_SETTINGS.particles);
@@ -598,9 +752,9 @@ class SettingsController {
   
   // Update UI controls to reflect current settings
   updateUIFromSettings() {
-    
     // Get all settings from AnimationSettingsManager
     const fireworkSettings = this.settingsManager.getSettings('fireworks');
+    const bubbleSettings = this.settingsManager.getSettings('bubbles');
     const particleSettings = this.settingsManager.getSettings('particles');
     const effectSettings = this.settingsManager.getSettings('effects');
     const animationSettings = this.settingsManager.getSettings('animation');
@@ -619,7 +773,6 @@ class SettingsController {
       console.error('[SettingsController] Failed to load audio settings:', error);
     }
 
-    
     // Update ColorManager instance with all loaded color settings
     if (this.colorManager) {
         this.colorManager.setTheme(colorSettings.theme);
@@ -647,6 +800,26 @@ class SettingsController {
     this.updateRangeControl('randomLaunchPowerMin', 'randomLaunchPowerMinValue', fireworkSettings.randomLaunchPowerMin);
     this.updateRangeControl('randomLaunchPowerMax', 'randomLaunchPowerMaxValue', fireworkSettings.randomLaunchPowerMax);
     
+    // Update bubble range controls
+    this.updateRangeControl('bubbleSize', 'bubbleSizeValue', bubbleSettings.bubbleSize);
+    this.updateRangeControl('bubbleClusterSize', 'bubbleClusterSizeValue', bubbleSettings.bubbleClusterSize);
+    this.updateRangeControl('randomClusterSizeMin', 'randomClusterSizeMinValue', bubbleSettings.randomClusterSizeMin);
+    this.updateRangeControl('randomClusterSizeMax', 'randomClusterSizeMaxValue', bubbleSettings.randomClusterSizeMax);
+    this.updateRangeControl('bubbleLaunchSpread', 'bubbleLaunchSpreadValue', bubbleSettings.launchSpread);
+    this.updateRangeControl('bubbleRiseSpeed', 'bubbleRiseSpeedValue', bubbleSettings.riseSpeed);
+    this.updateRangeControl('bubbleAutoPopHeight', 'bubbleAutoPopHeightValue', Math.round(bubbleSettings.autoPopHeight * 100));
+    this.updateRangeControl('maxBubbles', 'maxBubblesValue', bubbleSettings.maxBubbles);
+    this.updateRangeControl('bubbleGravity', 'bubbleGravityValue', bubbleSettings.gravity);
+    this.updateRangeControl('bubbleClusterSpread', 'bubbleClusterSpreadValue', bubbleSettings.clusterSpread);
+    this.updateRangeControl('randomRiseSpeedMin', 'randomRiseSpeedMinValue', bubbleSettings.randomRiseSpeedMin);
+    this.updateRangeControl('randomRiseSpeedMax', 'randomRiseSpeedMaxValue', bubbleSettings.randomRiseSpeedMax);
+    this.updateRangeControl('randomPopHeightMin', 'randomPopHeightMinValue', Math.round(bubbleSettings.randomPopHeightMin * 100));
+    this.updateRangeControl('randomPopHeightMax', 'randomPopHeightMaxValue', Math.round(bubbleSettings.randomPopHeightMax * 100));
+    this.updateRangeControl('randomBubbleSizeMin', 'randomBubbleSizeMinValue', bubbleSettings.randomSizeMin);
+    this.updateRangeControl('randomBubbleSizeMax', 'randomBubbleSizeMaxValue', bubbleSettings.randomSizeMax);
+    this.updateRangeControl('bubbleWobble', 'bubbleWobbleValue', bubbleSettings.wobbleIntensity);
+    this.updateRangeControl('bubbleBuoyancy', 'bubbleBuoyancyValue', bubbleSettings.buoyancy);
+    
     this.updateRangeControl('particleCount', 'particleCountValue', particleSettings.count);
     this.updateRangeControl('particleLifespan', 'particleLifespanValue', particleSettings.lifespan * 60);
     this.updateRangeControl('particleMinSize', 'particleMinSizeValue', particleSettings.minSize);
@@ -673,6 +846,12 @@ class SettingsController {
     this.updateToggleControl('randomFireworkSize', fireworkSettings.randomSize);
     this.updateToggleControl('randomLaunchPower', fireworkSettings.randomLaunchPower);
     
+    // Update bubble toggle controls
+    this.updateToggleControl('randomBubbleSize', bubbleSettings.randomSize);
+    this.updateToggleControl('randomBubbleClusterSize', bubbleSettings.randomClusterSize);
+    this.updateToggleControl('randomBubbleRiseSpeed', bubbleSettings.randomRiseSpeed);
+    this.updateToggleControl('randomBubblePopHeight', bubbleSettings.randomPopHeight);
+    
     // Show/hide random size range controls based on toggle state
     const rangeControls = document.getElementById('randomSizeRange');
     const maxRangeControls = document.getElementById('randomSizeMaxSetting');
@@ -689,8 +868,43 @@ class SettingsController {
       launchPowerMaxRangeControls.style.display = fireworkSettings.randomLaunchPower ? 'block' : 'none';
     }
     
+    // Show/hide bubble random size range controls based on toggle state
+    const bubbleSizeRangeControls = document.getElementById('randomBubbleSizeRange');
+    const bubbleSizeMaxRangeControls = document.getElementById('randomBubbleSizeMaxSetting');
+    if (bubbleSizeRangeControls && bubbleSizeMaxRangeControls) {
+      bubbleSizeRangeControls.style.display = bubbleSettings.randomSize ? 'block' : 'none';
+      bubbleSizeMaxRangeControls.style.display = bubbleSettings.randomSize ? 'block' : 'none';
+    }
+    
+    // Show/hide bubble random cluster size range controls based on toggle state
+    const bubbleClusterSizeRangeControls = document.getElementById('randomClusterSizeRange');
+    const bubbleClusterSizeMaxRangeControls = document.getElementById('randomClusterSizeMaxSetting');
+    if (bubbleClusterSizeRangeControls && bubbleClusterSizeMaxRangeControls) {
+      bubbleClusterSizeRangeControls.style.display = bubbleSettings.randomClusterSize ? 'block' : 'none';
+      bubbleClusterSizeMaxRangeControls.style.display = bubbleSettings.randomClusterSize ? 'block' : 'none';
+    }
+    
+    // Show/hide bubble random rise speed range controls based on toggle state
+    const bubbleRiseSpeedRangeControls = document.getElementById('randomRiseSpeedRange');
+    const bubbleRiseSpeedMaxRangeControls = document.getElementById('randomRiseSpeedMaxSetting');
+    if (bubbleRiseSpeedRangeControls && bubbleRiseSpeedMaxRangeControls) {
+      bubbleRiseSpeedRangeControls.style.display = bubbleSettings.randomRiseSpeed ? 'block' : 'none';
+      bubbleRiseSpeedMaxRangeControls.style.display = bubbleSettings.randomRiseSpeed ? 'block' : 'none';
+    }
+    
+    // Show/hide bubble random pop height range controls based on toggle state
+    const bubblePopHeightRangeControls = document.getElementById('randomPopHeightRange');
+    const bubblePopHeightMaxRangeControls = document.getElementById('randomPopHeightMaxSetting');
+    if (bubblePopHeightRangeControls && bubblePopHeightMaxRangeControls) {
+      bubblePopHeightRangeControls.style.display = bubbleSettings.randomPopHeight ? 'block' : 'none';
+      bubblePopHeightMaxRangeControls.style.display = bubbleSettings.randomPopHeight ? 'block' : 'none';
+    }
+    
     // Update select controls
     this.updateSelectControl('colorTheme', colorSettings.theme);
+    
+    // Update bubble select controls
+    this.updateSelectControl('bubbleLaunchSpreadMode', bubbleSettings.launchSpreadMode);
     
     // Update custom colors UI
     this.updateCustomColorsUI();
@@ -719,11 +933,17 @@ class SettingsController {
     const input = document.getElementById(inputId);
     const valueDisplay = document.getElementById(valueId);
     
-    if (input && value !== undefined) {
+    // Check for valid numeric value
+    if (value === undefined || value === null || isNaN(value)) {
+      console.warn(`[SettingsController] Invalid value for ${inputId}:`, value);
+      return;
+    }
+    
+    if (input) {
       input.value = value;
     }
     
-    if (valueDisplay && value !== undefined) {
+    if (valueDisplay) {
       valueDisplay.textContent = value;
     }
   }

@@ -8,6 +8,64 @@ import LaunchControlsManager from './LaunchControlsManager.js';
 import ModeManager from './modes/ModeManager.js';
 
 /**
+ * Set up global drag and drop prevention to avoid opening images in new windows
+ * This is especially important when hosting on servers like FileZilla
+ */
+function setupGlobalDragPrevention() {
+    // Prevent default drag and drop behavior globally to avoid opening images in new windows
+    // This is especially important when hosting on servers like FileZilla
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.addEventListener(eventName, (e) => {
+            // Check if the event target or any parent is within an upload zone
+            const uploadZones = document.querySelectorAll('#dropZone, #bgDropZone');
+            let isInUploadZone = false;
+            
+            // Check if the target or any of its parents is an upload zone
+            let currentElement = e.target;
+            while (currentElement && currentElement !== document) {
+                uploadZones.forEach(zone => {
+                    if (zone && (currentElement === zone || zone.contains(currentElement))) {
+                        isInUploadZone = true;
+                    }
+                });
+                if (isInUploadZone) break;
+                currentElement = currentElement.parentElement;
+            }
+            
+            // If not in an upload zone, prevent the default behavior
+            if (!isInUploadZone) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Debug log for drop events outside upload zones
+                if (eventName === 'drop') {
+                    console.log('Prevented default drop behavior outside upload zone');
+                }
+            }
+        }, false);
+    });
+
+    // Additional specific prevention for drop events on the document body
+    document.body.addEventListener('drop', (e) => {
+        // Check if this is not within an upload zone
+        const uploadZones = document.querySelectorAll('#dropZone, #bgDropZone');
+        let isInUploadZone = false;
+        
+        uploadZones.forEach(zone => {
+            if (zone && zone.contains(e.target)) {
+                isInUploadZone = true;
+            }
+        });
+        
+        if (!isInUploadZone) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }, false);
+}
+
+/**
  * Main application entry point
  */
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Get other initial settings for AnimationController and its sub-managers
     const initialAnimationSettings = settingsManager.getSettings('animation');
     const initialFireworkSettings = settingsManager.getSettings('fireworks');
+    const initialBubbleSettings = settingsManager.getSettings('bubbles');
     const initialParticleSettings = settingsManager.getSettings('particles');
     const initialEffectSettings = settingsManager.getSettings('effects');
     // Background settings are handled by UIController/BackgroundUploader for now
@@ -42,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const allInitialAnimCtrlSettings = {
         animation: initialAnimationSettings,
         fireworks: initialFireworkSettings,
+        bubbles: initialBubbleSettings,
         particles: initialParticleSettings,
         effects: initialEffectSettings
     };
@@ -144,6 +204,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
             }
         }
+
+        // Now that uploaders are initialized, set up global drag prevention
+        // This ensures the upload zones exist when we check for them
+        setupGlobalDragPrevention();
     });
     
     // Display browser compatibility warning if necessary
@@ -256,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Setup bubble settings handlers
-    setupBubbleSettings();
+    // setupBubbleSettings();
 });
 
 /**
@@ -340,6 +404,10 @@ function setupBubbleSettings() {
     const bubbleAutoPopHeightSlider = document.getElementById('bubbleAutoPopHeight');
     const bubbleAutoPopHeightValue = document.getElementById('bubbleAutoPopHeightValue');
     if (bubbleAutoPopHeightSlider && bubbleAutoPopHeightValue) {
+        // Initialize with current slider value on page load
+        const initialValue = parseFloat(bubbleAutoPopHeightSlider.value) / 100;
+        updateBubbleManagerSettings({ autoPopHeight: initialValue });
+        
         bubbleAutoPopHeightSlider.addEventListener('input', () => {
             bubbleAutoPopHeightValue.textContent = bubbleAutoPopHeightSlider.value;
             updateBubbleManagerSettings({ autoPopHeight: parseFloat(bubbleAutoPopHeightSlider.value) / 100 });
@@ -435,6 +503,10 @@ function setupBubbleSettings() {
     const randomPopHeightMin = document.getElementById('randomPopHeightMin');
     const randomPopHeightMinValue = document.getElementById('randomPopHeightMinValue');
     if (randomPopHeightMin && randomPopHeightMinValue) {
+        // Initialize with current slider value on page load
+        const initialMinValue = parseFloat(randomPopHeightMin.value) / 100;
+        updateBubbleManagerSettings({ randomPopHeightMin: initialMinValue });
+        
         randomPopHeightMin.addEventListener('input', () => {
             randomPopHeightMinValue.textContent = randomPopHeightMin.value;
             updateBubbleManagerSettings({ randomPopHeightMin: parseFloat(randomPopHeightMin.value) / 100 });
@@ -444,6 +516,10 @@ function setupBubbleSettings() {
     const randomPopHeightMax = document.getElementById('randomPopHeightMax');
     const randomPopHeightMaxValue = document.getElementById('randomPopHeightMaxValue');
     if (randomPopHeightMax && randomPopHeightMaxValue) {
+        // Initialize with current slider value on page load
+        const initialMaxValue = parseFloat(randomPopHeightMax.value) / 100;
+        updateBubbleManagerSettings({ randomPopHeightMax: initialMaxValue });
+        
         randomPopHeightMax.addEventListener('input', () => {
             randomPopHeightMaxValue.textContent = randomPopHeightMax.value;
             updateBubbleManagerSettings({ randomPopHeightMax: parseFloat(randomPopHeightMax.value) / 100 });
@@ -545,6 +621,16 @@ function applyBubblePreset(preset) {
             randomPopHeight: false,
             autoPopHeight: 0.15
         },
+        minimal: {
+            bubbleClusterSize: 0,
+            riseSpeed: 1.8,
+            launchSpread: 10,
+            launchSpreadMode: 'center',
+            clusterSpread: 0,
+            randomRiseSpeed: false,
+            randomPopHeight: false,
+            autoPopHeight: 0.20
+        },
         chaos: {
             bubbleClusterSize: 8,
             riseSpeed: 3.0,
@@ -559,7 +645,7 @@ function applyBubblePreset(preset) {
             randomPopHeightMax: 0.45
         },
         peaceful: {
-            bubbleClusterSize: 3,
+            bubbleClusterSize: 2,
             riseSpeed: 1.0,
             launchSpread: 40,
             launchSpreadMode: 'range',
@@ -607,6 +693,7 @@ function updateBubblePresetDescription(preset, descriptionElement) {
         celebration: "Large clusters with varied speeds and random pop heights for festive effects",
         fountain: "Bubbles launch from center like a fountain with varied rise speeds",
         stream: "Single bubbles in a steady stream rising from the center",
+        minimal: "Clean single bubbles without foam clusters - pure and simple",
         chaos: "Random everything - clusters, positions, speeds, and pop heights",
         peaceful: "Slow, spread-out bubbles with gentle random variations",
         party: "Fast, energetic bubbles launching everywhere with quick pops"

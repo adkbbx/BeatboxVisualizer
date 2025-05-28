@@ -1,9 +1,25 @@
-/* Modern Dark Mode Styles */
+/* Global reset and base styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     transition: all 0.2s ease;
+}
+
+/* Prevent text cursor on non-input elements */
+*:not(input):not(textarea):not([contenteditable="true"]) {
+    caret-color: transparent;
+}
+
+/* Ensure text cursor only appears on actual text input elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+textarea,
+[contenteditable="true"] {
+    caret-color: auto;
 }
 
 body {
@@ -1016,6 +1032,29 @@ footer {
 .mode-option:focus-visible {
     outline: 2px solid #60a5fa;
     outline-offset: 1px;
+}
+
+/* Prevent text cursor on focusable non-input elements */
+.mode-toggle,
+.mode-option,
+div[tabindex],
+button,
+[role="switch"],
+[role="button"] {
+    caret-color: transparent;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Ensure proper cursor for interactive elements */
+.mode-toggle,
+.mode-option,
+div[tabindex]:not([tabindex="-1"]),
+[role="switch"],
+[role="button"] {
+    cursor: pointer;
 }
 
 /* High contrast mode support */

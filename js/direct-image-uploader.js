@@ -22,30 +22,32 @@ export class DirectImageUploader {
         const selectButton = document.getElementById('selectFiles');
         
         if (!dropZone || !fileInput || !selectButton) {
+            console.warn('DirectImageUploader: Required elements not found', {
+                dropZone: !!dropZone,
+                fileInput: !!fileInput,
+                selectButton: !!selectButton
+            });
             return;
         }
 
-        // Setup drag and drop events
+        // Setup drag and drop events with better event handling
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, this.preventDefaults.bind(this), false);
-        });
-        
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => {
-                dropZone.classList.add('dragover');
+            dropZone.addEventListener(eventName, (e) => {
+                this.preventDefaults(e);
+                
+                // Add visual feedback for drag events
+                if (eventName === 'dragenter' || eventName === 'dragover') {
+                    dropZone.classList.add('dragover');
+                } else if (eventName === 'dragleave' || eventName === 'drop') {
+                    dropZone.classList.remove('dragover');
+                }
+                
+                // Handle file drop
+                if (eventName === 'drop' && e.dataTransfer && e.dataTransfer.files) {
+                    this.handleFiles(e.dataTransfer.files);
+                }
             }, false);
         });
-        
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => {
-                dropZone.classList.remove('dragover');
-            }, false);
-        });
-        
-        // Handle file drop
-        dropZone.addEventListener('drop', e => {
-            this.handleFiles(e.dataTransfer.files);
-        }, false);
         
         // Handle file selection via button
         selectButton.addEventListener('click', () => {

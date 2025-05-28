@@ -4,8 +4,10 @@
 class ModeManager {
     constructor(animationController) {
         this.animationController = animationController;
-        this.currentMode = 'firework'; // Default mode
         this.availableModes = ['firework', 'bubble'];
+        
+        // Load saved mode from localStorage, fallback to 'firework' if none saved
+        this.currentMode = this.loadSavedMode() || 'firework';
         
         // Initialize UI
         this.initializeModeUI();
@@ -26,6 +28,17 @@ class ModeManager {
         
         // Initialize UI for current mode
         this.updateModeUI(this.currentMode);
+        
+        // Initialize the loaded mode
+        this.initializeMode(this.currentMode);
+        
+        // Update settings for the loaded mode
+        this.updateSettingsForMode(this.currentMode);
+        
+        // Notify animation controller of the initial mode
+        if (this.animationController && this.animationController.switchMode) {
+            this.animationController.switchMode(this.currentMode);
+        }
     }
     
     /**
@@ -147,8 +160,6 @@ class ModeManager {
             return; // Already in this mode
         }
         
-
-        
         // Clear current animations
         this.clearCurrentAnimations();
         
@@ -183,6 +194,9 @@ class ModeManager {
         
         // Trigger mode change event
         this.dispatchModeChangeEvent(previousMode, newMode);
+        
+        // Save current mode to localStorage
+        this.saveModeToStorage(newMode);
     }
     
     /**
@@ -318,54 +332,39 @@ class ModeManager {
             if (fireworksTab) fireworksTab.style.display = 'none';
             if (bubblesTab) bubblesTab.style.display = 'inline-block';
             
-            // Remove any inline styles from tab panes to let CSS classes control visibility
+            // Ensure only bubbles tab pane is active
             if (fireworksTabPane) {
-                fireworksTabPane.style.display = '';
                 fireworksTabPane.classList.remove('active');
             }
             if (bubblesTabPane) {
-                bubblesTabPane.style.display = '';
+                bubblesTabPane.classList.add('active');
             }
             
-            // If currently on fireworks tab, switch to bubbles tab
-            if (fireworksTab && fireworksTab.classList.contains('active')) {
-                fireworksTab.classList.remove('active');
-                if (bubblesTab) {
-                    bubblesTab.classList.add('active');
-                    if (bubblesTabPane) bubblesTabPane.classList.add('active');
-                }
-            } else if (bubblesTab && !document.querySelector('.tab-button.active')) {
-                // If no tab is active, activate bubbles tab
-                bubblesTab.classList.add('active');
-                if (bubblesTabPane) bubblesTabPane.classList.add('active');
-            }
+            // Update tab button states
+            if (fireworksTab) fireworksTab.classList.remove('active');
+            if (bubblesTab) bubblesTab.classList.add('active');
+            
         } else {
             // Hide bubbles tab, show fireworks tab
             if (bubblesTab) bubblesTab.style.display = 'none';
             if (fireworksTab) fireworksTab.style.display = 'inline-block';
             
-            // Remove any inline styles from tab panes to let CSS classes control visibility
+            // Ensure only fireworks tab pane is active
             if (bubblesTabPane) {
-                bubblesTabPane.style.display = '';
                 bubblesTabPane.classList.remove('active');
             }
             if (fireworksTabPane) {
-                fireworksTabPane.style.display = '';
+                fireworksTabPane.classList.add('active');
             }
             
-            // If currently on bubbles tab, switch to fireworks tab
-            if (bubblesTab && bubblesTab.classList.contains('active')) {
-                bubblesTab.classList.remove('active');
-                if (fireworksTab) {
-                    fireworksTab.classList.add('active');
-                    if (fireworksTabPane) fireworksTabPane.classList.add('active');
-                }
-            } else if (fireworksTab && !document.querySelector('.tab-button.active')) {
-                // If no tab is active, activate fireworks tab
-                fireworksTab.classList.add('active');
-                if (fireworksTabPane) fireworksTabPane.classList.add('active');
-            }
+            // Update tab button states
+            if (bubblesTab) bubblesTab.classList.remove('active');
+            if (fireworksTab) fireworksTab.classList.add('active');
         }
+        
+        // Save the active tab to localStorage for consistency
+        const activeTabName = mode === 'bubble' ? 'bubbles' : 'fireworks';
+        localStorage.setItem('vibecoding-active-settings-tab', activeTabName);
     }
     
     /**
@@ -399,6 +398,34 @@ class ModeManager {
      */
     isModeAvailable(mode) {
         return this.availableModes.includes(mode);
+    }
+    
+    /**
+     * Load saved mode from localStorage
+     * @returns {string|null} The saved mode or null if none exists
+     */
+    loadSavedMode() {
+        try {
+            const savedMode = localStorage.getItem('vibecoding_selected_mode');
+            if (savedMode && this.availableModes.includes(savedMode)) {
+                return savedMode;
+            }
+        } catch (error) {
+            console.warn('[ModeManager] Failed to load saved mode from localStorage:', error);
+        }
+        return null;
+    }
+    
+    /**
+     * Save current mode to localStorage
+     * @param {string} mode - The mode to save
+     */
+    saveModeToStorage(mode) {
+        try {
+            localStorage.setItem('vibecoding_selected_mode', mode);
+        } catch (error) {
+            console.warn('[ModeManager] Failed to save mode to localStorage:', error);
+        }
     }
 }
 

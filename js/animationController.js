@@ -26,6 +26,9 @@ class AnimationController {
     const currentAnimationSettings = { ...defaultAnimSettings, ...(initialSettings.animation || {}) };
     this.globalSpeed = currentAnimationSettings.globalSpeed;
 
+    // Store initial settings for later use
+    this.initialSettings = initialSettings;
+
     // Initialize managers with their respective initial settings
     this.colorManager = colorManagerInstance;
     // Pass particle and effect settings combined to ParticleManager
@@ -57,7 +60,7 @@ class AnimationController {
     
     // Initialize bubble manager if switching to bubble mode and it doesn't exist
     if (newMode === 'bubble' && !this.bubbleManager) {
-      this.bubbleManager = new BubbleManager(this.ctx, this.colorManager, this.particleManager);
+      this.bubbleManager = new BubbleManager(this.ctx, this.colorManager, this.particleManager, this.initialSettings?.bubbles || {});
       
       // Update sound effects if audio is ready
       if (this.audioReady && this.bubbleManager) {

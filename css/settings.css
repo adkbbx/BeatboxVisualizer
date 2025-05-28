@@ -1,5 +1,21 @@
 /* VibeCoding Settings System - Consolidated */
 
+/* Prevent text cursor on interactive elements */
+.tab-button,
+.switch,
+.slider,
+button,
+select,
+[role="button"],
+[role="switch"],
+[role="tab"] {
+    caret-color: transparent;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 /* Settings Panel with Tabs */
 .settings-panel {
   max-width: 600px;
@@ -67,7 +83,6 @@
   text-overflow: clip;
   line-height: 1.3;
   font-weight: 500;
-}
   margin: 0 2px;
 }
 

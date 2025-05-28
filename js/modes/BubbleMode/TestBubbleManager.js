@@ -5,9 +5,11 @@ class TestBubbleManager {
     constructor(bubbleManager, soundEffects) {
         this.bubbleManager = bubbleManager;
         this.soundEffects = soundEffects;
-        this.testBubbles = new Set(); // Track test bubbles by ID
         this.soundEnabled = true;
-        this.soundVolume = 0.3;
+        this.soundVolume = 0.5;
+        
+        // Track test bubbles using Map (id -> bubble object)
+        this.testBubbles = new Map();
     }
 
     /**
@@ -18,7 +20,7 @@ class TestBubbleManager {
     }
 
     /**
-     * Launch a test bubble that will auto-pop at its target height
+     * Launch a test bubble with cluster appearance
      */
     async launchTestBubble() {
         if (!this.bubbleManager) {
@@ -27,9 +29,8 @@ class TestBubbleManager {
         }
 
         try {
-            // Play launch sound if enabled and microphone is not active (to prevent audio feedback)
-            const microphoneActive = window.audioManager?.isActive;
-            if (this.soundEnabled && !microphoneActive) {
+            // Play launch sound if enabled (test bubbles always play sound since they're manually triggered)
+            if (this.soundEnabled) {
                 if (this.soundEffects) {
                     await this.soundEffects.playBubbleLaunchSound();
                 } else {
@@ -44,28 +45,8 @@ class TestBubbleManager {
                 }
             }
 
-            // Generate unique cluster ID for test bubbles
-            const testClusterId = `test_cluster_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            
-            // Create a test bubble cluster with the cluster ID
-            const testBubbles = this.bubbleManager.bubbleFactory.createBubbleCluster(250, testClusterId);
-            
-            // Mark bubbles as test bubbles and set auto-pop behavior
-            testBubbles.forEach(bubble => {
-                bubble.isTestBubble = true; // Mark as test bubble
-                bubble.autoPopHeight = 0.3; // Pop at 30% of screen height
-                
-                // Track this test bubble
-                this.testBubbles.add(bubble.id);
-            });
-
-            // Add to bubble manager
-            this.bubbleManager.bubbles.push(...testBubbles);
-
-            // Set up auto-pop timer for test bubbles
-            setTimeout(() => {
-                this.autoPopTestBubbles(testBubbles);
-            }, 1500); // Auto-pop after 1.5 seconds if not already popped
+            // Create test bubble using the new single bubble approach
+            this.createTestBubble();
 
         } catch (error) {
             console.error('[TestBubbleManager] Error launching test bubble:', error);
@@ -73,44 +54,44 @@ class TestBubbleManager {
     }
 
     /**
-     * Auto-pop test bubbles that haven't popped naturally
+     * Auto-pop test bubbles that haven't popped naturally (REMOVED - now purely height-based)
      */
     async autoPopTestBubbles(testBubbles) {
-        // Find bubbles that haven't exploded yet
-        const activeBubbles = testBubbles.filter(bubble => 
-            !bubble.exploded && this.testBubbles.has(bubble.id)
-        );
-        
-        if (activeBubbles.length > 0) {
-            // Get the cluster ID from the first active bubble
-            const clusterId = activeBubbles[0].clusterId;
-            
-            if (clusterId) {
-                // Pop the entire cluster at once (this will create one image)
-                this.bubbleManager.popBubbleCluster(clusterId);
-            } else {
-                // Fallback: pop individual bubbles without images
-                for (const bubble of activeBubbles) {
-                    this.bubbleManager.popBubble(bubble, false, false);
-                    bubble.exploded = true;
-                    await this.cleanupTestBubble(bubble.id);
-                }
-            }
-        }
+        // This method is no longer used - bubbles pop purely based on height
     }
 
     /**
-     * Check if a bubble should auto-pop (called during bubble updates)
+     * Check if any test bubble should auto-pop based on height (simplified for single bubbles)
      */
-    checkAutoPopCondition(bubble) {
-        // Only auto-pop test bubbles that have existed for a while
-        if (!bubble.isTestBubble || !this.testBubbles.has(bubble.id) || bubble.age < 60) {
-            return false;
+    checkAutoPopCondition() {
+        if (this.testBubbles.size === 0) {
+            return; // No test bubbles to check
         }
 
-        // Check if bubble has reached auto-pop height
-        const autoPopY = this.bubbleManager.ctx.canvas.height * (bubble.autoPopHeight || 0.3);
-        return bubble.y <= autoPopY;
+        const canvasHeight = this.bubbleManager.ctx.canvas.height;
+
+        // Check each test bubble individually using their individual autoPopHeight
+        for (const testBubble of this.testBubbles.values()) {
+            if (testBubble.exploded || testBubble.hasReachedAutoPopHeight) {
+                continue;
+            }
+
+            // Use the bubble's individual autoPopHeight (which may be randomized)
+            const bubbleAutoPopHeight = testBubble.autoPopHeight || this.bubbleManager.settings.autoPopHeight || 0.15;
+            
+            // FIXED: Invert the calculation so higher percentage = higher in sky (lower Y value)
+            // 100% = top of screen (Y = 0), 10% = near bottom (Y = 90% of canvas height)
+            const targetHeight = canvasHeight * (1 - bubbleAutoPopHeight);
+
+            // Check if bubble has reached its individual target height
+            if (testBubble.y <= targetHeight) {
+                // Mark as reached to prevent multiple triggers
+                testBubble.hasReachedAutoPopHeight = true;
+                
+                // Pop the bubble immediately
+                this.bubbleManager.popTestBubbleClusterImmediately(testBubble.clusterId);
+            }
+        }
     }
 
     /**
@@ -120,9 +101,8 @@ class TestBubbleManager {
         if (this.testBubbles.has(bubbleId)) {
             this.testBubbles.delete(bubbleId);
             
-            // Play pop sound if this was a test bubble and microphone is not active (to prevent audio feedback)
-            const microphoneActive = window.audioManager?.isActive;
-            if (this.soundEnabled && !microphoneActive) {
+            // Play pop sound if this was a test bubble (test bubbles always play sound since they're manually triggered)
+            if (this.soundEnabled) {
                 if (this.soundEffects) {
                     try {
                         await this.soundEffects.playBubblePopSound();
@@ -173,6 +153,49 @@ class TestBubbleManager {
      */
     getActiveTestBubbleCount() {
         return this.testBubbles.size;
+    }
+
+    /**
+     * Create a test bubble (now single bubble with cluster appearance)
+     */
+    createTestBubble() {
+        if (!this.bubbleManager || !this.bubbleManager.bubbleFactory) {
+            console.error('[TestBubbleManager] BubbleManager or BubbleFactory not available');
+            return;
+        }
+
+        // Generate unique cluster ID
+        const clusterId = `test_cluster_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Create single bubble with cluster appearance
+        const bubbles = this.bubbleManager.bubbleFactory.createBubbleCluster(250, clusterId);
+        
+        if (bubbles && bubbles.length > 0) {
+            const bubble = bubbles[0]; // Single bubble with cluster appearance
+            
+            // Mark as test bubble
+            bubble.isTestBubble = true;
+            bubble.hasReachedAutoPopHeight = false;
+            
+            // Determine auto-pop height for test bubbles (using settings panel values)
+            let autoPopHeight = this.bubbleManager.settings.autoPopHeight || 0.15;
+            
+            // Apply random pop height if enabled
+            if (this.bubbleManager.settings.randomPopHeight) {
+                const minHeight = this.bubbleManager.settings.randomPopHeightMin || 0.1;
+                const maxHeight = this.bubbleManager.settings.randomPopHeightMax || 0.4;
+                autoPopHeight = minHeight + Math.random() * (maxHeight - minHeight);
+            }
+            
+            // Set auto-pop height
+            bubble.autoPopHeight = autoPopHeight;
+            
+            // Add to bubble manager
+            this.bubbleManager.bubbles.push(bubble);
+            
+            // Track the test bubble
+            this.testBubbles.set(bubble.id, bubble);
+        }
     }
 }
 

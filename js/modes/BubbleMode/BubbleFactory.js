@@ -35,7 +35,10 @@ class BubbleFactory {
         this.buoyancy = bubbleSettings.buoyancy || 0.98;
         
         // Bubble-specific settings
-        this.bubbleClusterSize = bubbleSettings.bubbleClusterSize || 3; // Number of bubbles per launch
+        this.bubbleClusterSize = bubbleSettings.bubbleClusterSize || 2; // Number of bubbles per launch
+        this.randomClusterSize = bubbleSettings.randomClusterSize || false;
+        this.randomClusterSizeMin = bubbleSettings.randomClusterSizeMin || 1;
+        this.randomClusterSizeMax = bubbleSettings.randomClusterSizeMax || 6;
         this.clusterSpread = bubbleSettings.clusterSpread || 20; // Spread of bubble cluster
     }
     
@@ -69,6 +72,11 @@ class BubbleFactory {
         // Physics settings
         if (newSettings.wobbleIntensity !== undefined) this.wobbleIntensity = newSettings.wobbleIntensity;
         if (newSettings.buoyancy !== undefined) this.buoyancy = newSettings.buoyancy;
+        
+        // Bubble-specific settings
+        if (newSettings.randomClusterSize !== undefined) this.randomClusterSize = newSettings.randomClusterSize;
+        if (newSettings.randomClusterSizeMin !== undefined) this.randomClusterSizeMin = newSettings.randomClusterSizeMin;
+        if (newSettings.randomClusterSizeMax !== undefined) this.randomClusterSizeMax = newSettings.randomClusterSizeMax;
     }
     
     /**
@@ -191,57 +199,59 @@ class BubbleFactory {
             size = this.randomSizeMin + Math.random() * (this.randomSizeMax - this.randomSizeMin);
         }
         
-        // Determine auto-pop height (NEW: Random Pop Height feature)
-        let autoPopHeight = this.autoPopHeight;
-        if (this.randomPopHeight) {
-            autoPopHeight = this.randomPopHeightMin + Math.random() * (this.randomPopHeightMax - this.randomPopHeightMin);
-        }
-        
-        // Create the bubble
+        // Create the bubble (regular bubbles don't get auto-pop height)
         const bubble = new Bubble(startX, startY, targetX, targetY, color, velocity, size);
         
-        // Set the custom auto-pop height for this bubble
-        bubble.autoPopHeight = autoPopHeight;
+        // Note: autoPopHeight is only set by TestBubbleManager for test bubbles
+        // Regular bubbles should float away naturally
         
         return bubble;
     }
     
     /**
-     * Create a cluster of bubbles
+     * Create a cluster of bubbles (now creates single bubble with cluster appearance)
      * @param {number} duration - Duration of the sustained sound
-     * @param {string} clusterId - Optional cluster ID to assign to all bubbles
-     * @returns {Array<Bubble>} Array of created bubbles
+     * @param {string} clusterId - Unique cluster ID
+     * @returns {Array} Array containing single bubble with cluster appearance
      */
     createBubbleCluster(duration = 250, clusterId = null) {
-        const bubbles = [];
-        const baseParams = this.calculateLaunchParameters(duration);
-        const { bubbleColor, selectedCustomImageId } = this.getBubbleColor();
+        // Calculate launch parameters
+        const launchParams = this.calculateLaunchParameters(duration);
         
-        // Generate cluster ID if not provided
-        const finalClusterId = clusterId || `cluster_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Get color and image information
+        const colorInfo = this.getBubbleColor();
         
-        // Create multiple bubbles in a cluster
-        for (let i = 0; i < this.bubbleClusterSize; i++) {
-            // Add some variation to each bubble's position
-            const offsetX = (Math.random() - 0.5) * this.clusterSpread;
-            const offsetY = Math.random() * 20; // Slight vertical offset
-            
-            const startX = baseParams.startX + offsetX;
-            const startY = baseParams.startY + offsetY;
-            const targetX = baseParams.targetX + offsetX;
-            const targetY = baseParams.targetY;
-            
-            const bubble = this.createBubble(startX, startY, targetX, targetY, bubbleColor);
-            
-            // Set additional properties
-            bubble.selectedImageColor = bubbleColor;
-            bubble.selectedCustomImageId = selectedCustomImageId;
-            bubble.clusterId = finalClusterId; // Assign cluster ID
-            
-            bubbles.push(bubble);
+        // Create single bubble with cluster appearance
+        const bubble = this.createBubble(
+            launchParams.startX,
+            launchParams.startY,
+            launchParams.targetX,
+            launchParams.targetY,
+            colorInfo.bubbleColor
+        );
+        
+        // Determine cluster size (number of visual bubbles)
+        let clusterSize = this.bubbleClusterSize;
+        if (this.randomClusterSize) {
+            // Use random cluster size within specified range
+            clusterSize = Math.floor(this.randomClusterSizeMin + Math.random() * (this.randomClusterSizeMax - this.randomClusterSizeMin + 1));
         }
         
-        return bubbles;
+        // Set up cluster appearance (visual only)
+        bubble.setupClusterAppearance(clusterSize);
+        
+        // Set cluster ID for identification
+        if (clusterId) {
+            bubble.clusterId = clusterId;
+        }
+        
+        // Set image information
+        if (colorInfo.selectedCustomImageId) {
+            bubble.setCustomImageId(colorInfo.selectedCustomImageId);
+        }
+        
+        // Return array with single bubble (maintains compatibility with existing code)
+        return [bubble];
     }
     
     /**

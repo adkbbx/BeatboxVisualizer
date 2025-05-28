@@ -457,13 +457,42 @@
                         <h5 class="group-title">🫧 Cluster Settings</h5>
                         
                         <div class="setting">
-                            <label for="bubbleClusterSize">Bubbles per Launch: <span id="bubbleClusterSizeValue">3</span></label>
-                            <input type="range" id="bubbleClusterSize" min="1" max="8" step="1" value="3" class="setting-slider">
+                            <label for="bubbleClusterSize">Bubbles per Launch: <span id="bubbleClusterSizeValue">2</span></label>
+                            <input type="range" id="bubbleClusterSize" min="0" max="8" step="1" value="2" class="setting-slider">
                             <div class="range-labels">
-                                <span>1 (Single)</span>
+                                <span>0 (None)</span>
                                 <span>8 (Large Cluster)</span>
                             </div>
                             <p class="setting-description">Number of bubbles created each time you launch</p>
+                        </div>
+                        
+                        <div class="setting toggle-setting">
+                            <label for="randomBubbleClusterSize">Random Bubbles per Launch:</label>
+                            <label class="switch">
+                                <input type="checkbox" id="randomBubbleClusterSize">
+                                <span class="slider round"></span>
+                            </label>
+                            <p class="setting-description">Each launch will create a random number of bubbles for more variety.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomClusterSizeRange" style="display: none;">
+                            <label for="randomClusterSizeMin">Minimum Bubbles: <span id="randomClusterSizeMinValue">1</span></label>
+                            <input type="range" id="randomClusterSizeMin" min="1" max="5" step="1" value="1" class="setting-slider">
+                            <div class="range-labels">
+                                <span>1 (Single)</span>
+                                <span>5 (Medium)</span>
+                            </div>
+                            <p class="setting-description">Minimum number of bubbles per launch.</p>
+                        </div>
+                        
+                        <div class="setting" id="randomClusterSizeMaxSetting" style="display: none;">
+                            <label for="randomClusterSizeMax">Maximum Bubbles: <span id="randomClusterSizeMaxValue">6</span></label>
+                            <input type="range" id="randomClusterSizeMax" min="3" max="8" step="1" value="6" class="setting-slider">
+                            <div class="range-labels">
+                                <span>3 (Small)</span>
+                                <span>8 (Large Cluster)</span>
+                            </div>
+                            <p class="setting-description">Maximum number of bubbles per launch.</p>
                         </div>
                         
                         <div class="setting">
@@ -583,45 +612,45 @@
                     <h4 class="section-title">💥 Pop Behavior</h4>
                     
                     <div class="setting-group">
-                        <h5 class="group-title">🎯 Pop Height Settings</h5>
+                        <h5 class="group-title">🎯 Test Bubble Pop Height Settings</h5>
                         
                         <div class="setting">
-                            <label for="bubbleAutoPopHeight">Auto-Pop Height: <span id="bubbleAutoPopHeightValue">20</span>%</label>
-                            <input type="range" id="bubbleAutoPopHeight" min="10" max="50" step="5" value="20" class="setting-slider">
+                            <label for="bubbleAutoPopHeight">Test Bubble Auto-Pop Height: <span id="bubbleAutoPopHeightValue">85</span>%</label>
+                            <input type="range" id="bubbleAutoPopHeight" min="10" max="100" step="5" value="85" class="setting-slider">
                             <div class="range-labels">
-                                <span>10% (High in Sky)</span>
-                                <span>50% (Low in Sky)</span>
+                                <span>10% (Low in Sky)</span>
+                                <span>100% (High in Sky)</span>
                             </div>
-                            <p class="setting-description">Height from top where bubbles automatically pop (lower = higher in sky)</p>
+                            <p class="setting-description">Height where TEST BUBBLES automatically pop (10% = low in sky, 100% = high in sky)</p>
                         </div>
                         
                         <div class="setting toggle-setting">
-                            <label for="randomBubblePopHeight">Random Pop Heights:</label>
+                            <label for="randomBubblePopHeight">Random Test Bubble Pop Heights:</label>
                             <label class="switch">
                                 <input type="checkbox" id="randomBubblePopHeight">
                                 <span class="slider round"></span>
                             </label>
-                            <p class="setting-description">Each bubble will pop at a different random height for more variety.</p>
+                            <p class="setting-description">Each test bubble will pop at a different random height for more variety.</p>
                         </div>
                         
                         <div class="setting" id="randomPopHeightRange" style="display: none;">
-                            <label for="randomPopHeightMin">Minimum Height: <span id="randomPopHeightMinValue">15</span>%</label>
-                            <input type="range" id="randomPopHeightMin" min="10" max="30" step="5" value="15" class="setting-slider">
+                            <label for="randomPopHeightMin">Minimum Pop Height: <span id="randomPopHeightMinValue">70</span>%</label>
+                            <input type="range" id="randomPopHeightMin" min="10" max="80" step="5" value="70" class="setting-slider">
                             <div class="range-labels">
-                                <span>10% (Very High)</span>
-                                <span>30% (Moderate)</span>
+                                <span>10% (Low)</span>
+                                <span>80% (High)</span>
                             </div>
-                            <p class="setting-description">Minimum pop height for random bubbles.</p>
+                            <p class="setting-description">Minimum pop height for random test bubbles (lower = closer to ground).</p>
                         </div>
                         
                         <div class="setting" id="randomPopHeightMaxSetting" style="display: none;">
-                            <label for="randomPopHeightMax">Maximum Height: <span id="randomPopHeightMaxValue">40</span>%</label>
-                            <input type="range" id="randomPopHeightMax" min="25" max="50" step="5" value="40" class="setting-slider">
+                            <label for="randomPopHeightMax">Maximum Pop Height: <span id="randomPopHeightMaxValue">100</span>%</label>
+                            <input type="range" id="randomPopHeightMax" min="30" max="100" step="5" value="100" class="setting-slider">
                             <div class="range-labels">
-                                <span>25% (High)</span>
-                                <span>50% (Low in Sky)</span>
+                                <span>30% (Moderate)</span>
+                                <span>100% (Very High)</span>
                             </div>
-                            <p class="setting-description">Maximum pop height for random bubbles.</p>
+                            <p class="setting-description">Maximum pop height for random test bubbles (higher = closer to top).</p>
                         </div>
                     </div>
                     

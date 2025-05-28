@@ -10,6 +10,9 @@ class AnimationSettingsManager {
         gravity: 0.02,
         maxFireworks: 20,
         launchHeightFactor: 10, // Changed from 0.15 to match HTML slider default
+        randomLaunchPower: true,
+        randomLaunchPowerMin: 30,
+        randomLaunchPowerMax: 90,
         smokeTrailIntensity: 0.3,
         fireworkSize: 1.0,
         randomSize: false,
@@ -25,6 +28,36 @@ class AnimationSettingsManager {
         launchAngleMax: 120,        // 45-165 degrees
         launchAngleMode: 'range',   // 'range', 'random', 'fixed'
         launchAngleFixed: 90        // Fixed angle when mode is 'fixed'
+      },
+      bubbles: {
+        gravity: 0.015,
+        maxBubbles: 15,
+        riseSpeed: 2.0,
+        riseSpeedVariation: 0.5,
+        bubbleSize: 1.0,
+        randomSize: false,
+        randomSizeMin: 0.5,
+        randomSizeMax: 2.0,
+        launchSpread: 30,
+        launchSpreadMode: 'range',
+        bubbleClusterSize: 2,
+        randomClusterSize: false,
+        randomClusterSizeMin: 1,
+        randomClusterSizeMax: 6,
+        clusterSpread: 20,
+        randomRiseSpeed: false,
+        randomRiseSpeedMin: 1.0,
+        randomRiseSpeedMax: 4.0,
+        autoPopHeight: 0.85,
+        randomPopHeight: false,
+        randomPopHeightMin: 0.70,
+        randomPopHeightMax: 1.0,
+        wobbleIntensity: 1.0,
+        buoyancy: 0.98,
+        sequentialPopDelay: 300,
+        sequentialPopExplosionDelay: 400,
+        loudSoundTriggerCooldown: 250,
+        popSensitivity: 0.8
       },
       particles: {
         count: 120,
