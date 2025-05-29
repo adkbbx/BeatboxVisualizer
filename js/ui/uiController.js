@@ -3,9 +3,9 @@
  * Updated with background image management
  */
 import UIEventHandlers from './UIEventHandlers.js';
-import SoundVisualization from './SoundVisualization.js';
-import SettingsManager from './SettingsManager.js';
-import SettingsController from './settings/SettingsController.js';
+import SoundVisualization from '../effects/SoundVisualization.js';
+import SettingsManager from '../managers/SettingsManager.js';
+import SettingsController from '../settings/SettingsController.js';
 // BackgroundUploader import removed - using direct implementation
 
 class UIController {

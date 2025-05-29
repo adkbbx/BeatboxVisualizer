@@ -68,8 +68,8 @@ header h1 {
     color: #e0e0e0;
 }
 
-/* Control Panel */
-.control-panel {
+/* Control Panel - MOVED TO control-panel-simplified.css */
+/* .control-panel {
     display: flex;
     justify-content: center;
     gap: 12px;
@@ -96,15 +96,15 @@ header h1 {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    order: 0; /* Default order for all buttons in control panel */
+    order: 0;
 }
 
 .control-panel #testFirework {
-    order: 3; /* Default order assuming it's after Start and Settings */
+    order: 3;
 }
 
 .control-panel #togglePanels {
-    order: 4; /* Default order assuming it's last */
+    order: 4;
     background-color: #95a5a6 !important;
     color: #ffffff !important;
 }
@@ -120,12 +120,12 @@ header h1 {
 }
 
 .control-panel #startMicrophone {
-    order: 1; /* Default order */
+    order: 1;
 }
 
 .control-panel #toggleSettings {
-    order: 2; /* Default order */
-}
+    order: 2;
+} */
 
 button .icon {
     font-size: 16px;
@@ -535,23 +535,21 @@ footer {
         height: 500px;
     }
     
+    /* Control panel styles moved to control-panel-simplified.css
     .control-panel {
         justify-content: space-evenly;
     }
 
-    /* Desktop: Reorder Test and Show/Hide buttons when Start and Settings are hidden */
     .control-panel:has(#startMicrophone.is-hidden):has(#toggleSettings.is-hidden):not(:has(#togglePanels.is-hidden)):not(:has(#testFirework.is-hidden)) {
-        /* Assuming desktop always keeps them in a row, or specific adjustments might be needed if it becomes 2x1 */
-        /* We just need to reorder if they are visible and others are not */
     }
 
     .control-panel:has(#startMicrophone.is-hidden):has(#toggleSettings.is-hidden):not(:has(#togglePanels.is-hidden)):not(:has(#testFirework.is-hidden)) #testFirework {
-        order: 1; /* Test button first */
+        order: 1;
     }
 
     .control-panel:has(#startMicrophone.is-hidden):has(#toggleSettings.is-hidden):not(:has(#togglePanels.is-hidden)):not(:has(#testFirework.is-hidden)) #togglePanels {
-        order: 2; /* Show/Hide button second */
-    }
+        order: 2;
+    } */
 }
 
 /* Mobile Mode Toggle - Above control panel */
@@ -706,8 +704,8 @@ footer {
     }
 }
 
-/* Mobile Control Panel - 2x2 Grid */
-@media (max-width: 767px) {
+/* Mobile Control Panel - MOVED TO control-panel-simplified.css */
+/* @media (max-width: 767px) {
     .control-panel {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -715,7 +713,7 @@ footer {
         gap: 12px;
         max-width: 400px;
         margin: 0 auto;
-        margin-top: 0; /* Remove extra margin since toggle container has padding */
+        margin-top: 0;
     }
     
     .control-panel button {
@@ -727,7 +725,7 @@ footer {
     #animationCanvas, #backgroundCanvas {
         height: 350px;
     }
-}
+} */
 
 
 
@@ -758,12 +756,12 @@ footer {
     }
 }
 
-.control-panel #togglePanels:hover,
+/* .control-panel #togglePanels:hover,
 .control-panel button#togglePanels:hover,
 #togglePanels:hover {
     background-color: #7f8c8d !important;
     color: #ffffff !important;
-}
+} */
 
 /* Desktop Toggle - Integrated into tab navigation */
 .mode-toggle.desktop-toggle {

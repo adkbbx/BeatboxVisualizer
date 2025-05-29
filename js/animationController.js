@@ -1,6 +1,6 @@
 import ParticleManager from './modes/FireworkMode/ParticleManager.js';
 import FireworkManager from './modes/FireworkMode/FireworkManager.js';
-import BackgroundManager from './BackgroundManager.js';
+import BackgroundManager from './managers/BackgroundManager.js';
 import BubbleManager from './modes/BubbleMode/BubbleManager.js';
 
 /**

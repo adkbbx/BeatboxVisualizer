@@ -1,6 +1,6 @@
 // direct-image-uploader.js
-import ImageManager from './ImageManager.js';
-import ImageProcessor from './ImageProcessor.js';
+import ImageManager from '../managers/ImageManager.js';
+import ImageProcessor from '../utils/ImageProcessor.js';
 
 export class DirectImageUploader {
     constructor() {

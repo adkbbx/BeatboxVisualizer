@@ -9,11 +9,13 @@
     <link rel="stylesheet" href="css/image-uploader.css">
     <link rel="stylesheet" href="css/background-uploader.css">
     <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/control-panel-simplified.css">
     <link rel="stylesheet" href="css/settings.css">
     <link rel="stylesheet" href="css/uploaders.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/mobile-responsive.css">
     <link rel="stylesheet" href="css/presets.css">
+    <link rel="stylesheet" href="css/mode-toggle-targeted-fix.css">
     
 </head>
 <body>
@@ -24,15 +26,7 @@
 
 
     <div class="app-container" style="z-index: 10; background: transparent !important;">
-        <!-- Mode Toggle for Mobile - Above control panel -->
-        <div class="mobile-mode-toggle">
-            <div class="mode-toggle mobile-toggle" tabindex="0" role="switch" aria-label="Toggle between fireworks and bubbles mode">
-                <div id="fireworkModeMobile" class="mode-option active" data-mode="firework" title="Fireworks Mode" tabindex="0">🎆</div>
-                <div id="bubbleModeMobile" class="mode-option" data-mode="bubble" title="Bubbles Mode" tabindex="0">🫧</div>
-                <div class="mode-slider" aria-hidden="true"></div>
-            </div>
-        </div>
-        
+        <!-- Control Panel -->
         <div class="control-panel">
             <button id="startMicrophone" class="mic-button">
                 <span class="icon">🎤</span>
@@ -53,8 +47,37 @@
                 <span class="icon">👁️</span>
                 <span class="text">Hide</span>
             </button>
-            
-
+        </div>
+        
+        <!-- Mode Toggle Dropdown -->
+        <div class="mode-toggle-dropdown">
+            <button class="mode-toggle-button" id="modeToggleButton" aria-haspopup="true" aria-expanded="false">
+                <span class="current-mode-icon">🎆</span>
+                <span class="current-mode-text">Fireworks</span>
+                <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="mode-dropdown-menu" id="modeDropdownMenu">
+                <div class="mode-option" data-mode="firework">
+                    <span class="mode-icon">🎆</span>
+                    <span class="mode-text">Fireworks</span>
+                </div>
+                <div class="mode-option" data-mode="bubble">
+                    <span class="mode-icon">🫧</span>
+                    <span class="mode-text">Bubbles</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Audio Visualizer -->
+        <div class="audio-visualizer">
+            <div id="volumeLevel" class="volume-meter">
+                <div class="level-bar"></div>
+            </div>
+            <div id="audioStatus">Audio status: inactive</div>
+            <div class="mic-test">
+                <p>Make LOUDER, SUSTAINED sounds to launch animations. Keep making sound to keep them rising. VERY LOUD sounds will trigger all active animations! 🔊</p>
+                <div id="micDetection" class="mic-detection">Make LOUDER, SUSTAINED sound to start animations</div>
+            </div>
         </div>
         
         <!-- Tabbed Uploader Interface -->
@@ -63,13 +86,6 @@
                 <button class="uploader-tab-button active" data-uploader-tab="firework">Animation Images</button>
                 <button class="uploader-tab-button" data-uploader-tab="background">Background Images</button>
                 <button class="uploader-tab-button" data-uploader-tab="presets">Presets</button>
-                
-                <!-- Mode Toggle for Desktop - integrated into tab header -->
-                <div class="mode-toggle desktop-toggle" tabindex="0" role="switch" aria-label="Toggle between fireworks and bubbles mode">
-                    <div id="fireworkModeDesktop" class="mode-option active" data-mode="firework" title="Fireworks Mode" tabindex="0">🎆</div>
-                    <div id="bubbleModeDesktop" class="mode-option" data-mode="bubble" title="Bubbles Mode" tabindex="0">🫧</div>
-                    <div class="mode-slider" aria-hidden="true"></div>
-                </div>
             </div>
             
             <div class="uploader-tab-content">
@@ -141,17 +157,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="audio-visualizer">
-            <div id="volumeLevel" class="volume-meter">
-                <div class="level-bar"></div>
-            </div>
-            <div id="audioStatus">Audio status: inactive</div>
-            <div class="mic-test">
-                <p>Make LOUDER, SUSTAINED sounds to launch animations. Keep making sound to keep them rising. VERY LOUD sounds will trigger all active animations! 🔊</p>
-                <div id="micDetection" class="mic-detection">Make LOUDER, SUSTAINED sound to start animations</div>
             </div>
         </div>
     </div>
@@ -835,13 +840,14 @@
     
     <!-- Original scripts -->
     <script type="module" src="js/main.js"></script>
-    <script type="module" src="js/direct-image-uploader.js"></script>
-    <script type="module" src="js/direct-background-uploader.js"></script>
-    <script type="module" src="js/ClearManager.js"></script>
-    <script type="module" src="js/PresetManager.js"></script>
-    <script type="module" src="js/PresetUI.js"></script>
-    <script src="js/tab-switcher.js"></script>
-    <script src="js/settings-swatch-fix.js"></script>
+    <script type="module" src="js/uploaders/direct-image-uploader.js"></script>
+    <script type="module" src="js/uploaders/direct-background-uploader.js"></script>
+    <script type="module" src="js/managers/ClearManager.js"></script>
+    <script type="module" src="js/managers/PresetManager.js"></script>
+    <script type="module" src="js/ui/PresetUI.js"></script>
+    <script src="js/ui/tab-switcher.js"></script>
+    <script src="js/ui/settings-swatch-fix.js"></script>
+    <script src="js/ui/mode-toggle-dropdown.js"></script>
     
     <script>
         // Direct button handlers

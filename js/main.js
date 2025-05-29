@@ -1,10 +1,10 @@
 import AudioManager from './audio/AudioManager.js';
 import AnimationController from './animationController.js';
-import UIController from './uiController.js';
-import initializePanelControls from './panel-controls.js';
+import UIController from './ui/uiController.js';
+import initializePanelControls from './ui/panel-controls.js';
 import AnimationSettingsManager from './settings/AnimationSettingsManager.js';
-import ColorManager from './ColorManager.js';
-import LaunchControlsManager from './LaunchControlsManager.js';
+import ColorManager from './managers/ColorManager.js';
+import LaunchControlsManager from './managers/LaunchControlsManager.js';
 import ModeManager from './modes/ModeManager.js';
 
 /**
@@ -36,11 +36,6 @@ function setupGlobalDragPrevention() {
             if (!isInUploadZone) {
                 e.preventDefault();
                 e.stopPropagation();
-                
-                // Debug log for drop events outside upload zones
-                if (eventName === 'drop') {
-                    console.log('Prevented default drop behavior outside upload zone');
-                }
             }
         }, false);
     });

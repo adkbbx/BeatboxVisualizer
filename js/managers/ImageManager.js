@@ -1,5 +1,5 @@
 // ImageManager.js
-import { CustomImage } from './CustomImage.js';
+import { CustomImage } from '../effects/CustomImage.js';
 
 class ImageManager {
     constructor() {

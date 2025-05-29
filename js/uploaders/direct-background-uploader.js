@@ -1,5 +1,5 @@
 // direct-background-uploader.js
-import BackgroundManager from './BackgroundManager.js';
+import BackgroundManager from '../managers/BackgroundManager.js';
 
 export class DirectBackgroundUploader {
     constructor() {

@@ -1,0 +1,100 @@
+/* Targeted fixes for mode toggle dropdown below 480px */
+/* This overrides any conflicting styles to ensure proper display */
+
+/* Fix for 361px - 480px range where the issue occurs */
+@media (max-width: 480px) and (min-width: 361px) {
+    /* Remove the conflicting styles from control-panel-simplified.css */
+    .mode-toggle-dropdown {
+        z-index: 200 !important;
+        position: relative !important;
+    }
+    
+    .mode-toggle-button {
+        padding: 8px 12px !important;
+        min-width: 120px !important;
+        max-width: 160px !important;
+        font-size: 12px !important;
+    }
+    
+    .mode-dropdown-menu {
+        min-width: 140px !important;
+        max-width: 160px !important;
+    }
+    
+    /* Ensure text is always visible */
+    .mode-dropdown-menu .mode-option .mode-text {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+    }
+    
+    /* Fix the blue background positioning */
+    .mode-dropdown-menu .mode-option.active {
+        background: #4a90e2 !important;
+        background-image: linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
+        background-origin: border-box !important;
+        background-clip: border-box !important;
+        background-size: 100% 100% !important;
+        background-position: 0 0 !important;
+        border-radius: 0 !important;
+    }
+    
+    /* Ensure first and last items have proper radius */
+    .mode-dropdown-menu .mode-option.active:first-child {
+        border-top-left-radius: 10px !important;
+        border-top-right-radius: 10px !important;
+    }
+    
+    .mode-dropdown-menu .mode-option.active:last-child {
+        border-bottom-left-radius: 10px !important;
+        border-bottom-right-radius: 10px !important;
+    }
+}
+
+/* Specific fix for screens below 480px */
+@media (max-width: 480px) {
+    /* Override the Small Mobile styles that might be hiding text */
+    .mode-dropdown-menu .mode-option {
+        padding: 12px 16px !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    
+    .mode-dropdown-menu .mode-option .mode-icon {
+        display: inline-block !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .mode-dropdown-menu .mode-option .mode-text {
+        display: inline-block !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        margin-left: 8px !important;
+    }
+}
+
+/* Force proper layout for all mobile sizes */
+@media (max-width: 767px) {
+    /* Ensure dropdown menu has proper structure */
+    .mode-dropdown-menu {
+        display: block !important;
+    }
+    
+    .mode-dropdown-menu .mode-option {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Reset any transforms or absolute positioning */
+    .mode-dropdown-menu .mode-option * {
+        position: relative !important;
+        transform: none !important;
+    }
+}

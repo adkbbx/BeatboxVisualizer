@@ -1,6 +1,6 @@
 // PresetUI.js - Manual preset discovery interface
-import { PresetManager } from './PresetManager.js';
-import ClearManager from './ClearManager.js';
+import { PresetManager } from '../managers/PresetManager.js';
+import ClearManager from '../managers/ClearManager.js';
 
 export class PresetUI {
     constructor() {
