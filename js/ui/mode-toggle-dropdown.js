@@ -103,8 +103,7 @@ class ModeToggleDropdown {
             if (window.modeManager && typeof window.modeManager.getCurrentMode === 'function') {
                 const modeManagerMode = window.modeManager.getCurrentMode();
                 if (modeManagerMode !== this.currentMode) {
-                    this.currentMode = modeManagerMode;
-                    this.updateDisplay();
+                    this.updateModeDisplay(modeManagerMode);
                 }
             } else {
                 // Check again after a short delay
@@ -220,6 +219,14 @@ class ModeToggleDropdown {
     // Public method to set mode programmatically
     setMode(mode) {
         this.selectMode(mode);
+    }
+    
+    // Public method to update mode without triggering events (for sync from ModeManager)
+    updateModeDisplay(mode) {
+        if (mode === this.currentMode) return;
+        
+        this.currentMode = mode;
+        this.updateDisplay();
     }
     
     // Public method to get current mode

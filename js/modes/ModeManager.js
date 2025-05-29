@@ -247,7 +247,7 @@ class ModeManager {
             }
         });
         
-        // Update desktop toggle slider position
+        // Update desktop toggle slider position (if it exists)
         const desktopToggle = document.querySelector('.mode-toggle.desktop-toggle');
         if (desktopToggle) {
             if (activeMode === 'bubble') {
@@ -257,7 +257,7 @@ class ModeManager {
             }
         }
         
-        // Update mobile toggle
+        // Update mobile toggle (if it exists)
         const mobileToggle = document.querySelector('.mode-toggle.mobile-toggle');
         if (mobileToggle) {
             const fireworkButton = document.getElementById('fireworkModeMobile');
@@ -279,6 +279,14 @@ class ModeManager {
                 mobileToggle.classList.add('bubble-mode');
             } else {
                 mobileToggle.classList.remove('bubble-mode');
+            }
+        }
+        
+        // Update mode toggle dropdown (if it exists)
+        if (window.modeToggleDropdown && typeof window.modeToggleDropdown.updateModeDisplay === 'function') {
+            // Only update if the dropdown's mode is different to avoid loops
+            if (window.modeToggleDropdown.getCurrentMode() !== activeMode) {
+                window.modeToggleDropdown.updateModeDisplay(activeMode);
             }
         }
         
