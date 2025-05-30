@@ -11,7 +11,7 @@ class UIEventHandlers {
      * Set up all event listeners for UI elements - simplified
      */
     setupEventListeners() {
-        const audioStatus = document.getElementById('audioStatus');
+        const audioStatusDetection = document.getElementById('audioStatusDetection');
 
         // Set up start/stop button with improved error handling
         if (this.uiController.startButton) {
@@ -25,47 +25,47 @@ class UIEventHandlers {
                 try {
                     if (!button.classList.contains('active')) {
                         // Starting microphone
-                        textElement.textContent = 'Starting...';
-                        audioStatus.textContent = 'Audio status: starting...';
-                        audioStatus.className = 'starting';
+                        textElement.textContent = window.i18n ? window.i18n.t('ui.status.starting') : 'Starting...';
+                        audioStatusDetection.textContent = window.i18n ? window.i18n.t('audio.status.starting') : 'Audio status: starting...';
+                        audioStatusDetection.className = 'audio-status-detection starting';
                         
                         const success = await this.uiController.startMicrophone();
                         
                         if (success !== false) {
                             // Success
                             button.classList.add('active');
-                            textElement.textContent = 'Stop';
-                            audioStatus.textContent = 'Audio status: active';
-                            audioStatus.className = 'active';
+                            textElement.textContent = window.i18n ? window.i18n.t('ui.buttons.stop') : 'Stop';
+                            audioStatusDetection.textContent = window.i18n ? window.i18n.t('audio.status.active') : 'Audio status: active';
+                            audioStatusDetection.className = 'audio-status-detection active';
                 
                         } else {
                             // Failed
-                            textElement.textContent = 'Start';
-                            audioStatus.textContent = 'Audio status: failed to start';
-                            audioStatus.className = 'error';
+                            textElement.textContent = window.i18n ? window.i18n.t('ui.buttons.start') : 'Start';
+                            audioStatusDetection.textContent = window.i18n ? window.i18n.t('audio.status.failed') : 'Audio status: failed to start';
+                            audioStatusDetection.className = 'audio-status-detection error';
                 
                             
                             // Reset error state after 3 seconds
                             setTimeout(() => {
-                                if (audioStatus.className === 'error') {
-                                    audioStatus.textContent = 'Audio status: inactive';
-                                    audioStatus.className = 'inactive';
+                                if (audioStatusDetection.className === 'audio-status-detection error') {
+                                    audioStatusDetection.textContent = window.i18n ? window.i18n.t('audio.status.inactive') : 'Audio status: inactive';
+                                    audioStatusDetection.className = 'audio-status-detection inactive';
                                 }
                             }, 3000);
                         }
                     } else {
                         // Stopping microphone
-                        textElement.textContent = 'Stopping...';
-                        audioStatus.textContent = 'Audio status: stopping...';
-                        audioStatus.className = 'stopping';
+                        textElement.textContent = window.i18n ? window.i18n.t('ui.status.stopping') : 'Stopping...';
+                        audioStatusDetection.textContent = window.i18n ? window.i18n.t('audio.status.stopping') : 'Audio status: stopping...';
+                        audioStatusDetection.className = 'audio-status-detection stopping';
                         
                         this.uiController.stopMicrophone();
                         
                         // Update UI
                         button.classList.remove('active');
-                        textElement.textContent = 'Start';
-                        audioStatus.textContent = 'Audio status: inactive';
-                        audioStatus.className = 'inactive';
+                        textElement.textContent = window.i18n ? window.i18n.t('ui.buttons.start') : 'Start';
+                        audioStatusDetection.textContent = window.i18n ? window.i18n.t('audio.status.inactive') : 'Audio status: inactive';
+                        audioStatusDetection.className = 'audio-status-detection inactive';
             
                     }
                 } catch (error) {
@@ -73,15 +73,15 @@ class UIEventHandlers {
                     
                     // Reset to safe state
                     button.classList.remove('active');
-                    textElement.textContent = 'Start';
-                    audioStatus.textContent = 'Audio status: error';
-                    audioStatus.className = 'error';
+                    textElement.textContent = window.i18n ? window.i18n.t('ui.buttons.start') : 'Start';
+                    audioStatusDetection.textContent = window.i18n ? window.i18n.t('audio.status.error') : 'Audio status: error';
+                    audioStatusDetection.className = 'audio-status-detection error';
                     
                     // Reset error state after 3 seconds
                     setTimeout(() => {
-                        if (audioStatus.className === 'error') {
-                            audioStatus.textContent = 'Audio status: inactive';
-                            audioStatus.className = 'inactive';
+                        if (audioStatusDetection.className === 'audio-status-detection error') {
+                            audioStatusDetection.textContent = window.i18n ? window.i18n.t('audio.status.inactive') : 'Audio status: inactive';
+                            audioStatusDetection.className = 'audio-status-detection inactive';
                         }
                     }, 3000);
                 } finally {

@@ -5,13 +5,35 @@
    - Cleaner code structure
 */
 
-/* ===== MODE TOGGLE DROPDOWN ===== */
-.mode-toggle-dropdown {
-    position: relative;
-    z-index: 100;
+/* ===== MODE TOGGLE BUTTON ===== */
+#modeToggleButton {
+    background-color: #e74c3c;
 }
 
-.mode-toggle-button {
+#modeToggleButton:hover:not(:disabled) {
+    background-color: #c0392b;
+}
+
+#modeToggleButton.bubble-mode {
+    background-color: #3498db;
+}
+
+#modeToggleButton.bubble-mode:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+
+/* ===== LANGUAGE SWITCHER DROPDOWN ===== */
+.language-switcher-dropdown {
+    position: relative;
+    z-index: 100;
+    /* Desktop positioning: align to right above uploader container */
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    pointer-events: auto;
+}
+
+.language-switcher-button {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -28,37 +50,37 @@
     font-weight: 500;
 }
 
-.mode-toggle-button:hover {
+.language-switcher-button:hover {
     background-color: #3c3c3c;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.mode-toggle-button .current-mode-icon {
+.language-switcher-button .language-icon {
     font-size: 18px;
 }
 
-.mode-toggle-button .current-mode-text {
+.language-switcher-button .current-language-text {
     flex: 1;
     text-align: left;
 }
 
-.mode-toggle-button .dropdown-arrow {
+.language-switcher-button .dropdown-arrow {
     font-size: 12px;
     transition: transform 0.2s ease;
 }
 
-.mode-toggle-button[aria-expanded="true"] .dropdown-arrow {
+.language-switcher-button[aria-expanded="true"] .dropdown-arrow {
     transform: rotate(180deg);
 }
 
-.mode-dropdown-menu {
+.language-dropdown-menu {
     position: absolute;
     top: 100%;
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
     margin-top: 6px;
-    min-width: 100px;
+    min-width: 150px;
     max-width: calc(100vw - 40px);
     background-color: #2c2c2c;
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -71,13 +93,13 @@
     transition: all 0.2s ease;
 }
 
-.mode-dropdown-menu.open {
+.language-dropdown-menu.open {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
 }
 
-.mode-dropdown-menu .mode-option {
+.language-dropdown-menu .language-option {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -90,11 +112,11 @@
     position: relative;
 }
 
-.mode-dropdown-menu .mode-option:hover {
+.language-dropdown-menu .language-option:hover {
     background-color: #3c3c3c;
 }
 
-.mode-dropdown-menu .mode-option.active {
+.language-dropdown-menu .language-option.active {
     background: #4a90e2 linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
     background-size: 100% 100% !important;
     background-clip: padding-box !important;
@@ -105,28 +127,30 @@
     outline: none;
 }
 
-.mode-dropdown-menu .mode-option.active:hover {
+.language-dropdown-menu .language-option.active:hover {
     background: #5ba0f2 linear-gradient(135deg, #5ba0f2 0%, #4589cd 100%) !important;
     background-size: 100% 100% !important;
     background-clip: padding-box !important;
 }
 
-.mode-dropdown-menu .mode-option:first-child {
+.language-dropdown-menu .language-option:first-child {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
 
-.mode-dropdown-menu .mode-option:last-child {
+.language-dropdown-menu .language-option:last-child {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
 
-.mode-dropdown-menu .mode-option .mode-icon {
+.language-dropdown-menu .language-option .language-flag {
     font-size: 16px;
+    line-height: 1;
 }
 
-.mode-dropdown-menu .mode-option .mode-text {
+.language-dropdown-menu .language-option .language-text {
     flex: 1;
+    font-size: 13px;
 }
 
 /* ===== CONTROL PANEL BASE STYLES ===== */
@@ -228,11 +252,11 @@
 }
 
 #testFirework {
-    background-color: #9b59b6;
+    background-color: #3498db;
 }
 
 #testFirework:hover:not(:disabled) {
-    background-color: #8e44ad;
+    background-color: #2980b9;
 }
 
 #toggleSettings {
@@ -284,14 +308,15 @@
     margin: 0;
 }
 
-/* Hide mode toggle dropdown in hidden state */
-.app-container.hidden-panels .mode-toggle-dropdown {
+/* Hide mode toggle button in hidden state */
+.app-container.hidden-panels .control-panel #modeToggleButton {
     display: none !important;
 }
 
 /* Hide Start and Settings buttons in hidden state */
 .app-container.hidden-panels .control-panel #startMicrophone,
-.app-container.hidden-panels .control-panel #toggleSettings {
+.app-container.hidden-panels .control-panel #toggleSettings,
+.app-container.hidden-panels .language-switcher-dropdown {
     display: none !important;
 }
 
@@ -323,91 +348,6 @@
 
 /* Mobile Portrait (max-width: 767px) */
 @media (max-width: 767px) {
-    /* Mode toggle dropdown - improved mobile version */
-    .mode-toggle-dropdown {
-        align-self: center;
-        position: relative;
-        z-index: 200;
-        width: 100%;
-        max-width: 400px;
-        display: flex;
-        justify-content: center;
-    }
-    
-    .mode-toggle-button {
-        padding: 8px 12px;
-        min-width: 110px;
-        font-size: 13px;
-        background-color: #2c2c2c;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .mode-toggle-button .current-mode-icon {
-        font-size: 16px;
-    }
-    
-    .mode-toggle-button .current-mode-text {
-        font-size: 12px;
-        font-weight: 500;
-        /* Keep text visible on mobile for better UX */
-    }
-    
-    .mode-dropdown-menu {
-        left: 50% !important;
-        transform: translateX(-50%) translateY(-10px) !important;
-    }
-    
-    .mode-dropdown-menu.open {
-        transform: translateX(-50%) translateY(0) !important;
-    }
-    
-    .mode-dropdown-menu .mode-option {
-        padding: 12px 14px;
-        font-size: 13px;
-        border-radius: 0;
-        transition: background-color 0.2s ease;
-    }
-    
-    .mode-dropdown-menu .mode-option:first-child {
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-    }
-    
-    .mode-dropdown-menu .mode-option:last-child {
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
-    }
-    
-    .mode-dropdown-menu .mode-option .mode-icon {
-        font-size: 16px;
-    }
-    
-    .mode-dropdown-menu .mode-option .mode-text {
-        font-weight: 500;
-    }
-    
-    .mode-dropdown-menu .mode-option:hover {
-        background-color: #3c3c3c;
-    }
-    
-    .mode-dropdown-menu .mode-option.active {
-        background: #4a90e2 linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
-        background-size: 100% 100% !important;
-        background-clip: padding-box !important;
-        color: white !important;
-        font-weight: 600;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        border: none;
-        outline: none;
-    }
-    
-    .mode-dropdown-menu .mode-option.active:hover {
-        background: #5ba0f2 linear-gradient(135deg, #5ba0f2 0%, #4589cd 100%) !important;
-        background-size: 100% 100% !important;
-        background-clip: padding-box !important;
-    }
-
     .control-panel {
         /* Use flexbox for horizontal row layout instead of grid */
         display: flex;
@@ -493,556 +433,34 @@
     
     .app-container.hidden-panels .control-panel #testFirework .text,
     .app-container.hidden-panels .control-panel #togglePanels .text {
-        font-size: 10px !important;
+        font-size: 9px !important; /* Match mobile normal state */
     }
 }
 
-/* Small Mobile (361px - 480px) */
+/* Small Mobile (361px - 480px) - Fix button height for hidden state to prevent text cutoff */
 @media (max-width: 480px) and (min-width: 361px) {
-    .mode-toggle-dropdown {
-        z-index: 200;
-        position: relative;
-    }
-    
-    .mode-toggle-button {
-        padding: 6px 8px;
-        min-width: 85px;
-        font-size: 11px;
-        max-width: calc(100vw - 30px);
-    }
-    
-    .mode-toggle-button .current-mode-icon {
-        font-size: 14px;
-    }
-    
-    .mode-toggle-button .current-mode-text {
-        font-size: 10px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .mode-dropdown-menu {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-10px);
-        margin-top: 6px;
-        min-width: 100px;
-        max-width: calc(100vw - 40px);
-        background-color: #2c2c2c;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(12px);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.2s ease;
-    }
-    
-    .mode-dropdown-menu.open {
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(-50%) translateY(0);
-    }
-    
-    .mode-dropdown-menu .mode-option {
-        padding: 8px 10px;
-        font-size: 11px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .mode-dropdown-menu .mode-option .mode-icon {
-        font-size: 14px;
-        flex-shrink: 0;
-    }
-    
-    .mode-dropdown-menu .mode-option .mode-text {
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .mode-dropdown-menu .mode-option:hover {
-        background-color: #3c3c3c;
-    }
-    
-    .mode-dropdown-menu .mode-option.active {
-        background: #4a90e2 linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
-        background-size: 100% 100% !important;
-        background-clip: padding-box !important;
-        color: white !important;
-        font-weight: 600;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        border: none;
-        outline: none;
-    }
-    
-    .mode-dropdown-menu .mode-option.active:hover {
-        background: #5ba0f2 linear-gradient(135deg, #5ba0f2 0%, #4589cd 100%) !important;
-        background-size: 100% 100% !important;
-        background-clip: padding-box !important;
-    }
-
-    .control-panel {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-items: center;
-        gap: 3px;
-        padding: 4px;
-        max-width: calc(100vw - 30px);
-        margin: 0 auto;
-    }
-    
-    .control-panel button {
-        flex: 1;
-        min-width: 50px;
-        min-height: 40px;
-        padding: 4px 2px;
-        font-size: 10px;
-    }
-    
-    .control-panel button .icon {
-        font-size: 14px;
-    }
-    
-    .control-panel button .text {
-        font-size: 7px;
-    }
-    
-    /* Removed mode-toggle-dropdown styling for hidden-panels mode */
-    /*
-    .app-container.hidden-panels .mode-toggle-dropdown {
-        z-index: 200;
-        position: fixed;
-        top: 8px;
-        right: 8px;
-    }
-    
-    .app-container.hidden-panels .mode-toggle-button {
-        padding: 5px 6px;
-        min-width: 70px;
-        font-size: 9px;
-        max-width: calc(100vw - 90px);
-    }
-    
-    .app-container.hidden-panels .mode-dropdown-menu {
-        right: 0;
-        max-width: calc(100vw - 16px);
-    }
-    */
-    
-    .app-container.hidden-panels .control-panel {
-        position: fixed !important;
-        top: 8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: auto !important;
-        max-width: none !important;
-        min-width: auto !important;
-        padding: 6px 8px !important;
-        gap: 6px !important;
-        z-index: 150 !important;
-        margin: 0 !important;
-        /* Ensure it only sizes to fit the 2 visible buttons */
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
-    
     .app-container.hidden-panels .control-panel #testFirework,
     .app-container.hidden-panels .control-panel #togglePanels {
-        min-width: 70px !important;
-        max-width: 90px !important;
-        height: 44px !important;
-        padding: 8px 10px !important;
-        flex: 0 0 auto !important; /* Don't stretch to fill container */
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    .app-container.hidden-panels .control-panel #testFirework .icon,
-    .app-container.hidden-panels .control-panel #togglePanels .icon {
-        font-size: 18px;
-    }
-    
-    .app-container.hidden-panels .control-panel #testFirework .text,
-    .app-container.hidden-panels .control-panel #togglePanels .text {
-        font-size: 10px;
+        height: 48px !important; /* Increased from 44px to prevent text cutoff */
+        padding: 6px 8px !important; /* Slightly reduced padding to fit */
     }
 }
 
-/* Extra Small Mobile (321px - 360px) */
+/* Extra Small Mobile (321px - 360px) - Fix button height for hidden state to prevent text cutoff */
 @media (max-width: 360px) and (min-width: 321px) {
-    .mode-toggle-dropdown {
-        z-index: 200;
-        position: relative;
-    }
-    
-    .mode-toggle-button {
-        padding: 6px 8px;
-        min-width: 85px;
-        font-size: 11px;
-        max-width: calc(100vw - 30px);
-    }
-    
-    .mode-toggle-button .current-mode-icon {
-        font-size: 14px;
-    }
-    
-    .mode-toggle-button .current-mode-text {
-        font-size: 10px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .mode-dropdown-menu {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-10px);
-        margin-top: 6px;
-        min-width: 100px;
-        max-width: calc(100vw - 40px);
-        background-color: #2c2c2c;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(12px);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.2s ease;
-    }
-    
-    .mode-dropdown-menu.open {
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(-50%) translateY(0);
-    }
-    
-    .mode-dropdown-menu .mode-option {
-        padding: 8px 10px;
-        font-size: 11px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .mode-dropdown-menu .mode-option .mode-icon {
-        font-size: 14px;
-        flex-shrink: 0;
-    }
-    
-    .mode-dropdown-menu .mode-option .mode-text {
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .mode-dropdown-menu .mode-option:hover {
-        background-color: #3c3c3c;
-    }
-    
-    .mode-dropdown-menu .mode-option.active {
-        background: #4a90e2 linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
-        background-size: 100% 100% !important;
-        background-clip: padding-box !important;
-        color: white !important;
-        font-weight: 600;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        border: none;
-        outline: none;
-    }
-    
-    .mode-dropdown-menu .mode-option.active:hover {
-        background: #5ba0f2 linear-gradient(135deg, #5ba0f2 0%, #4589cd 100%) !important;
-        background-size: 100% 100% !important;
-        background-clip: padding-box !important;
-    }
-
-    .control-panel {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-items: center;
-        gap: 3px;
-        padding: 4px;
-        max-width: calc(100vw - 30px);
-        margin: 0 auto;
-    }
-    
-    .control-panel button {
-        flex: 1;
-        min-width: 50px;
-        min-height: 40px;
-        padding: 4px 2px;
-        font-size: 10px;
-    }
-    
-    .control-panel button .icon {
-        font-size: 14px;
-    }
-    
-    .control-panel button .text {
-        font-size: 7px;
-    }
-    
-    /* Removed mode-toggle-dropdown styling for hidden-panels mode */
-    /*
-    .app-container.hidden-panels .mode-toggle-dropdown {
-        z-index: 200;
-        position: fixed;
-        top: 8px;
-        right: 8px;
-    }
-    
-    .app-container.hidden-panels .mode-toggle-button {
-        padding: 5px 6px;
-        min-width: 70px;
-        font-size: 9px;
-        max-width: calc(100vw - 90px);
-    }
-    
-    .app-container.hidden-panels .mode-dropdown-menu {
-        right: 0;
-        max-width: calc(100vw - 16px);
-    }
-    */
-    
-    .app-container.hidden-panels .control-panel {
-        position: fixed !important;
-        top: 8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: auto !important;
-        max-width: none !important;
-        min-width: auto !important;
-        padding: 6px 8px !important;
-        gap: 6px !important;
-        z-index: 150 !important;
-        margin: 0 !important;
-        /* Ensure it only sizes to fit the 2 visible buttons */
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
-    
     .app-container.hidden-panels .control-panel #testFirework,
     .app-container.hidden-panels .control-panel #togglePanels {
-        min-width: 70px !important;
-        max-width: 90px !important;
-        height: 44px !important;
-        padding: 8px 10px !important;
-        flex: 0 0 auto !important; /* Don't stretch to fill container */
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    .app-container.hidden-panels .control-panel #testFirework .icon,
-    .app-container.hidden-panels .control-panel #togglePanels .icon {
-        font-size: 18px;
-    }
-    
-    .app-container.hidden-panels .control-panel #testFirework .text,
-    .app-container.hidden-panels .control-panel #togglePanels .text {
-        font-size: 10px;
+        height: 48px !important; /* Increased from 44px to prevent text cutoff */
+        padding: 6px 8px !important; /* Slightly reduced padding to fit */
     }
 }
 
-/* Ultra Small Mobile (max-width: 320px) */
+/* Ultra Small Mobile (max-width: 320px) - Fix button height for hidden state to prevent text cutoff */
 @media (max-width: 320px) {
-    .mode-toggle-dropdown {
-        z-index: 200;
-        position: relative;
-    }
-    
-    .mode-toggle-button {
-        padding: 5px 6px;
-        min-width: 70px;
-        font-size: 9px;
-        max-width: calc(100vw - 20px);
-    }
-    
-    .mode-toggle-button .current-mode-icon {
-        font-size: 12px;
-    }
-    
-    .mode-toggle-button .current-mode-text {
-        font-size: 8px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .mode-dropdown-menu {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-10px);
-        margin-top: 6px;
-        min-width: 100px;
-        max-width: calc(100vw - 40px);
-        background-color: #2c2c2c;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(12px);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.2s ease;
-    }
-    
-    .mode-dropdown-menu.open {
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(-50%) translateY(0);
-    }
-    
-    .mode-dropdown-menu .mode-option {
-        padding: 6px 8px;
-        font-size: 9px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .mode-dropdown-menu .mode-option .mode-icon {
-        font-size: 12px;
-        flex-shrink: 0;
-    }
-    
-    .mode-dropdown-menu .mode-option .mode-text {
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .mode-dropdown-menu .mode-option:hover {
-        background-color: #3c3c3c;
-    }
-    
-    .mode-dropdown-menu .mode-option.active {
-        background: #4a90e2 linear-gradient(135deg, #4a90e2 0%, #357abd 100%) !important;
-        background-size: 100% 100% !important;
-        background-clip: padding-box !important;
-        color: white !important;
-        font-weight: 600;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        border: none;
-        outline: none;
-    }
-    
-    .mode-dropdown-menu .mode-option.active:hover {
-        background: #5ba0f2 linear-gradient(135deg, #5ba0f2 0%, #4589cd 100%) !important;
-        background-size: 100% 100% !important;
-        background-clip: padding-box !important;
-    }
-
-    .control-panel {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-items: center;
-        gap: 2px;
-        padding: 3px;
-        max-width: calc(100vw - 20px);
-        margin: 0 auto;
-    }
-    
-    .control-panel button {
-        flex: 1;
-        min-width: 40px;
-        min-height: 36px;
-        padding: 3px 1px;
-        font-size: 8px;
-    }
-    
-    .control-panel button .icon {
-        font-size: 12px;
-    }
-    
-    .control-panel button .text {
-        font-size: 6px;
-    }
-    
-    /* Removed mode-toggle-dropdown styling for hidden-panels mode */
-    /*
-    .app-container.hidden-panels .mode-toggle-dropdown {
-        z-index: 200;
-        position: fixed;
-        top: 6px;
-        right: 6px;
-    }
-    
-    .app-container.hidden-panels .mode-toggle-button {
-        padding: 4px 5px;
-        min-width: 60px;
-        font-size: 8px;
-        max-width: calc(100vw - 80px);
-    }
-    
-    .app-container.hidden-panels .mode-dropdown-menu {
-        right: 0;
-        max-width: calc(100vw - 12px);
-    }
-    */
-    
-    .app-container.hidden-panels .control-panel {
-        position: fixed !important;
-        top: 8px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        width: auto !important;
-        max-width: none !important;
-        min-width: auto !important;
-        padding: 6px 8px !important;
-        gap: 6px !important;
-        z-index: 150 !important;
-        margin: 0 !important;
-        /* Ensure it only sizes to fit the 2 visible buttons */
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
-    
     .app-container.hidden-panels .control-panel #testFirework,
     .app-container.hidden-panels .control-panel #togglePanels {
-        min-width: 70px !important;
-        max-width: 90px !important;
-        height: 44px !important;
-        padding: 8px 10px !important;
-        flex: 0 0 auto !important; /* Don't stretch to fill container */
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    .app-container.hidden-panels .control-panel #testFirework .icon,
-    .app-container.hidden-panels .control-panel #togglePanels .icon {
-        font-size: 18px;
-    }
-    
-    .app-container.hidden-panels .control-panel #testFirework .text,
-    .app-container.hidden-panels .control-panel #togglePanels .text {
-        font-size: 10px;
+        height: 46px !important; /* Increased from 44px to prevent text cutoff */
+        padding: 5px 7px !important; /* Slightly reduced padding to fit */
     }
 }
 
@@ -1147,5 +565,39 @@
     #togglePanels {
         background-color: #95a5a6;
         color: white;
+    }
+}
+
+/* ===== FONT SIZE CONSISTENCY FIXES ===== */
+
+/* Mobile Portrait (max-width: 767px) - Ensure hidden state matches normal state */
+@media (max-width: 767px) {
+    .app-container.hidden-panels .control-panel #testFirework .text,
+    .app-container.hidden-panels .control-panel #togglePanels .text {
+        font-size: 9px !important; /* Match mobile normal state */
+    }
+}
+
+/* Small Mobile (361px - 480px) - Ensure hidden state matches normal state */
+@media (max-width: 480px) and (min-width: 361px) {
+    .app-container.hidden-panels .control-panel #testFirework .text,
+    .app-container.hidden-panels .control-panel #togglePanels .text {
+        font-size: 7px !important; /* Match small mobile normal state */
+    }
+}
+
+/* Extra Small Mobile (321px - 360px) - Ensure hidden state matches normal state */
+@media (max-width: 360px) and (min-width: 321px) {
+    .app-container.hidden-panels .control-panel #testFirework .text,
+    .app-container.hidden-panels .control-panel #togglePanels .text {
+        font-size: 7px !important; /* Match extra small mobile normal state */
+    }
+}
+
+/* Ultra Small Mobile (max-width: 320px) - Ensure hidden state matches normal state */
+@media (max-width: 320px) {
+    .app-container.hidden-panels .control-panel #testFirework .text,
+    .app-container.hidden-panels .control-panel #togglePanels .text {
+        font-size: 6px !important; /* Match ultra small mobile normal state */
     }
 }

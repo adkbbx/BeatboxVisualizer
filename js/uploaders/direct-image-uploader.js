@@ -144,7 +144,14 @@ export class DirectImageUploader {
     showError(message) {
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
+        
+        // Check if message is a translation key or direct text
+        if (window.i18n && message.includes('.')) {
+            // Assume it's a translation key if it contains dots
+            errorDiv.textContent = window.i18n.t(message) || message;
+        } else {
+            errorDiv.textContent = message;
+        }
         
         const container = document.querySelector('.image-upload-container');
         if (container) {

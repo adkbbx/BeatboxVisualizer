@@ -212,7 +212,7 @@ class SettingsManager {
     showSettingsConfirmation() {
         // Create a small notification
         const notification = document.createElement('div');
-        notification.textContent = 'Settings updated';
+        notification.textContent = window.i18n ? window.i18n.t('success.settings.saved') : 'Settings updated';
         notification.style.position = 'fixed';
         notification.style.bottom = '20px';
         notification.style.right = '20px';

@@ -24,10 +24,18 @@ export class ClearManager {
             // Clear any preview containers
             this.clearPreviewContainers();
             
-            return { success: true, message: 'All images cleared successfully' };
+            return { 
+                success: true, 
+                message: window.i18n ? window.i18n.t('success.files.cleared') : 'All images cleared successfully' 
+            };
             
         } catch (error) {
-            return { success: false, message: `Clear failed: ${error.message}` };
+            return { 
+                success: false, 
+                message: window.i18n ? 
+                    window.i18n.t('errors.generic.unknown') + `: ${error.message}` : 
+                    `Clear failed: ${error.message}` 
+            };
         } finally {
             this.isClearing = false;
         }
@@ -157,7 +165,14 @@ export class ClearManager {
             font-family: Arial, sans-serif;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         `;
-        messageDiv.textContent = message;
+        
+        // Check if message is a translation key or direct text
+        if (window.i18n && message.includes('.')) {
+            // Assume it's a translation key if it contains dots
+            messageDiv.textContent = window.i18n.t(message) || message;
+        } else {
+            messageDiv.textContent = message;
+        }
         
         document.body.appendChild(messageDiv);
         

@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/mobile-responsive.css">
     <link rel="stylesheet" href="css/presets.css">
-    <link rel="stylesheet" href="css/mode-toggle-targeted-fix.css">
     
 </head>
 <body>
@@ -30,40 +29,54 @@
         <div class="control-panel">
             <button id="startMicrophone" class="mic-button">
                 <span class="icon">🎤</span>
-                <span class="text">Start</span>
+                <span class="text" data-i18n="ui.buttons.start">Start</span>
             </button>
             
             <button id="testFirework" class="test-button">
+                <span class="icon">⚡</span>
+                <span class="text" data-i18n="ui.buttons.test">Test</span>
+            </button>
+            
+            <!-- Mode Toggle Button (moved before settings) -->
+            <button id="modeToggleButton" class="mode-toggle-control-button">
                 <span class="icon">🎆</span>
-                <span class="text">Test</span>
+                <span class="text" data-i18n="ui.modes.fireworks">Fireworks</span>
             </button>
             
             <button id="toggleSettings">
                 <span class="icon">⚙️</span>
-                <span class="text">Settings</span>
+                <span class="text" data-i18n="ui.buttons.settings">Settings</span>
             </button>
             
             <button id="togglePanels">
                 <span class="icon">👁️</span>
-                <span class="text">Hide</span>
+                <span class="text" data-i18n="ui.buttons.hide">Hide</span>
             </button>
         </div>
         
-        <!-- Mode Toggle Dropdown -->
-        <div class="mode-toggle-dropdown">
-            <button class="mode-toggle-button" id="modeToggleButton" aria-haspopup="true" aria-expanded="false">
-                <span class="current-mode-icon">🎆</span>
-                <span class="current-mode-text">Fireworks</span>
+        <!-- Language Switcher Dropdown -->
+        <div class="language-switcher-dropdown">
+            <button class="language-switcher-button" id="languageSwitcherButton" aria-haspopup="true" aria-expanded="false" title="Select interface language">
+                <span class="language-icon">🌐</span>
+                <span class="current-language-text" data-i18n="ui.language.selector">Language</span>
                 <span class="dropdown-arrow">▼</span>
             </button>
-            <div class="mode-dropdown-menu" id="modeDropdownMenu">
-                <div class="mode-option" data-mode="firework">
-                    <span class="mode-icon">🎆</span>
-                    <span class="mode-text">Fireworks</span>
+            <div class="language-dropdown-menu" id="languageDropdownMenu">
+                <div class="language-option active" data-language="en">
+                    <span class="language-flag">🇺🇸</span>
+                    <span class="language-text" data-i18n="ui.language.english">English</span>
                 </div>
-                <div class="mode-option" data-mode="bubble">
-                    <span class="mode-icon">🫧</span>
-                    <span class="mode-text">Bubbles</span>
+                <div class="language-option" data-language="ja">
+                    <span class="language-flag">🇯🇵</span>
+                    <span class="language-text" data-i18n="ui.language.japanese">日本語</span>
+                </div>
+                <div class="language-option" data-language="zh-cn">
+                    <span class="language-flag">🇨🇳</span>
+                    <span class="language-text" data-i18n="ui.language.chineseSimplified">简体中文</span>
+                </div>
+                <div class="language-option" data-language="zh-tw">
+                    <span class="language-flag">🇹🇼</span>
+                    <span class="language-text" data-i18n="ui.language.chineseTraditional">繁體中文</span>
                 </div>
             </div>
         </div>
@@ -73,19 +86,18 @@
             <div id="volumeLevel" class="volume-meter">
                 <div class="level-bar"></div>
             </div>
-            <div id="audioStatus">Audio status: inactive</div>
             <div class="mic-test">
-                <p>Make LOUDER, SUSTAINED sounds to launch animations. Keep making sound to keep them rising. VERY LOUD sounds will trigger all active animations! 🔊</p>
-                <div id="micDetection" class="mic-detection">Make LOUDER, SUSTAINED sound to start animations</div>
+                <p data-i18n="audio.instructions.main">Make LOUDER, SUSTAINED sounds to launch animations. Keep making sound to keep them rising. VERY LOUD sounds will trigger all active animations! 🔊</p>
+                <div id="audioStatusDetection" class="audio-status-detection" data-i18n="audio.status.inactive">Audio status: inactive</div>
             </div>
         </div>
         
         <!-- Tabbed Uploader Interface -->
         <div class="uploader-tabs-container">
             <div class="uploader-tab-navigation">
-                <button class="uploader-tab-button active" data-uploader-tab="firework">Animation Images</button>
-                <button class="uploader-tab-button" data-uploader-tab="background">Background Images</button>
-                <button class="uploader-tab-button" data-uploader-tab="presets">Presets</button>
+                <button class="uploader-tab-button active" data-uploader-tab="firework" data-i18n="ui.tabs.animationImages">Animation Images</button>
+                <button class="uploader-tab-button" data-uploader-tab="background" data-i18n="ui.tabs.backgroundImages">Background Images</button>
+                <button class="uploader-tab-button" data-uploader-tab="presets" data-i18n="ui.tabs.presets">Presets</button>
             </div>
             
             <div class="uploader-tab-content">
@@ -94,11 +106,11 @@
                         <div class="upload-area" id="dropZone">
                             <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
                             <div class="upload-content">
-                                <p>Drag and drop custom images here</p>
-                                <p>or</p>
-                                <button id="selectFiles" class="button">Select Files</button>
-                                <p class="file-types">Supported: JPG, PNG, GIF (max 5MB)</p>
-                                <p class="file-description">Images will appear during firework explosions and bubble pops</p>
+                                <p data-i18n="upload.instructions.dragDrop">Drag and drop custom images here</p>
+                                <p data-i18n="upload.instructions.or">or</p>
+                                <button id="selectFiles" class="button" data-i18n="upload.buttons.selectFiles">Select Files</button>
+                                <p class="file-types" data-i18n="upload.instructions.fileTypes">Supported: JPG, PNG, GIF (max 5MB)</p>
+                                <p class="file-description" data-i18n="upload.instructions.imageDescription">Images will appear during firework explosions and bubble pops</p>
                             </div>
                         </div>
                         <div class="preview-container" id="previewContainer"></div>
@@ -110,10 +122,10 @@
                         <div class="upload-area" id="bgDropZone">
                             <input type="file" id="bgFileInput" accept="image/*" multiple style="display: none;">
                             <div class="upload-content">
-                                <p>Drag and drop background images here</p>
-                                <p>or</p>
-                                <button id="selectBgFiles" class="button">Select Files</button>
-                                <p class="file-types">Supported: JPG, PNG, GIF (max 5MB)</p>
+                                <p data-i18n="upload.instructions.dragDrop">Drag and drop background images here</p>
+                                <p data-i18n="upload.instructions.or">or</p>
+                                <button id="selectBgFiles" class="button" data-i18n="upload.buttons.selectFiles">Select Files</button>
+                                <p class="file-types" data-i18n="upload.instructions.fileTypes">Supported: JPG, PNG, GIF (max 5MB)</p>
                             </div>
                         </div>
                         
@@ -124,9 +136,9 @@
                 <div class="uploader-tab-pane" id="presets-tab">
                     <div class="preset-container">
                         <div class="preset-actions">
-                            <button id="discoverPresets" class="button">🔍 Discover Presets</button>
-                            <button id="loadExternalPreset" class="button">📁 Load Preset Folder</button>
-                            <button id="clearAllImages" class="button secondary">🗑️ Clear All</button>
+                            <button id="discoverPresets" class="button" data-i18n="presets.actions.discover">🔍 Discover Presets</button>
+                            <button id="loadExternalPreset" class="button" data-i18n="presets.actions.loadFolder">📁 Load Preset Folder</button>
+                            <button id="clearAllImages" class="button secondary" data-i18n="presets.actions.clearAll">🗑️ Clear All</button>
                         </div>
                         
                         <div class="preset-sections">
@@ -134,14 +146,14 @@
                             <div id="presetEmptyState" class="preset-empty-state">
                                 <div class="empty-state-content">
                                     <div class="empty-state-icon">📦</div>
-                                    <h4>No Presets Loaded</h4>
-                                    <p>Click "Discover Presets" to scan your /presets/ folder and find available preset collections.</p>
+                                    <h4 data-i18n="presets.messages.noPresets">No Presets Loaded</h4>
+                                    <p data-i18n="presets.messages.discoverInstructions">Click "Discover Presets" to scan your /presets/ folder and find available preset collections.</p>
                                 </div>
                             </div>
                             
                             <!-- Built-in Presets Section (hidden initially) -->
                             <div class="preset-section" id="defaultPresetsSection" style="display: none;">
-                                <h4>📦 Discovered Presets</h4>
+                                <h4 data-i18n="presets.sections.discovered">📦 Discovered Presets</h4>
                                 <div id="defaultPresetsContainer" class="presets-grid">
                                     <!-- Discovered presets will be populated here -->
                                 </div>
@@ -149,7 +161,7 @@
                             
                             <!-- External Presets Section -->
                             <div class="preset-section" id="externalPresetsSection" style="display: none;">
-                                <h4>📁 Loaded Presets</h4>
+                                <h4 data-i18n="presets.sections.loaded">📁 Loaded Presets</h4>
                                 <div id="externalPresetsContainer" class="presets-grid">
                                     <!-- External presets will be populated here -->
                                 </div>
@@ -163,262 +175,262 @@
     
     <!-- Settings panel with tabs -->
     <div id="settingsPanel" class="settings-panel" style="display: none;">
-        <h2>Animation Settings</h2>
+        <h2 data-i18n="settings.title">Animation Settings</h2>
         
         <!-- Tab Navigation -->
         <div class="tab-navigation" role="tablist">
-            <button class="tab-button" data-tab="audio" role="tab">🎤 Audio</button>
-            <button class="tab-button" data-tab="fireworks" role="tab">🎆 Fireworks</button>
-            <button class="tab-button" data-tab="bubbles" role="tab">🫧 Bubbles</button>
-            <button class="tab-button" data-tab="effects" role="tab">✨ Effects</button>
-            <button class="tab-button" data-tab="images" role="tab">🖼️ Images</button>
-            <button class="tab-button" data-tab="colors" role="tab">🎨 Colors</button>
+            <button class="tab-button" data-tab="audio" role="tab" data-i18n="settings.tabs.audio">🎤 Audio</button>
+            <button class="tab-button" data-tab="fireworks" role="tab" data-i18n="settings.tabs.fireworks">🎆 Fireworks</button>
+            <button class="tab-button" data-tab="bubbles" role="tab" data-i18n="settings.tabs.bubbles">🫧 Bubbles</button>
+            <button class="tab-button" data-tab="effects" role="tab" data-i18n="settings.tabs.effects">✨ Effects</button>
+            <button class="tab-button" data-tab="images" role="tab" data-i18n="settings.tabs.images">🖼️ Images</button>
+            <button class="tab-button" data-tab="colors" role="tab" data-i18n="settings.tabs.colors">🎨 Colors</button>
         </div>
         
         <!-- Tab Content -->
         <div class="tab-content">
             <!-- Audio & Sound Tab Pane -->
             <div class="tab-pane" id="audio-tab" data-tab-content="audio">
-                <h4>🎤 Audio & Sound Settings</h4>
+                <h4 data-i18n="settings.audio.title">🎤 Audio & Sound Settings</h4>
                 <div class="setting">
-                    <label for="sensitivitySlider">Microphone Sensitivity: <span id="sensitivityValue">2.0</span></label>
+                    <label for="sensitivitySlider" data-i18n="settings.audio.microphoneSensitivity">Microphone Sensitivity: <span id="sensitivityValue">2.0</span></label>
                     <input type="range" id="sensitivitySlider" min="0.5" max="4" step="0.1" value="2.0">
-                    <p class="setting-description">How sensitive the microphone is to your voice and sounds.</p>
+                    <p class="setting-description" data-i18n="settings.audio.microphoneSensitivityDesc">How sensitive the microphone is to your voice and sounds.</p>
                 </div>
                 <div class="setting">
-                    <label for="thresholdLow">Launch Sensitivity: <span id="thresholdLowValue">0.08</span></label>
+                    <label for="thresholdLow" data-i18n="settings.audio.launchSensitivity">Launch Sensitivity: <span id="thresholdLowValue">0.08</span></label>
                     <input type="range" id="thresholdLow" min="0.02" max="0.2" step="0.01" value="0.08">
-                    <p class="setting-description">How quiet your voice can be to still launch fireworks.</p>
+                    <p class="setting-description" data-i18n="settings.audio.launchSensitivityDesc">How quiet your voice can be to still launch fireworks.</p>
                 </div>
                 <div class="setting">
-                    <label for="thresholdHigh">Burst Sensitivity: <span id="thresholdHighValue">0.18</span></label>
+                    <label for="thresholdHigh" data-i18n="settings.audio.burstSensitivity">Burst Sensitivity: <span id="thresholdHighValue">0.18</span></label>
                     <input type="range" id="thresholdHigh" min="0.1" max="1" step="0.05" value="0.18">
-                    <p class="setting-description">How loud you need to be to explode all bubbles at once.</p>
+                    <p class="setting-description" data-i18n="settings.audio.burstSensitivityDesc">How loud you need to be to explode all bubbles at once.</p>
                 </div>
                 <div class="setting">
-                    <label for="suddenThreshold">Quick Response: <span id="suddenThresholdValue">0.12</span></label>
+                    <label for="suddenThreshold" data-i18n="settings.audio.quickResponse">Quick Response: <span id="suddenThresholdValue">0.12</span></label>
                     <input type="range" id="suddenThreshold" min="0.05" max="0.3" step="0.01" value="0.12">
-                    <p class="setting-description">How quickly the app responds to sudden sounds.</p>
+                    <p class="setting-description" data-i18n="settings.audio.quickResponseDesc">How quickly the app responds to sudden sounds.</p>
                 </div>
                 <div class="setting toggle-setting">
-                    <label for="testSoundEnabled">Test Animation Sounds:</label>
+                    <label for="testSoundEnabled" data-i18n="settings.audio.testSounds">Test Animation Sounds:</label>
                     <label class="switch">
                         <input type="checkbox" id="testSoundEnabled" checked>
                         <span class="slider round"></span>
                     </label>
-                    <p class="setting-description">Play realistic launch and explosion sounds when testing animations (fireworks/bubbles).</p>
+                    <p class="setting-description" data-i18n="settings.audio.testSoundsDesc">Play realistic launch and explosion sounds when testing animations (fireworks/bubbles).</p>
                 </div>
                 <div class="setting">
-                    <label for="testSoundVolume">Sound Volume: <span id="testSoundVolumeValue">0.3</span></label>
+                    <label for="testSoundVolume" data-i18n="settings.audio.soundVolume">Sound Volume: <span id="testSoundVolumeValue">0.3</span></label>
                     <input type="range" id="testSoundVolume" min="0" max="1" step="0.05" value="0.3">
-                    <p class="setting-description">Volume level for animation sound effects.</p>
+                    <p class="setting-description" data-i18n="settings.audio.soundVolumeDesc">Volume level for animation sound effects.</p>
                 </div>
             </div>
 
             <!-- Fireworks Tab Pane -->
             <div class="tab-pane" id="fireworks-tab" data-tab-content="fireworks">
-                <h4>🎆 Fireworks Settings</h4>
+                <h4 data-i18n="settings.fireworks.title">🎆 Fireworks Settings</h4>
                 
                 <!-- Launch Controls Section -->
                 <div class="settings-section launch-controls-section">
-                    <h4 class="section-title">🚀 Launch Controls</h4>
+                    <h4 class="section-title" data-i18n="settings.fireworks.launchControls">🚀 Launch Controls</h4>
                     
                     <!-- Launch Position Settings -->
                     <div class="setting-group">
-                        <h5 class="group-title">🎯 Launch Position</h5>
+                        <h5 class="group-title" data-i18n="settings.fireworks.launchPosition">🎯 Launch Position</h5>
                         
                         <div class="setting">
-                            <label for="launchSpreadMode">Position Mode:</label>
+                            <label for="launchSpreadMode" data-i18n="settings.fireworks.positionMode">Position Mode:</label>
                             <select id="launchSpreadMode" class="setting-select">
-                                <option value="center">Center Only</option>
-                                <option value="range" selected>Range from Center</option>
-                                <option value="random">Random Across Screen</option>
+                                <option value="center" data-i18n="settings.fireworks.centerOnly">Center Only</option>
+                                <option value="range" selected data-i18n="settings.fireworks.rangeFromCenter">Range from Center</option>
+                                <option value="random" data-i18n="settings.fireworks.randomAcrossScreen">Random Across Screen</option>
                             </select>
-                            <p class="setting-description">How fireworks are positioned along the bottom of the screen</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.positionModeDesc">How fireworks are positioned along the bottom of the screen</p>
                         </div>
                         
                         <div class="setting" id="launchSpreadSetting">
-                            <label for="launchSpread">Launch Spread: <span id="launchSpreadValue">20</span>%</label>
+                            <label for="launchSpread" data-i18n="settings.fireworks.launchSpread">Launch Spread: <span id="launchSpreadValue">20</span>%</label>
                             <input type="range" id="launchSpread" min="0" max="100" step="5" value="20" class="setting-slider">
                             <div class="range-labels">
-                                <span>Center Only</span>
-                                <span>Full Width</span>
+                                <span data-i18n="settings.fireworks.centerOnlyLabel">Center Only</span>
+                                <span data-i18n="settings.fireworks.fullWidthLabel">Full Width</span>
                             </div>
-                            <p class="setting-description">Width of the launch zone (0% = center point, 100% = entire screen width)</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.launchSpreadDesc">Width of the launch zone (0% = center point, 100% = entire screen width)</p>
                         </div>
                     </div>
 
                     <!-- Launch Angle Settings -->
                     <div class="setting-group">
-                        <h5 class="group-title">📐 Launch Angle</h5>
+                        <h5 class="group-title" data-i18n="settings.fireworks.launchAngle">📐 Launch Angle</h5>
                         
                         <div class="setting">
-                            <label for="launchAngleMode">Angle Mode:</label>
+                            <label for="launchAngleMode" data-i18n="settings.fireworks.angleMode">Angle Mode:</label>
                             <select id="launchAngleMode" class="setting-select">
-                                <option value="range" selected>Angle Range</option>
-                                <option value="fixed">Fixed Angle</option>
-                                <option value="random">Random Angle</option>
+                                <option value="range" selected data-i18n="settings.fireworks.angleRange">Angle Range</option>
+                                <option value="fixed" data-i18n="settings.fireworks.fixedAngle">Fixed Angle</option>
+                                <option value="random" data-i18n="settings.fireworks.randomAngle">Random Angle</option>
                             </select>
-                            <p class="setting-description">How launch angles are determined</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.angleModeDesc">How launch angles are determined</p>
                         </div>
                         
                         <div class="setting" id="launchAngleRangeSetting">
-                            <label for="launchAngleCenter">Center Angle: <span id="launchAngleCenterValue">90</span>°</label>
+                            <label for="launchAngleCenter" data-i18n="settings.fireworks.centerAngle">Center Angle: <span id="launchAngleCenterValue">90</span>°</label>
                             <input type="range" id="launchAngleCenter" min="45" max="135" step="5" value="90" class="setting-slider">
                             <div class="range-labels">
-                                <span>45° (Right)</span>
-                                <span>90° (Up)</span>
-                                <span>135° (Left)</span>
+                                <span data-i18n="settings.fireworks.rightAngle">45° (Right)</span>
+                                <span data-i18n="settings.fireworks.upAngle">90° (Up)</span>
+                                <span data-i18n="settings.fireworks.leftAngle">135° (Left)</span>
                             </div>
-                            <p class="setting-description">The main direction fireworks will launch toward</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.centerAngleDesc">The main direction fireworks will launch toward</p>
                         </div>
                         
                         <div class="setting" id="launchAngleSpreadSetting">
-                            <label for="launchAngleSpread">Angle Spread: <span id="launchAngleSpreadValue">30</span>°</label>
+                            <label for="launchAngleSpread" data-i18n="settings.fireworks.angleSpread">Angle Spread: <span id="launchAngleSpreadValue">30</span>°</label>
                             <input type="range" id="launchAngleSpread" min="0" max="45" step="5" value="30" class="setting-slider">
                             <div class="range-labels">
-                                <span>0° (Precise)</span>
-                                <span>45° (Wide Variety)</span>
+                                <span data-i18n="settings.fireworks.preciseAngle">0° (Precise)</span>
+                                <span data-i18n="settings.fireworks.wideVariety">45° (Wide Variety)</span>
                             </div>
-                            <p class="setting-description">How much angles can vary from the center (±spread)</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.angleSpreadDesc">How much angles can vary from the center (±spread)</p>
                         </div>
                         
                         <div class="setting" id="launchAngleFixedSetting" style="display: none;">
-                            <label for="launchAngleFixed">Fixed Angle: <span id="launchAngleFixedValue">90</span>°</label>
+                            <label for="launchAngleFixed" data-i18n="settings.fireworks.fixedAngleLabel">Fixed Angle: <span id="launchAngleFixedValue">90</span>°</label>
                             <input type="range" id="launchAngleFixed" min="45" max="165" step="5" value="90" class="setting-slider">
                             <div class="range-labels">
-                                <span>45° (Right)</span>
-                                <span>90° (Straight Up)</span>
-                                <span>135° (Left)</span>
+                                <span data-i18n="settings.fireworks.rightFixed">45° (Right)</span>
+                                <span data-i18n="settings.fireworks.straightUp">90° (Straight Up)</span>
+                                <span data-i18n="settings.fireworks.leftFixed">135° (Left)</span>
                             </div>
-                            <p class="setting-description">Fixed launch angle for all fireworks</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.fixedAngleDesc">Fixed launch angle for all fireworks</p>
                         </div>
                     </div>
 
                     <!-- Launch Power Settings -->
                     <div class="setting-group">
-                        <h5 class="group-title">🚀 Launch Power</h5>
+                        <h5 class="group-title" data-i18n="settings.fireworks.launchPower">🚀 Launch Power</h5>
                         
                         <div class="setting">
-                            <label for="launchHeight">Launch Power: <span id="launchHeightValue">60</span>%</label>
+                            <label for="launchHeight" data-i18n="settings.fireworks.launchPowerLabel">Launch Power: <span id="launchHeightValue">60</span>%</label>
                             <input type="range" id="launchHeight" min="10" max="100" step="5" value="60" class="setting-slider">
                             <div class="range-labels">
-                                <span>10% (Low)</span>
-                                <span>100% (High)</span>
+                                <span data-i18n="settings.fireworks.lowPower">10% (Low)</span>
+                                <span data-i18n="settings.fireworks.highPower">100% (High)</span>
                             </div>
-                            <p class="setting-description">How high fireworks reach (10% = 10% of screen height, 100% = 90% of screen height)</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.launchPowerDesc">How high fireworks reach (10% = 10% of screen height, 100% = 90% of screen height)</p>
                         </div>
                         
                         <div class="setting toggle-setting">
-                            <label for="randomLaunchPower">Random Launch Power:</label>
+                            <label for="randomLaunchPower" data-i18n="settings.fireworks.randomLaunchPower">Random Launch Power:</label>
                             <label class="switch">
                                 <input type="checkbox" id="randomLaunchPower" checked>
                                 <span class="slider round"></span>
                             </label>
-                            <p class="setting-description">Each firework will have a different random launch power for more variety.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.randomLaunchPowerDesc">Each firework will have a different random launch power for more variety.</p>
                         </div>
                         
                         <div class="setting" id="randomLaunchPowerRange" style="display: none;">
-                            <label for="randomLaunchPowerMin">Minimum Power: <span id="randomLaunchPowerMinValue">30</span>%</label>
+                            <label for="randomLaunchPowerMin" data-i18n="settings.fireworks.minimumPower">Minimum Power: <span id="randomLaunchPowerMinValue">30</span>%</label>
                             <input type="range" id="randomLaunchPowerMin" min="10" max="80" step="5" value="30" class="setting-slider">
                             <div class="range-labels">
-                                <span>10% (Very Low)</span>
-                                <span>80% (High)</span>
+                                <span data-i18n="settings.fireworks.veryLow">10% (Very Low)</span>
+                                <span data-i18n="settings.fireworks.high">80% (High)</span>
                             </div>
-                            <p class="setting-description">Minimum launch power for random fireworks.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.minimumPowerDesc">Minimum launch power for random fireworks.</p>
                         </div>
                         
                         <div class="setting" id="randomLaunchPowerMaxSetting" style="display: none;">
-                            <label for="randomLaunchPowerMax">Maximum Power: <span id="randomLaunchPowerMaxValue">90</span>%</label>
+                            <label for="randomLaunchPowerMax" data-i18n="settings.fireworks.maximumPower">Maximum Power: <span id="randomLaunchPowerMaxValue">90</span>%</label>
                             <input type="range" id="randomLaunchPowerMax" min="20" max="100" step="5" value="90" class="setting-slider">
                             <div class="range-labels">
-                                <span>20% (Low)</span>
-                                <span>100% (Maximum)</span>
+                                <span data-i18n="settings.fireworks.lowLabel">20% (Low)</span>
+                                <span data-i18n="settings.fireworks.maximum">100% (Maximum)</span>
                             </div>
-                            <p class="setting-description">Maximum launch power for random fireworks.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.maximumPowerDesc">Maximum launch power for random fireworks.</p>
                         </div>
                     </div>
 
                     <!-- Launch Presets -->
                     <div class="setting-group">
-                        <h5 class="group-title">⚡ Quick Presets</h5>
+                        <h5 class="group-title" data-i18n="settings.fireworks.quickPresets">⚡ Quick Presets</h5>
                         
                         <div class="setting">
-                            <label for="launchPreset">Launch Pattern:</label>
+                            <label for="launchPreset" data-i18n="settings.fireworks.launchPattern">Launch Pattern:</label>
                             <select id="launchPreset" class="setting-select">
-                                <option value="">-- Select Preset --</option>
-                                <option value="classic">🎆 Classic (Center, Slight Spread)</option>
-                                <option value="wide-celebration">🎉 Wide Celebration (Full Screen)</option>
-                                <option value="fountain">⛲ Fountain (Center, Wide Angles)</option>
-                                <option value="rocket-straight">🚀 Straight Rockets (Vertical Only)</option>
-                                <option value="left-cascade">↖️ Left Cascade</option>
-                                <option value="right-cascade">↗️ Right Cascade</option>
-                                <option value="chaos">🌪️ Chaos Mode (Random Everything)</option>
+                                <option value="" data-i18n="settings.fireworks.selectPreset">-- Select Preset --</option>
+                                <option value="classic" data-i18n="presets.names.classic">🎆 Classic (Center, Slight Spread)</option>
+                                <option value="wide-celebration" data-i18n="presets.names.wideCelebration">🎉 Wide Celebration (Full Screen)</option>
+                                <option value="fountain" data-i18n="presets.names.fountain">⛲ Fountain (Center, Wide Angles)</option>
+                                <option value="rocket-straight" data-i18n="presets.names.rocketStraight">🚀 Straight Rockets (Vertical Only)</option>
+                                <option value="left-cascade" data-i18n="presets.names.leftCascade">↖️ Left Cascade</option>
+                                <option value="right-cascade" data-i18n="presets.names.rightCascade">↗️ Right Cascade</option>
+                                <option value="chaos" data-i18n="presets.names.chaos">🌪️ Chaos Mode (Random Everything)</option>
                             </select>
-                            <p class="setting-description" id="presetDescription">Choose a preset to quickly configure launch settings</p>
+                            <p class="setting-description" id="presetDescription" data-i18n="settings.fireworks.presetDescription">Choose a preset to quickly configure launch settings</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Firework Appearance Section -->
                 <div class="settings-section">
-                    <h4 class="section-title">✨ Firework Appearance</h4>
+                    <h4 class="section-title" data-i18n="settings.fireworks.fireworkAppearance">✨ Firework Appearance</h4>
                     
                     <div class="setting-group">
-                        <h5 class="group-title">📏 Size Settings</h5>
+                        <h5 class="group-title" data-i18n="settings.fireworks.sizeSettings">📏 Size Settings</h5>
                         
                         <div class="setting">
-                            <label for="fireworkSize">Firework Size: <span id="fireworkSizeValue">1.0</span></label>
+                            <label for="fireworkSize" data-i18n="settings.fireworks.fireworkSize">Firework Size: <span id="fireworkSizeValue">1.0</span></label>
                             <input type="range" id="fireworkSize" min="0.5" max="5.0" step="0.1" value="1.0">
-                            <p class="setting-description">Controls how big fireworks and uploaded images appear during explosions.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.fireworkSizeDesc">Controls how big fireworks and uploaded images appear during explosions.</p>
                         </div>
                         
                         <div class="setting toggle-setting">
-                            <label for="randomFireworkSize">Random Firework Sizes:</label>
+                            <label for="randomFireworkSize" data-i18n="settings.fireworks.randomFireworkSizes">Random Firework Sizes:</label>
                             <label class="switch">
                                 <input type="checkbox" id="randomFireworkSize">
                                 <span class="slider round"></span>
                             </label>
-                            <p class="setting-description">Each firework will have a different random size for more variety.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.randomFireworkSizesDesc">Each firework will have a different random size for more variety.</p>
                         </div>
                         
                         <div class="setting" id="randomSizeRange" style="display: none;">
-                            <label for="randomSizeMin">Smallest Size: <span id="randomSizeMinValue">0.5</span></label>
+                            <label for="randomSizeMin" data-i18n="settings.fireworks.smallestSize">Smallest Size: <span id="randomSizeMinValue">0.5</span></label>
                             <input type="range" id="randomSizeMin" min="0.5" max="2.0" step="0.1" value="0.5">
-                            <p class="setting-description">Minimum size for random fireworks.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.smallestSizeDesc">Minimum size for random fireworks.</p>
                         </div>
                         
                         <div class="setting" id="randomSizeMaxSetting" style="display: none;">
-                            <label for="randomSizeMax">Largest Size: <span id="randomSizeMaxValue">2.0</span></label>
+                            <label for="randomSizeMax" data-i18n="settings.fireworks.largestSize">Largest Size: <span id="randomSizeMaxValue">2.0</span></label>
                             <input type="range" id="randomSizeMax" min="2.0" max="5.0" step="0.1" value="2.0">
-                            <p class="setting-description">Maximum size for random fireworks.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.largestSizeDesc">Maximum size for random fireworks.</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Physics & Behavior Section -->
                 <div class="settings-section">
-                    <h4 class="section-title">⚙️ Physics & Behavior</h4>
+                    <h4 class="section-title" data-i18n="settings.fireworks.physicsAndBehavior">⚙️ Physics & Behavior</h4>
                     
                     <div class="setting-group">
-                        <h5 class="group-title">🌍 Physics Settings</h5>
+                        <h5 class="group-title" data-i18n="settings.fireworks.physicsSettings">🌍 Physics Settings</h5>
                         
                         <div class="setting">
-                            <label for="maxFireworks">Max Fireworks on Screen: <span id="maxFireworksValue">15</span></label>
+                            <label for="maxFireworks" data-i18n="settings.fireworks.maxFireworksOnScreen">Max Fireworks on Screen: <span id="maxFireworksValue">15</span></label>
                             <input type="range" id="maxFireworks" min="1" max="50" step="1" value="15">
-                            <p class="setting-description">Maximum number of fireworks that can be active at the same time.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.maxFireworksOnScreenDesc">Maximum number of fireworks that can be active at the same time.</p>
                         </div>
                         
                         <div class="setting">
-                            <label for="fireworkGravity">Gravity Strength: <span id="gravityValue">0.035</span></label>
+                            <label for="fireworkGravity" data-i18n="settings.fireworks.gravityStrength">Gravity Strength: <span id="gravityValue">0.035</span></label>
                             <input type="range" id="fireworkGravity" min="0.01" max="0.2" step="0.005" value="0.035">
-                            <p class="setting-description">How quickly fireworks fall back down (higher = faster falling).</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.gravityStrengthDesc">How quickly fireworks fall back down (higher = faster falling).</p>
                         </div>
                         
                         <div class="setting">
-                            <label for="smokeTrailIntensity">Smoke Trail: <span id="smokeTrailValue">0.3</span></label>
+                            <label for="smokeTrailIntensity" data-i18n="settings.fireworks.smokeTrail">Smoke Trail: <span id="smokeTrailValue">0.3</span></label>
                             <input type="range" id="smokeTrailIntensity" min="0" max="1" step="0.05" value="0.3">
-                            <p class="setting-description">Intensity of the smoke trail behind rising fireworks.</p>
+                            <p class="setting-description" data-i18n="settings.fireworks.smokeTrailDesc">Intensity of the smoke trail behind rising fireworks.</p>
                         </div>
                     </div>
                 </div>
@@ -426,273 +438,273 @@
 
             <!-- Bubbles Tab Pane -->
             <div class="tab-pane" id="bubbles-tab" data-tab-content="bubbles">
-                <h4>🫧 Bubble Settings</h4>
+                <h4 data-i18n="settings.bubbles.title">🫧 Bubble Settings</h4>
                 
                 <!-- Launch Controls Section -->
                 <div class="settings-section launch-controls-section">
-                    <h4 class="section-title">🚀 Launch Controls</h4>
+                    <h4 class="section-title" data-i18n="settings.bubbles.launchControls">🚀 Launch Controls</h4>
                     
                     <!-- Launch Position Settings -->
                     <div class="setting-group">
-                        <h5 class="group-title">🎯 Launch Position</h5>
+                        <h5 class="group-title" data-i18n="settings.bubbles.launchPosition">🎯 Launch Position</h5>
                         
                         <div class="setting">
-                            <label for="bubbleLaunchSpreadMode">Position Mode:</label>
+                            <label for="bubbleLaunchSpreadMode" data-i18n="settings.bubbles.positionMode">Position Mode:</label>
                             <select id="bubbleLaunchSpreadMode" class="setting-select">
-                                <option value="center">Center Only</option>
-                                <option value="range" selected>Range from Center</option>
-                                <option value="random">Random Across Screen</option>
+                                <option value="center" data-i18n="settings.bubbles.centerOnly">Center Only</option>
+                                <option value="range" selected data-i18n="settings.bubbles.rangeFromCenter">Range from Center</option>
+                                <option value="random" data-i18n="settings.bubbles.randomAcrossScreen">Random Across Screen</option>
                             </select>
-                            <p class="setting-description">How bubbles are positioned along the bottom of the screen</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.positionModeDesc">How bubbles are positioned along the bottom of the screen</p>
                         </div>
                         
                         <div class="setting" id="bubbleLaunchSpreadSetting">
-                            <label for="bubbleLaunchSpread">Launch Spread: <span id="bubbleLaunchSpreadValue">30</span>%</label>
+                            <label for="bubbleLaunchSpread" data-i18n="settings.bubbles.launchSpread">Launch Spread: <span id="bubbleLaunchSpreadValue">30</span>%</label>
                             <input type="range" id="bubbleLaunchSpread" min="0" max="100" step="5" value="30" class="setting-slider">
                             <div class="range-labels">
-                                <span>Center Only</span>
-                                <span>Full Width</span>
+                                <span data-i18n="settings.bubbles.centerOnlyLabel">Center Only</span>
+                                <span data-i18n="settings.bubbles.fullWidthLabel">Full Width</span>
                             </div>
-                            <p class="setting-description">Width of the launch zone (0% = center point, 100% = entire screen width)</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.launchSpreadDesc">Width of the launch zone (0% = center point, 100% = entire screen width)</p>
                         </div>
                     </div>
 
                     <!-- Cluster Settings -->
                     <div class="setting-group">
-                        <h5 class="group-title">🫧 Cluster Settings</h5>
+                        <h5 class="group-title" data-i18n="settings.bubbles.clusterSettings">🫧 Cluster Settings</h5>
                         
                         <div class="setting">
-                            <label for="bubbleClusterSize">Bubbles per Launch: <span id="bubbleClusterSizeValue">2</span></label>
+                            <label for="bubbleClusterSize" data-i18n="settings.bubbles.bubblesPerLaunch">Bubbles per Launch: <span id="bubbleClusterSizeValue">2</span></label>
                             <input type="range" id="bubbleClusterSize" min="0" max="8" step="1" value="2" class="setting-slider">
                             <div class="range-labels">
-                                <span>0 (None)</span>
-                                <span>8 (Large Cluster)</span>
+                                <span data-i18n="settings.bubbles.noneCluster">0 (None)</span>
+                                <span data-i18n="settings.bubbles.largeCluster">8 (Large Cluster)</span>
                             </div>
-                            <p class="setting-description">Number of bubbles created each time you launch</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.bubblesPerLaunchDesc">Number of bubbles created each time you launch</p>
                         </div>
                         
                         <div class="setting toggle-setting">
-                            <label for="randomBubbleClusterSize">Random Bubbles per Launch:</label>
+                            <label for="randomBubbleClusterSize" data-i18n="settings.bubbles.randomBubblesPerLaunch">Random Bubbles per Launch:</label>
                             <label class="switch">
                                 <input type="checkbox" id="randomBubbleClusterSize">
                                 <span class="slider round"></span>
                             </label>
-                            <p class="setting-description">Each launch will create a random number of bubbles for more variety.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.randomBubblesPerLaunchDesc">Each launch will create a random number of bubbles for more variety.</p>
                         </div>
                         
                         <div class="setting" id="randomClusterSizeRange" style="display: none;">
-                            <label for="randomClusterSizeMin">Minimum Bubbles: <span id="randomClusterSizeMinValue">1</span></label>
+                            <label for="randomClusterSizeMin" data-i18n="settings.bubbles.minimumBubbles">Minimum Bubbles: <span id="randomClusterSizeMinValue">1</span></label>
                             <input type="range" id="randomClusterSizeMin" min="1" max="5" step="1" value="1" class="setting-slider">
                             <div class="range-labels">
-                                <span>1 (Single)</span>
-                                <span>5 (Medium)</span>
+                                <span data-i18n="settings.bubbles.singleBubble">1 (Single)</span>
+                                <span data-i18n="settings.bubbles.mediumCluster">5 (Medium)</span>
                             </div>
-                            <p class="setting-description">Minimum number of bubbles per launch.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.minimumBubblesDesc">Minimum number of bubbles per launch.</p>
                         </div>
                         
                         <div class="setting" id="randomClusterSizeMaxSetting" style="display: none;">
-                            <label for="randomClusterSizeMax">Maximum Bubbles: <span id="randomClusterSizeMaxValue">6</span></label>
+                            <label for="randomClusterSizeMax" data-i18n="settings.bubbles.maximumBubbles">Maximum Bubbles: <span id="randomClusterSizeMaxValue">6</span></label>
                             <input type="range" id="randomClusterSizeMax" min="3" max="8" step="1" value="6" class="setting-slider">
                             <div class="range-labels">
-                                <span>3 (Small)</span>
-                                <span>8 (Large Cluster)</span>
+                                <span data-i18n="settings.bubbles.smallCluster">3 (Small)</span>
+                                <span data-i18n="settings.bubbles.largeClusterMax">8 (Large Cluster)</span>
                             </div>
-                            <p class="setting-description">Maximum number of bubbles per launch.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.maximumBubblesDesc">Maximum number of bubbles per launch.</p>
                         </div>
                         
                         <div class="setting">
-                            <label for="bubbleClusterSpread">Cluster Spread: <span id="bubbleClusterSpreadValue">20</span>px</label>
+                            <label for="bubbleClusterSpread" data-i18n="settings.bubbles.clusterSpread">Cluster Spread: <span id="bubbleClusterSpreadValue">20</span>px</label>
                             <input type="range" id="bubbleClusterSpread" min="5" max="100" step="5" value="20" class="setting-slider">
                             <div class="range-labels">
-                                <span>5px (Tight)</span>
-                                <span>100px (Wide)</span>
+                                <span data-i18n="settings.bubbles.tightCluster">5px (Tight)</span>
+                                <span data-i18n="settings.bubbles.wideCluster">100px (Wide)</span>
                             </div>
-                            <p class="setting-description">How spread out bubbles are within each cluster</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.clusterSpreadDesc">How spread out bubbles are within each cluster</p>
                         </div>
                     </div>
 
                     <!-- Rise Speed Settings -->
                     <div class="setting-group">
-                        <h5 class="group-title">⬆️ Rise Speed</h5>
+                        <h5 class="group-title" data-i18n="settings.bubbles.riseSpeed">⬆️ Rise Speed</h5>
                         
                         <div class="setting">
-                            <label for="bubbleRiseSpeed">Base Rise Speed: <span id="bubbleRiseSpeedValue">2.0</span></label>
+                            <label for="bubbleRiseSpeed" data-i18n="settings.bubbles.baseRiseSpeed">Base Rise Speed: <span id="bubbleRiseSpeedValue">2.0</span></label>
                             <input type="range" id="bubbleRiseSpeed" min="0.5" max="5.0" step="0.1" value="2.0" class="setting-slider">
                             <div class="range-labels">
-                                <span>0.5 (Slow Float)</span>
-                                <span>5.0 (Fast Rise)</span>
+                                <span data-i18n="settings.bubbles.slowFloat">0.5 (Slow Float)</span>
+                                <span data-i18n="settings.bubbles.fastRise">5.0 (Fast Rise)</span>
                             </div>
-                            <p class="setting-description">Base speed at which bubbles float upward</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.baseRiseSpeedDesc">Base speed at which bubbles float upward</p>
                         </div>
                         
                         <div class="setting toggle-setting">
-                            <label for="randomBubbleRiseSpeed">Random Rise Speeds:</label>
+                            <label for="randomBubbleRiseSpeed" data-i18n="settings.bubbles.randomRiseSpeeds">Random Rise Speeds:</label>
                             <label class="switch">
                                 <input type="checkbox" id="randomBubbleRiseSpeed">
                                 <span class="slider round"></span>
                             </label>
-                            <p class="setting-description">Each bubble will have a different random rise speed for more variety.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.randomRiseSpeedsDesc">Each bubble will have a different random rise speed for more variety.</p>
                         </div>
                         
                         <div class="setting" id="randomRiseSpeedRange" style="display: none;">
-                            <label for="randomRiseSpeedMin">Minimum Speed: <span id="randomRiseSpeedMinValue">1.0</span></label>
+                            <label for="randomRiseSpeedMin" data-i18n="settings.bubbles.minimumSpeed">Minimum Speed: <span id="randomRiseSpeedMinValue">1.0</span></label>
                             <input type="range" id="randomRiseSpeedMin" min="0.5" max="3.0" step="0.1" value="1.0" class="setting-slider">
                             <div class="range-labels">
-                                <span>0.5 (Very Slow)</span>
-                                <span>3.0 (Fast)</span>
+                                <span data-i18n="settings.bubbles.verySlow">0.5 (Very Slow)</span>
+                                <span data-i18n="settings.bubbles.fastSpeed">3.0 (Fast)</span>
                             </div>
-                            <p class="setting-description">Minimum rise speed for random bubbles.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.minimumSpeedDesc">Minimum rise speed for random bubbles.</p>
                         </div>
                         
                         <div class="setting" id="randomRiseSpeedMaxSetting" style="display: none;">
-                            <label for="randomRiseSpeedMax">Maximum Speed: <span id="randomRiseSpeedMaxValue">4.0</span></label>
+                            <label for="randomRiseSpeedMax" data-i18n="settings.bubbles.maximumSpeed">Maximum Speed: <span id="randomRiseSpeedMaxValue">4.0</span></label>
                             <input type="range" id="randomRiseSpeedMax" min="2.0" max="5.0" step="0.1" value="4.0" class="setting-slider">
                             <div class="range-labels">
-                                <span>2.0 (Moderate)</span>
-                                <span>5.0 (Very Fast)</span>
+                                <span data-i18n="settings.bubbles.moderateSpeed">2.0 (Moderate)</span>
+                                <span data-i18n="settings.bubbles.veryFastSpeed">5.0 (Very Fast)</span>
                             </div>
-                            <p class="setting-description">Maximum rise speed for random bubbles.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.maximumSpeedDesc">Maximum rise speed for random bubbles.</p>
                         </div>
                     </div>
 
                     <!-- Quick Presets -->
                     <div class="setting-group">
-                        <h5 class="group-title">⚡ Quick Presets</h5>
+                        <h5 class="group-title" data-i18n="settings.bubbles.quickPresets">⚡ Quick Presets</h5>
                         
                         <div class="setting">
-                            <label for="bubblePreset">Bubble Pattern:</label>
+                            <label for="bubblePreset" data-i18n="settings.bubbles.bubblePattern">Bubble Pattern:</label>
                             <select id="bubblePreset" class="setting-select">
-                                <option value="">-- Select Preset --</option>
-                                <option value="gentle">🫧 Gentle (Small Clusters, Slow Rise)</option>
-                                <option value="celebration">🎉 Celebration (Large Clusters, Fast Rise)</option>
-                                <option value="fountain">⛲ Fountain (Center, Many Bubbles)</option>
-                                <option value="stream">🌊 Stream (Single Line, Steady)</option>
-                                <option value="chaos">🌪️ Chaos Mode (Random Everything)</option>
-                                <option value="peaceful">🕊️ Peaceful (Slow, Spread Out)</option>
-                                <option value="party">🎊 Party (Fast, Everywhere)</option>
+                                <option value="" data-i18n="settings.bubbles.selectPreset">-- Select Preset --</option>
+                                <option value="gentle" data-i18n="presets.names.gentle">🫧 Gentle (Small Clusters, Slow Rise)</option>
+                                <option value="celebration" data-i18n="presets.names.celebration">🎉 Celebration (Large Clusters, Fast Rise)</option>
+                                <option value="fountain" data-i18n="presets.names.fountainBubbles">⛲ Fountain (Center, Many Bubbles)</option>
+                                <option value="stream" data-i18n="presets.names.stream">🌊 Stream (Single Line, Steady)</option>
+                                <option value="chaos" data-i18n="presets.names.chaosBubbles">🌪️ Chaos Mode (Random Everything)</option>
+                                <option value="peaceful" data-i18n="presets.names.peaceful">🕊️ Peaceful (Slow, Spread Out)</option>
+                                <option value="party" data-i18n="presets.names.party">🎊 Party (Fast, Everywhere)</option>
                             </select>
-                            <p class="setting-description" id="bubblePresetDescription">Choose a preset to quickly configure bubble settings</p>
+                            <p class="setting-description" id="bubblePresetDescription" data-i18n="settings.bubbles.presetDescription">Choose a preset to quickly configure bubble settings</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Bubble Appearance Section -->
                 <div class="settings-section">
-                    <h4 class="section-title">✨ Bubble Appearance</h4>
+                    <h4 class="section-title" data-i18n="settings.bubbles.bubbleAppearance">✨ Bubble Appearance</h4>
                     
                     <div class="setting-group">
-                        <h5 class="group-title">📏 Size Settings</h5>
+                        <h5 class="group-title" data-i18n="settings.bubbles.sizeSettings">📏 Size Settings</h5>
                         
                         <div class="setting">
-                            <label for="bubbleSize">Bubble Size: <span id="bubbleSizeValue">1.0</span></label>
+                            <label for="bubbleSize" data-i18n="settings.bubbles.bubbleSize">Bubble Size: <span id="bubbleSizeValue">1.0</span></label>
                             <input type="range" id="bubbleSize" min="0.5" max="3.0" step="0.1" value="1.0">
-                            <p class="setting-description">Controls how big bubbles and uploaded images appear during pops.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.bubbleSizeDesc">Controls how big bubbles and uploaded images appear during pops.</p>
                         </div>
                         
                         <div class="setting toggle-setting">
-                            <label for="randomBubbleSize">Random Bubble Sizes:</label>
+                            <label for="randomBubbleSize" data-i18n="settings.bubbles.randomBubbleSizes">Random Bubble Sizes:</label>
                             <label class="switch">
                                 <input type="checkbox" id="randomBubbleSize">
                                 <span class="slider round"></span>
                             </label>
-                            <p class="setting-description">Each bubble will have a different random size for more variety.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.randomBubbleSizesDesc">Each bubble will have a different random size for more variety.</p>
                         </div>
                         
                         <div class="setting" id="randomBubbleSizeRange" style="display: none;">
-                            <label for="randomBubbleSizeMin">Smallest Size: <span id="randomBubbleSizeMinValue">0.5</span></label>
+                            <label for="randomBubbleSizeMin" data-i18n="settings.bubbles.smallestBubbleSize">Smallest Size: <span id="randomBubbleSizeMinValue">0.5</span></label>
                             <input type="range" id="randomBubbleSizeMin" min="0.5" max="2.0" step="0.1" value="0.5">
-                            <p class="setting-description">Minimum size for random bubbles.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.smallestBubbleSizeDesc">Minimum size for random bubbles.</p>
                         </div>
                         
                         <div class="setting" id="randomBubbleSizeMaxSetting" style="display: none;">
-                            <label for="randomBubbleSizeMax">Largest Size: <span id="randomBubbleSizeMaxValue">2.0</span></label>
+                            <label for="randomBubbleSizeMax" data-i18n="settings.bubbles.largestBubbleSize">Largest Size: <span id="randomBubbleSizeMaxValue">2.0</span></label>
                             <input type="range" id="randomBubbleSizeMax" min="2.0" max="5.0" step="0.1" value="2.0">
-                            <p class="setting-description">Maximum size for random bubbles.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.largestBubbleSizeDesc">Maximum size for random bubbles.</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Pop Behavior Section -->
                 <div class="settings-section">
-                    <h4 class="section-title">💥 Pop Behavior</h4>
+                    <h4 class="section-title" data-i18n="settings.bubbles.popBehavior">💥 Pop Behavior</h4>
                     
                     <div class="setting-group">
-                        <h5 class="group-title">🎯 Test Bubble Pop Height Settings</h5>
+                        <h5 class="group-title" data-i18n="settings.bubbles.testBubblePopHeightSettings">🎯 Test Bubble Pop Height Settings</h5>
                         
                         <div class="setting">
-                            <label for="bubbleAutoPopHeight">Test Bubble Auto-Pop Height: <span id="bubbleAutoPopHeightValue">85</span>%</label>
+                            <label for="bubbleAutoPopHeight" data-i18n="settings.bubbles.testBubbleAutoPopHeight">Test Bubble Auto-Pop Height: <span id="bubbleAutoPopHeightValue">85</span>%</label>
                             <input type="range" id="bubbleAutoPopHeight" min="10" max="100" step="5" value="85" class="setting-slider">
                             <div class="range-labels">
-                                <span>10% (Low in Sky)</span>
-                                <span>100% (High in Sky)</span>
+                                <span data-i18n="settings.bubbles.lowInSky">10% (Low in Sky)</span>
+                                <span data-i18n="settings.bubbles.highInSky">100% (High in Sky)</span>
                             </div>
-                            <p class="setting-description">Height where TEST BUBBLES automatically pop (10% = low in sky, 100% = high in sky)</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.testBubbleAutoPopHeightDesc">Height where TEST BUBBLES automatically pop (10% = low in sky, 100% = high in sky)</p>
                         </div>
                         
                         <div class="setting toggle-setting">
-                            <label for="randomBubblePopHeight">Random Test Bubble Pop Heights:</label>
+                            <label for="randomBubblePopHeight" data-i18n="settings.bubbles.randomTestBubblePopHeights">Random Test Bubble Pop Heights:</label>
                             <label class="switch">
                                 <input type="checkbox" id="randomBubblePopHeight">
                                 <span class="slider round"></span>
                             </label>
-                            <p class="setting-description">Each test bubble will pop at a different random height for more variety.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.randomTestBubblePopHeightsDesc">Each test bubble will pop at a different random height for more variety.</p>
                         </div>
                         
                         <div class="setting" id="randomPopHeightRange" style="display: none;">
-                            <label for="randomPopHeightMin">Minimum Pop Height: <span id="randomPopHeightMinValue">70</span>%</label>
+                            <label for="randomPopHeightMin" data-i18n="settings.bubbles.minimumPopHeight">Minimum Pop Height: <span id="randomPopHeightMinValue">70</span>%</label>
                             <input type="range" id="randomPopHeightMin" min="10" max="80" step="5" value="70" class="setting-slider">
                             <div class="range-labels">
-                                <span>10% (Low)</span>
-                                <span>80% (High)</span>
+                                <span data-i18n="settings.bubbles.lowPop">10% (Low)</span>
+                                <span data-i18n="settings.bubbles.highPop">80% (High)</span>
                             </div>
-                            <p class="setting-description">Minimum pop height for random test bubbles (lower = closer to ground).</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.minimumPopHeightDesc">Minimum pop height for random test bubbles (lower = closer to ground).</p>
                         </div>
                         
                         <div class="setting" id="randomPopHeightMaxSetting" style="display: none;">
-                            <label for="randomPopHeightMax">Maximum Pop Height: <span id="randomPopHeightMaxValue">100</span>%</label>
+                            <label for="randomPopHeightMax" data-i18n="settings.bubbles.maximumPopHeight">Maximum Pop Height: <span id="randomPopHeightMaxValue">100</span>%</label>
                             <input type="range" id="randomPopHeightMax" min="30" max="100" step="5" value="100" class="setting-slider">
                             <div class="range-labels">
-                                <span>30% (Moderate)</span>
-                                <span>100% (Very High)</span>
+                                <span data-i18n="settings.bubbles.moderatePop">30% (Moderate)</span>
+                                <span data-i18n="settings.bubbles.veryHighPop">100% (Very High)</span>
                             </div>
-                            <p class="setting-description">Maximum pop height for random test bubbles (higher = closer to top).</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.maximumPopHeightDesc">Maximum pop height for random test bubbles (higher = closer to top).</p>
                         </div>
                     </div>
                     
                     <div class="setting-group">
-                        <h5 class="group-title">⚙️ Pop Settings</h5>
+                        <h5 class="group-title" data-i18n="settings.bubbles.popSettings">⚙️ Pop Settings</h5>
                         
                         <div class="setting">
-                            <label for="maxBubbles">Max Bubbles on Screen: <span id="maxBubblesValue">15</span></label>
+                            <label for="maxBubbles" data-i18n="settings.bubbles.maxBubblesOnScreen">Max Bubbles on Screen: <span id="maxBubblesValue">15</span></label>
                             <input type="range" id="maxBubbles" min="5" max="50" step="1" value="15">
-                            <p class="setting-description">Maximum number of bubbles that can be active at the same time.</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.maxBubblesOnScreenDesc">Maximum number of bubbles that can be active at the same time.</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Physics & Behavior Section -->
                 <div class="settings-section">
-                    <h4 class="section-title">⚙️ Physics & Behavior</h4>
+                    <h4 class="section-title" data-i18n="settings.bubbles.physicsAndBehavior">⚙️ Physics & Behavior</h4>
                     
                     <div class="setting-group">
-                        <h5 class="group-title">🌍 Physics Settings</h5>
+                        <h5 class="group-title" data-i18n="settings.bubbles.physicsSettings">🌍 Physics Settings</h5>
                         
                         <div class="setting">
-                            <label for="bubbleGravity">Bubble Gravity: <span id="bubbleGravityValue">0.015</span></label>
+                            <label for="bubbleGravity" data-i18n="settings.bubbles.bubbleGravity">Bubble Gravity: <span id="bubbleGravityValue">0.015</span></label>
                             <input type="range" id="bubbleGravity" min="0.005" max="0.05" step="0.005" value="0.015">
-                            <p class="setting-description">How much gravity affects bubbles (higher = fall faster).</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.bubbleGravityDesc">How much gravity affects bubbles (higher = fall faster).</p>
                         </div>
                         
                         <div class="setting">
-                            <label for="bubbleWobble">Wobble Intensity: <span id="bubbleWobbleValue">1.0</span></label>
+                            <label for="bubbleWobble" data-i18n="settings.bubbles.wobbleIntensity">Wobble Intensity: <span id="bubbleWobbleValue">1.0</span></label>
                             <input type="range" id="bubbleWobble" min="0" max="3.0" step="0.1" value="1.0">
-                            <p class="setting-description">How much bubbles wobble as they float (0 = straight up).</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.wobbleIntensityDesc">How much bubbles wobble as they float (0 = straight up).</p>
                         </div>
                         
                         <div class="setting">
-                            <label for="bubbleBuoyancy">Buoyancy: <span id="bubbleBuoyancyValue">0.98</span></label>
+                            <label for="bubbleBuoyancy" data-i18n="settings.bubbles.buoyancy">Buoyancy: <span id="bubbleBuoyancyValue">0.98</span></label>
                             <input type="range" id="bubbleBuoyancy" min="0.9" max="1.0" step="0.01" value="0.98">
-                            <p class="setting-description">How well bubbles resist gravity (higher = float better).</p>
+                            <p class="setting-description" data-i18n="settings.bubbles.buoyancyDesc">How well bubbles resist gravity (higher = float better).</p>
                         </div>
                     </div>
                 </div>
@@ -700,121 +712,121 @@
 
             <!-- Visual Effects Tab Pane -->
             <div class="tab-pane" id="effects-tab" data-tab-content="effects">
-                <h4>✨ Visual Effects Settings</h4>
+                <h4 data-i18n="settings.effects.title">✨ Visual Effects Settings</h4>
                 <div class="setting">
-                    <label for="globalSpeed">Animation Speed: <span id="globalSpeedValue">1</span></label>
+                    <label for="globalSpeed" data-i18n="settings.effects.animationSpeed">Animation Speed: <span id="globalSpeedValue">1</span></label>
                     <input type="range" id="globalSpeed" min="0.1" max="2" step="0.1" value="1">
-                    <p class="setting-description">Overall speed of all animations (higher = faster, lower = slower motion).</p>
+                    <p class="setting-description" data-i18n="settings.effects.animationSpeedDesc">Overall speed of all animations (higher = faster, lower = slower motion).</p>
                 </div>
                 <div class="setting">
-                    <label for="particleCount">Explosion Particles: <span id="particleCountValue">100</span></label>
+                    <label for="particleCount" data-i18n="settings.effects.explosionParticles">Explosion Particles: <span id="particleCountValue">100</span></label>
                     <input type="range" id="particleCount" min="10" max="500" step="10" value="100">
-                    <p class="setting-description">Number of sparkly particles created when fireworks explode.</p>
+                    <p class="setting-description" data-i18n="settings.effects.explosionParticlesDesc">Number of sparkly particles created when fireworks explode.</p>
                 </div>
                 <div class="setting">
-                    <label for="particleLifespan">Particle Duration: <span id="particleLifespanValue">60</span> frames</label>
+                    <label for="particleLifespan" data-i18n="settings.effects.particleDuration">Particle Duration: <span id="particleLifespanValue">60</span> frames</label>
                     <input type="range" id="particleLifespan" min="20" max="200" step="5" value="60">
-                    <p class="setting-description">How long explosion particles stay visible before fading away.</p>
+                    <p class="setting-description" data-i18n="settings.effects.particleDurationDesc">How long explosion particles stay visible before fading away.</p>
                 </div>
                 <div class="setting">
-                    <label for="particleMinSize">Smallest Particles: <span id="particleMinSizeValue">1</span></label>
+                    <label for="particleMinSize" data-i18n="settings.effects.smallestParticles">Smallest Particles: <span id="particleMinSizeValue">1</span></label>
                     <input type="range" id="particleMinSize" min="0.5" max="5" step="0.1" value="1">
-                    <p class="setting-description">Minimum size of individual explosion particles.</p>
+                    <p class="setting-description" data-i18n="settings.effects.smallestParticlesDesc">Minimum size of individual explosion particles.</p>
                 </div>
                 <div class="setting">
-                    <label for="particleMaxSize">Largest Particles: <span id="particleMaxSizeValue">3</span></label>
+                    <label for="particleMaxSize" data-i18n="settings.effects.largestParticles">Largest Particles: <span id="particleMaxSizeValue">3</span></label>
                     <input type="range" id="particleMaxSize" min="1" max="10" step="0.1" value="3">
-                    <p class="setting-description">Maximum size of individual explosion particles.</p>
+                    <p class="setting-description" data-i18n="settings.effects.largestParticlesDesc">Maximum size of individual explosion particles.</p>
                 </div>
                 <div class="setting toggle-setting">
-                    <label for="useMultiColor">Colorful Particles:</label>
+                    <label for="useMultiColor" data-i18n="settings.effects.colorfulParticles">Colorful Particles:</label>
                     <label class="switch">
                          <input type="checkbox" id="useMultiColor">
                          <span class="slider round"></span>
                     </label>
-                    <p class="setting-description">Use multiple colors for particles instead of single-color explosions.</p>
+                    <p class="setting-description" data-i18n="settings.effects.colorfulParticlesDesc">Use multiple colors for particles instead of single-color explosions.</p>
                 </div>
                 <div class="setting toggle-setting">
-                    <label for="glowEffect">Glow Effect:</label>
+                    <label for="glowEffect" data-i18n="settings.effects.glowEffect">Glow Effect:</label>
                     <label class="switch">
                         <input type="checkbox" id="glowEffect">
                         <span class="slider round"></span>
                     </label>
-                    <p class="setting-description">Adds a beautiful glowing aura around fireworks and particles.</p>
+                    <p class="setting-description" data-i18n="settings.effects.glowEffectDesc">Adds a beautiful glowing aura around fireworks and particles.</p>
                 </div>
                 <div class="setting">
-                    <label for="fadeResistance">Particle Fade Speed: <span id="fadeResistanceValue">0.95</span></label>
+                    <label for="fadeResistance" data-i18n="settings.effects.particleFadeSpeed">Particle Fade Speed: <span id="fadeResistanceValue">0.95</span></label>
                     <input type="range" id="fadeResistance" min="0.8" max="0.99" step="0.01" value="0.95">
-                    <p class="setting-description">How quickly particles fade away (higher = slower fading, longer lasting).</p>
+                    <p class="setting-description" data-i18n="settings.effects.particleFadeSpeedDesc">How quickly particles fade away (higher = slower fading, longer lasting).</p>
                 </div>
             </div>
 
             <!-- Images Tab Pane -->
             <div class="tab-pane" id="images-tab" data-tab-content="images">
-                <h4>🖼️ Image Settings</h4>
+                <h4 data-i18n="settings.images.title">🖼️ Image Settings</h4>
                 <div class="setting toggle-setting">
-                    <label for="backgroundRemovalEnabled">Auto Remove Backgrounds:</label>
+                    <label for="backgroundRemovalEnabled" data-i18n="settings.images.autoRemoveBackgrounds">Auto Remove Backgrounds:</label>
                     <label class="switch">
                         <input type="checkbox" id="backgroundRemovalEnabled" checked>
                         <span class="slider round"></span>
                     </label>
-                    <p class="setting-description">Automatically remove white/solid backgrounds from uploaded firework images.</p>
+                    <p class="setting-description" data-i18n="settings.images.autoRemoveBackgroundsDesc">Automatically remove white/solid backgrounds from uploaded firework images.</p>
                 </div>
                 <div class="setting toggle-setting">
-                    <label for="imageRotation">Spinning Images:</label>
+                    <label for="imageRotation" data-i18n="settings.images.spinningImages">Spinning Images:</label>
                     <label class="switch">
                         <input type="checkbox" id="imageRotation">
                         <span class="slider round"></span>
                     </label>
-                    <p class="setting-description">Make uploaded images spin and rotate during firework explosions.</p>
+                    <p class="setting-description" data-i18n="settings.images.spinningImagesDesc">Make uploaded images spin and rotate during firework explosions.</p>
                 </div>
                 <div class="setting">
-                    <label for="imageGravity">Image Gravity: <span id="imageGravityValue">1.0</span></label>
+                    <label for="imageGravity" data-i18n="settings.images.imageGravity">Image Gravity: <span id="imageGravityValue">1.0</span></label>
                     <input type="range" id="imageGravity" min="0" max="3" step="0.1" value="1.0">
-                    <p class="setting-description">How fast images fall after exploding (0 = float forever, higher = fall faster).</p>
+                    <p class="setting-description" data-i18n="settings.images.imageGravityDesc">How fast images fall after exploding (0 = float forever, higher = fall faster).</p>
                 </div>
                 <div class="setting">
-                    <label for="bgOpacity">Background Image Opacity: <span id="bgOpacityValue">0.8</span></label>
+                    <label for="bgOpacity" data-i18n="settings.images.backgroundImageOpacity">Background Image Opacity: <span id="bgOpacityValue">0.8</span></label>
                     <input type="range" id="bgOpacity" min="0" max="1" step="0.05" value="0.8">
-                    <p class="setting-description">How see-through the background slideshow images are (0 = invisible, 1 = solid).</p>
+                    <p class="setting-description" data-i18n="settings.images.backgroundImageOpacityDesc">How see-through the background slideshow images are (0 = invisible, 1 = solid).</p>
                 </div>
                 <div class="setting">
-                    <label for="bgTransitionTime">Background Transition: <span id="bgTransitionValue">2</span> sec</label>
+                    <label for="bgTransitionTime" data-i18n="settings.images.backgroundTransition">Background Transition: <span id="bgTransitionValue">2</span> sec</label>
                     <input type="range" id="bgTransitionTime" min="0.5" max="5" step="0.5" value="2">
-                    <p class="setting-description">How long it takes for background images to fade from one to the next.</p>
+                    <p class="setting-description" data-i18n="settings.images.backgroundTransitionDesc">How long it takes for background images to fade from one to the next.</p>
                 </div>
                 <div class="setting">
-                    <label for="bgDisplayTime">Background Duration: <span id="bgDisplayValue">5</span> sec</label>
+                    <label for="bgDisplayTime" data-i18n="settings.images.backgroundDuration">Background Duration: <span id="bgDisplayValue">5</span> sec</label>
                     <input type="range" id="bgDisplayTime" min="2" max="20" step="1" value="5">
-                    <p class="setting-description">How long each background image is shown before changing to the next.</p>
+                    <p class="setting-description" data-i18n="settings.images.backgroundDurationDesc">How long each background image is shown before changing to the next.</p>
                 </div>
             </div>
             <div class="tab-pane" id="colors-tab" data-tab-content="colors">
-                <h4>🎨 Colors & Themes</h4>
+                <h4 data-i18n="settings.colors.title">🎨 Colors & Themes</h4>
                 <div class="setting">
-                    <label for="colorTheme">Color Theme:</label>
+                    <label for="colorTheme" data-i18n="settings.colors.colorTheme">Color Theme:</label>
                     <select id="colorTheme">
-                        <option value="Vivid" selected>🌈 Vivid (Bright & Bold)</option>
-                        <option value="Pastel">🌸 Pastel (Soft & Gentle)</option>
-                        <option value="Neon">⚡ Neon (Electric & Glowing)</option>
-                        <option value="Earthy">🍂 Earthy (Natural & Warm)</option>
-                        <option value="Monochrome">⚫ Monochrome (Black & White)</option>
-                        <option value="Custom">🎨 Custom (Your Own Colors)</option>
+                        <option value="Vivid" selected data-i18n="settings.colors.vivid">🌈 Vivid (Bright & Bold)</option>
+                        <option value="Pastel" data-i18n="settings.colors.pastel">🌸 Pastel (Soft & Gentle)</option>
+                        <option value="Neon" data-i18n="settings.colors.neon">⚡ Neon (Electric & Glowing)</option>
+                        <option value="Earthy" data-i18n="settings.colors.earthy">🍂 Earthy (Natural & Warm)</option>
+                        <option value="Monochrome" data-i18n="settings.colors.monochrome">⚫ Monochrome (Black & White)</option>
+                        <option value="Custom" data-i18n="settings.colors.custom">🎨 Custom (Your Own Colors)</option>
                     </select>
-                    <p class="setting-description">Choose a color style for your fireworks and particles.</p>
+                    <p class="setting-description" data-i18n="settings.colors.colorThemeDesc">Choose a color style for your fireworks and particles.</p>
                 </div>
                 <div class="setting">
-                    <label for="colorIntensity">Color Intensity: <span id="colorIntensityValue">1</span></label>
+                    <label for="colorIntensity" data-i18n="settings.colors.colorIntensity">Color Intensity: <span id="colorIntensityValue">1</span></label>
                     <input type="range" id="colorIntensity" min="0.1" max="2" step="0.1" value="1">
-                    <p class="setting-description">Adjusts the overall vividness of colors.</p>
+                    <p class="setting-description" data-i18n="settings.colors.colorIntensityDesc">Adjusts the overall vividness of colors.</p>
                 </div>
                 <div class="setting" id="customColorsSetting" style="display: none;">
-                    <h5>Custom Colors</h5>
+                    <h5 data-i18n="settings.colors.customColors">Custom Colors</h5>
                     <div class="color-picker-container">
                         <input type="color" id="colorPicker" value="#ff0000">
-                        <button id="addColor" class="button">Add Color</button>
+                        <button id="addColor" class="button" data-i18n="settings.colors.addColor">Add Color</button>
                     </div>
-                    <p class="setting-description">Click a swatch to remove it.</p>
+                    <p class="setting-description" data-i18n="settings.colors.customColorsDesc">Click a swatch to remove it.</p>
                     <div id="customColorsList" class="custom-colors-list">
                         <!-- Custom color swatches will be added here by JavaScript -->
                     </div>
@@ -827,16 +839,22 @@
         <div class="settings-controls">
             <button id="resetSettings" class="settings-btn">
                 <span class="icon">↺</span>
-                <span class="text">Reset</span>
+                <span class="text" data-i18n="ui.buttons.reset">Reset</span>
             </button>
             <button id="closeSettings" class="settings-btn">
                 <span class="icon">✓</span>
-                <span class="text">Close Settings</span>
+                <span class="text" data-i18n="ui.buttons.close">Close Settings</span>
             </button>
         </div>
     </div>
 
     <!-- Tab and button click fixes -->
+    
+    <!-- 🌍 Internationalization System -->
+    <script type="module" src="translations/i18n.js"></script>
+    
+    <!-- Language Switcher UI -->
+    <script src="js/ui/LanguageSwitcher.js"></script>
     
     <!-- Original scripts -->
     <script type="module" src="js/main.js"></script>

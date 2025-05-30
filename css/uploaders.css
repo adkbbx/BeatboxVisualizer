@@ -8,7 +8,9 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     border: 1px solid #2c2c2c;
     margin-bottom: 20px;
+    min-width: 400px;
     max-width: 600px;
+    width: 600px;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -35,6 +37,12 @@
     transition: all 0.2s;
     position: relative;
     text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    min-width: 0;
 }
 
 .uploader-tab-button:hover {
@@ -309,5 +317,110 @@ input[type="range"]::-moz-range-thumb {
 @media (max-width: 992px) {
     .uploader-tabs-container {
         margin-left: 0;
+        width: 100%;
+        max-width: 500px;
+        min-width: 350px;
+    }
+    
+    .uploader-tab-button {
+        font-size: 15px;
+        padding: 14px 12px;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.2;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* Medium screen adjustments - where text starts getting cramped */
+@media (max-width: 600px) {
+    .uploader-tab-button {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.2;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 12px 6px;
+    }
+}
+
+/* Tablet responsive adjustments */
+@media (max-width: 768px) {
+    .uploader-tabs-container {
+        width: 100%;
+        max-width: 400px;
+        min-width: 300px;
+    }
+    
+    .uploader-tab-button {
+        font-size: 14px;
+        padding: 12px 8px;
+        font-weight: 600;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.2;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 480px) {
+    .uploader-tabs-container {
+        width: 100%;
+        max-width: 350px;
+        min-width: 280px;
+    }
+    
+    .uploader-tab-button {
+        font-size: 13px;
+        padding: 10px 6px;
+        font-weight: 600;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.2;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* Extra small mobile adjustments */
+@media (max-width: 360px) {
+    .uploader-tabs-container {
+        width: 100%;
+        max-width: 320px;
+        min-width: 280px;
+    }
+    
+    .uploader-tab-button {
+        font-size: 12px;
+        padding: 8px 10px;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }

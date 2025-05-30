@@ -18,8 +18,7 @@ class UIController {
         this.settingsButton = document.getElementById('toggleSettings');
         this.settingsPanel = document.getElementById('settingsPanel');
         this.volumeLevel = document.getElementById('volumeLevel');
-        this.audioStatus = document.getElementById('audioStatus');
-        this.micDetection = document.getElementById('micDetection');
+        this.audioStatusDetection = document.getElementById('audioStatusDetection'); // Unified element
         this.togglePanelsButton = document.getElementById('togglePanels');
         
         // Create background uploader container if it doesn't exist
@@ -41,7 +40,7 @@ class UIController {
         this.initializeBackgroundUploader();
         
         // Initialize component modules
-        this.soundVisualization = new SoundVisualization(this.volumeLevel, this.micDetection, this.audioManager);
+        this.soundVisualization = new SoundVisualization(this.volumeLevel, this.audioStatusDetection, this.audioManager);
         this.settingsManager = new SettingsManager(this.audioManager);
         this.eventHandlers = new UIEventHandlers(this);
         
@@ -59,6 +58,9 @@ class UIController {
         
         // Initialize panel toggle button - This is now primarily handled by js/panel-controls.js
         // this.initializePanelToggle(); 
+        
+        // Volume visualization
+        this.levelBar = this.volumeLevel.querySelector('.level-bar');
     }
     
     /**
@@ -267,24 +269,24 @@ class UIController {
                 
                 // Update UI
                 this.startButton.disabled = false;
-                this.audioStatus.textContent = 'Microphone Active';
-                this.audioStatus.className = 'active';
-                this.audioStatus.parentElement.classList.add('active');
+                this.audioStatusDetection.textContent = 'Microphone Active';
+                this.audioStatusDetection.className = 'active';
+                this.audioStatusDetection.parentElement.classList.add('active');
                 this.updateMicrophoneState(true);
                 
                 return true;
             } else {
-                this.audioStatus.textContent = 'Microphone Access Denied';
-                this.audioStatus.className = 'inactive';
-                this.audioStatus.parentElement.classList.add('inactive');
+                this.audioStatusDetection.textContent = 'Microphone Access Denied';
+                this.audioStatusDetection.className = 'inactive';
+                this.audioStatusDetection.parentElement.classList.add('inactive');
                 this.updateMicrophoneState(false);
                 return false;
             }
         } catch (error) {
             console.error('❌ Error starting microphone:', error);
-            this.audioStatus.textContent = 'Microphone Error';
-            this.audioStatus.className = 'inactive';
-            this.audioStatus.parentElement.classList.add('inactive');
+            this.audioStatusDetection.textContent = 'Microphone Error';
+            this.audioStatusDetection.className = 'inactive';
+            this.audioStatusDetection.parentElement.classList.add('inactive');
             this.updateMicrophoneState(false);
             return false;
         }
@@ -311,18 +313,17 @@ class UIController {
             if (resetState) {
                 this.startButton.classList.remove('active');
                 this.startButton.querySelector('.text').textContent = 'Start';
-                const audioStatus = document.getElementById('audioStatus');
-                audioStatus.textContent = 'Audio status: inactive';
-                audioStatus.className = 'inactive';
+                // Use the unified audioStatusDetection element instead of the old audioStatus
+                this.audioStatusDetection.textContent = 'Audio status: inactive';
+                this.audioStatusDetection.className = 'audio-status-detection inactive';
             }
             
             // Update UI elements
             this.startButton.disabled = false;
-            this.audioStatus.textContent = 'Microphone Inactive';
-            this.audioStatus.className = 'inactive';
-            this.audioStatus.parentElement.classList.add('inactive');
+            this.audioStatusDetection.textContent = 'Microphone Inactive';
+            this.audioStatusDetection.className = 'audio-status-detection inactive';
+            this.audioStatusDetection.parentElement.classList.add('inactive');
             this.updateVolumeUI(0);
-            this.micDetection.textContent = 'Microphone inactive - no sound detected';
             this.updateMicrophoneState(false);
         } catch (error) {
             console.error('[UIController] Error stopping microphone:', error);

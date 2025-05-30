@@ -26,7 +26,10 @@ class CustomColorsManager {
     
     // Skip if color already exists
     if (colorSettings.customColors.includes(color)) {
-      this.showMessage(`Color ${color} already in palette`);
+      const message = window.i18n ? 
+        window.i18n.t('settings.colors.colorAlreadyExists', {color}) : 
+        `Color ${color} already in palette`;
+      this.showMessage(message);
       return;
     }
     
@@ -37,7 +40,10 @@ class CustomColorsManager {
     this.updateColorSettings(updatedColors);
     
     // Show success message
-    this.showMessage(`Added ${color} to palette`);
+    const message = window.i18n ? 
+      window.i18n.t('settings.colors.colorAdded', {color}) : 
+      `Added ${color} to palette`;
+    this.showMessage(message);
     
     // Update UI
     this.updateUI();
@@ -54,7 +60,10 @@ class CustomColorsManager {
     this.updateColorSettings(updatedColors);
     
     // Show message
-    this.showMessage(`Removed ${color} from palette`);
+    const message = window.i18n ? 
+      window.i18n.t('settings.colors.colorRemoved', {color}) : 
+      `Removed ${color} from palette`;
+    this.showMessage(message);
     
     // Update UI
     this.updateUI();
@@ -88,9 +97,12 @@ class CustomColorsManager {
     
     // Show empty state or color swatches
     if (customColors.length === 0) {
+      const emptyMessage = window.i18n ? 
+        window.i18n.t('settings.colors.noCustomColors') : 
+        'No custom colors added yet';
       this.container.innerHTML = `
         <div class="empty-colors-message">
-          No custom colors added yet
+          ${emptyMessage}
         </div>
       `;
     } else {

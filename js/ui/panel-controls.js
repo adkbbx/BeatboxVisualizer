@@ -65,13 +65,17 @@ export default function initializePanelControls(uiControllerInstance) {
      */
     function updateToggleButton() {
         if (toggleButton) {
+            // Get translated text for hide/show
+            const hideText = window.i18n ? window.i18n.t('ui.buttons.hide') : 'Hide';
+            const showText = window.i18n ? window.i18n.t('ui.buttons.show') : 'Show';
+            
             toggleButton.innerHTML = panelsVisible ? 
-                '<span class="icon">👁️</span><span class="text">Hide</span>' : 
-                '<span class="icon">👁️‍🗨️</span><span class="text">Show</span>';
+                `<span class="icon">👁️</span><span class="text">${hideText}</span>` : 
+                `<span class="icon">👁️‍🗨️</span><span class="text">${showText}</span>`;
             
             // Update aria-label for accessibility
             toggleButton.setAttribute('aria-label', 
-                panelsVisible ? 'Hide panels' : 'Show panels');
+                panelsVisible ? `${hideText} panels` : `${showText} panels`);
             toggleButton.setAttribute('aria-pressed', !panelsVisible);
         }
     }
@@ -178,6 +182,25 @@ export default function initializePanelControls(uiControllerInstance) {
     // Initialize UI
     updateToggleButton();
     initializeSettingsButton();
+    
+    // Add language change listener for real-time translation updates
+    if (window.i18n) {
+        window.i18n.onLanguageChange(() => {
+            updateToggleButton();
+        });
+    } else {
+        // Wait for i18n to be available and then set up the callback
+        const checkI18n = setInterval(() => {
+            if (window.i18n) {
+                clearInterval(checkI18n);
+                window.i18n.onLanguageChange(() => {
+                    updateToggleButton();
+                });
+                // Update button text once i18n is available
+                updateToggleButton();
+            }
+        }, 100);
+    }
     
     // Return public API
     return {

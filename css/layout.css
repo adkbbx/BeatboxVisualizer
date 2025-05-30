@@ -53,65 +53,108 @@ body {
     grid-area: audio;
     background-color: #1e1e1e;
     border-radius: 12px;
-    padding: 20px;
+    padding: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     pointer-events: auto;
     align-self: end;
     
-    /* Fix overflow issues */
-    overflow: hidden;
+    /* Enhanced sizing for natural content fit */
     box-sizing: border-box;
-    min-height: 0;
-    max-height: 200px;
     
-    /* Ensure content fits properly */
+    /* Allow natural height to accommodate all content */
+    height: auto;
+    min-height: auto;
+    max-height: none;
+    
+    /* Improved spacing between components */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
+    /* Match control panel width */
+    width: fit-content;
+    min-width: 500px;
+    max-width: 500px;
+    
+    /* Prevent horizontal overflow but allow vertical expansion */
+    overflow-x: hidden;
+    overflow-y: visible;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Enhanced text content overflow handling in audio visualizer */
+.audio-visualizer .mic-test {
+    flex-shrink: 0;
+    flex-grow: 0;
+    min-height: auto;
+    height: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    
-    /* Add overflow fixes for tablet */
-    overflow: hidden;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 180px;
-}
-
-/* Fix text content overflow in audio visualizer */
-.audio-visualizer .mic-test {
-    overflow: hidden;
-    flex-shrink: 1;
-    min-height: 0;
+    overflow: visible;
+    width: 100%;
+    max-width: 100%;
+    padding: 4px 0;
 }
 
 .audio-visualizer .mic-test p {
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
-    line-height: 1.4;
-    margin: 0 0 8px 0;
-    font-size: 14px;
+    hyphens: none;
+    line-height: 1.5;
+    margin: 0;
+    font-size: 13px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    box-sizing: border-box;
+    /* Better text wrapping - less aggressive */
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    letter-spacing: 0.3px;
 }
 
-.audio-visualizer #micDetection {
+.audio-visualizer #audioStatusDetection {
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
+    hyphens: none;
     line-height: 1.3;
-    font-size: 13px;
-    margin: 0;
-}
-
-.audio-visualizer #audioStatus {
+    font-size: 12px;
+    margin: 8px 0 0 0;
     flex-shrink: 0;
-    margin: 0 0 8px 0;
-    font-size: 14px;
+    flex-grow: 0;
+    height: auto;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    /* Better text wrapping for status text */
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 44px;
+    text-align: center;
+    transition: all 0.3s ease;
 }
 
 .audio-visualizer .volume-meter {
     flex-shrink: 0;
-    margin: 0 0 8px 0;
+    flex-grow: 0;
+    margin: 0 0 12px 0;
+    width: 100%;
+    box-sizing: border-box;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .uploader-tabs-container {
@@ -121,6 +164,7 @@ body {
     flex-direction: column;
     min-height: 0;
     overflow: hidden;
+    min-width: 400px;
     max-width: 600px;
     justify-self: end;
     align-self: stretch;
@@ -180,10 +224,10 @@ body {
 /* Audio visualizer components */
 .volume-meter {
     height: 10px;
-    background-color: #333;
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .level-bar {
@@ -272,6 +316,7 @@ body {
     
     .uploader-tabs-container {
         justify-self: end;
+        min-width: 350px;
         max-width: 100%;
         align-self: stretch;
     }
@@ -279,13 +324,12 @@ body {
     .audio-visualizer {
         align-self: end;
         
-        /* Add overflow fixes for tablet */
-        overflow: hidden;
+        /* Enhanced spacing for tablet */
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        max-height: 180px;
+        gap: 12px;
+        padding: 20px;
     }
 }
 
@@ -353,18 +397,16 @@ body {
         order: 4;
         width: 100%;
         max-width: 400px;
-        padding: 12px;
+        padding: 16px;
         min-height: 100px;
-        max-height: 150px;
         margin: 0;
         align-self: center;
         
-        /* Add overflow fixes for small mobile */
-        overflow: hidden;
+        /* Enhanced mobile spacing */
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 10px;
     }
 
     .uploader-tab-pane {
@@ -434,7 +476,6 @@ body {
     .audio-visualizer {
         padding: 12px;
         min-height: 100px;
-        max-height: 150px;
         max-width: 350px;
         align-self: center;
     }
@@ -467,12 +508,22 @@ body {
     .control-panel {
         padding: 6px;
         gap: 4px;
+        max-width: 320px;
         align-self: start;
     }
     
     .control-panel button {
         min-width: 60px;
         padding: 6px 10px;
+    }
+
+    .mode-toggle-dropdown {
+        max-width: 320px;
+    }
+
+    .uploader-tabs-container {
+        max-width: 320px;
+        align-self: stretch;
     }
 
     .background-upload-container,
@@ -483,18 +534,13 @@ body {
     .audio-visualizer {
         padding: 10px;
         min-height: 80px;
-        max-height: 120px;
+        max-width: 320px;
         align-self: start;
         
-        /* Add overflow fixes for extra small mobile */
-        overflow: hidden;
+        /* Keep content properly contained */
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
         gap: 4px;
-    }
-    
-    .uploader-tabs-container {
-        align-self: stretch;
     }
 }

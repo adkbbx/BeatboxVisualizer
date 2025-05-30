@@ -1,17 +1,11 @@
 /**
- * Mode Toggle Dropdown Controller
- * Handles the dropdown mode toggle functionality
+ * Mode Toggle Button Controller
+ * Handles the simple mode toggle button functionality
  */
 
-class ModeToggleDropdown {
+class ModeToggleButton {
     constructor() {
         this.button = document.getElementById('modeToggleButton');
-        this.menu = document.getElementById('modeDropdownMenu');
-        this.currentModeIcon = this.button?.querySelector('.current-mode-icon');
-        this.currentModeText = this.button?.querySelector('.current-mode-text');
-        this.dropdownArrow = this.button?.querySelector('.dropdown-arrow');
-        
-        this.isOpen = false;
         this.currentMode = this.loadSavedMode() || 'firework'; // Load from storage instead of hardcoding
         
         this.init();
@@ -28,47 +22,28 @@ class ModeToggleDropdown {
                 return savedMode;
             }
         } catch (error) {
-            console.warn('[ModeToggleDropdown] Failed to load saved mode from localStorage:', error);
+            console.warn('[ModeToggleButton] Failed to load saved mode from localStorage:', error);
         }
         return null;
     }
     
     init() {
-        if (!this.button || !this.menu) {
-            console.warn('Mode toggle dropdown elements not found');
+        if (!this.button) {
+            console.warn('Mode toggle button element not found');
             return;
         }
         
         // Event listeners
         this.button.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.toggle();
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!this.button.contains(e.target) && !this.menu.contains(e.target)) {
-                this.close();
-            }
-        });
-        
-        // Handle mode option clicks
-        this.menu.addEventListener('click', (e) => {
-            const modeOption = e.target.closest('.mode-option');
-            if (modeOption) {
-                const mode = modeOption.dataset.mode;
-                this.selectMode(mode);
-                this.close();
-            }
+            this.toggleMode();
         });
         
         // Keyboard navigation
         this.button.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                this.toggle();
-            } else if (e.key === 'Escape') {
-                this.close();
+                this.toggleMode();
             }
         });
         
@@ -91,52 +66,26 @@ class ModeToggleDropdown {
         // Listen for when ModeManager becomes available
         this.waitForModeManager();
         
+        // Add language change listener to update mode text
+        this.setupLanguageCallback();
+        
         // Initialize with current mode
         this.updateDisplay();
+        console.log('[ModeToggleButton] Initialized with mode:', this.currentMode);
     }
     
     /**
-     * Wait for ModeManager to become available and sync state
+     * Toggle between firework and bubble modes
      */
-    waitForModeManager() {
-        const checkModeManager = () => {
-            if (window.modeManager && typeof window.modeManager.getCurrentMode === 'function') {
-                const modeManagerMode = window.modeManager.getCurrentMode();
-                if (modeManagerMode !== this.currentMode) {
-                    this.updateModeDisplay(modeManagerMode);
-                }
-            } else {
-                // Check again after a short delay
-                setTimeout(checkModeManager, 100);
-            }
-        };
-        
-        checkModeManager();
+    toggleMode() {
+        const newMode = this.currentMode === 'firework' ? 'bubble' : 'firework';
+        this.selectMode(newMode);
     }
     
-    toggle() {
-        if (this.isOpen) {
-            this.close();
-        } else {
-            this.open();
-        }
-    }
-    
-    open() {
-        this.isOpen = true;
-        this.menu.classList.add('open');
-        this.button.setAttribute('aria-expanded', 'true');
-        
-        // Update active state in menu
-        this.updateMenuActiveState();
-    }
-    
-    close() {
-        this.isOpen = false;
-        this.menu.classList.remove('open');
-        this.button.setAttribute('aria-expanded', 'false');
-    }
-    
+    /**
+     * Select a specific mode
+     * @param {string} mode - The mode to select ('firework' or 'bubble')
+     */
     selectMode(mode) {
         if (mode === this.currentMode) return;
         
@@ -147,38 +96,48 @@ class ModeToggleDropdown {
         this.triggerModeChange(mode);
     }
     
+    /**
+     * Update the button display based on current mode
+     */
     updateDisplay() {
         const modeConfig = {
             firework: {
                 icon: '🎆',
-                text: 'Fireworks'
+                text: window.i18n ? window.i18n.t('ui.modes.fireworks') : 'Fireworks',
+                className: ''
             },
             bubble: {
                 icon: '🫧',
-                text: 'Bubbles'
+                text: window.i18n ? window.i18n.t('ui.modes.bubbles') : 'Bubbles',
+                className: 'bubble-mode'
             }
         };
         
         const config = modeConfig[this.currentMode];
-        if (config && this.currentModeIcon && this.currentModeText) {
-            this.currentModeIcon.textContent = config.icon;
-            this.currentModeText.textContent = config.text;
+        if (config && this.button) {
+            const iconElement = this.button.querySelector('.icon');
+            const textElement = this.button.querySelector('.text');
+            
+            if (iconElement) {
+                iconElement.textContent = config.icon;
+            }
+            
+            if (textElement) {
+                textElement.textContent = config.text;
+            }
+            
+            // Update button class for styling
+            this.button.classList.remove('bubble-mode');
+            if (config.className) {
+                this.button.classList.add(config.className);
+            }
         }
     }
     
-    updateMenuActiveState() {
-        // Remove active class from all options
-        this.menu.querySelectorAll('.mode-option').forEach(option => {
-            option.classList.remove('active');
-        });
-        
-        // Add active class to current mode
-        const activeOption = this.menu.querySelector(`[data-mode="${this.currentMode}"]`);
-        if (activeOption) {
-            activeOption.classList.add('active');
-        }
-    }
-    
+    /**
+     * Trigger mode change events
+     * @param {string} mode - The new mode
+     */
     triggerModeChange(mode) {
         // Dispatch custom event for mode change
         const event = new CustomEvent('modeChange', {
@@ -195,6 +154,10 @@ class ModeToggleDropdown {
         this.updateLegacyModeToggles(mode);
     }
     
+    /**
+     * Update legacy mode toggle elements for backward compatibility
+     * @param {string} mode - The new mode
+     */
     updateLegacyModeToggles(mode) {
         // Update any existing mode toggle elements for backward compatibility
         const legacyToggles = document.querySelectorAll('.mode-option[data-mode]');
@@ -216,6 +179,51 @@ class ModeToggleDropdown {
         });
     }
     
+    /**
+     * Wait for mode manager to become available and sync
+     */
+    waitForModeManager() {
+        const checkModeManager = () => {
+            if (window.modeManager && typeof window.modeManager.getCurrentMode === 'function') {
+                const managerMode = window.modeManager.getCurrentMode();
+                if (managerMode && managerMode !== this.currentMode) {
+                    this.currentMode = managerMode;
+                    this.updateDisplay();
+                    console.log('[ModeToggleButton] Synced with ModeManager:', managerMode);
+                }
+            } else {
+                // Keep checking until ModeManager is available
+                setTimeout(checkModeManager, 100);
+            }
+        };
+        
+        // Start checking after a short delay
+        setTimeout(checkModeManager, 100);
+    }
+    
+    /**
+     * Setup language change callback
+     */
+    setupLanguageCallback() {
+        if (window.i18n && typeof window.i18n.onLanguageChange === 'function') {
+            window.i18n.onLanguageChange(() => {
+                this.updateDisplay();
+            });
+        } else {
+            // Wait for i18n system to be available
+            const checkI18n = () => {
+                if (window.i18n && typeof window.i18n.onLanguageChange === 'function') {
+                    window.i18n.onLanguageChange(() => {
+                        this.updateDisplay();
+                    });
+                } else {
+                    setTimeout(checkI18n, 100);
+                }
+            };
+            setTimeout(checkI18n, 100);
+        }
+    }
+    
     // Public method to set mode programmatically
     setMode(mode) {
         this.selectMode(mode);
@@ -235,7 +243,7 @@ class ModeToggleDropdown {
     }
 }
 
-// Initialize the dropdown when DOM is loaded
+// Initialize the button when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.modeToggleDropdown = new ModeToggleDropdown();
+    window.modeToggleButton = new ModeToggleButton();
 }); 

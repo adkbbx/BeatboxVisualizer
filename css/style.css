@@ -225,7 +225,7 @@ button:disabled {
     margin-bottom: 30px;
 }
 
-/* Audio Visualizer */
+/* Audio Visualizer - Basic styles only (layout handled in layout.css and audio-visualizer.css) */
 .audio-visualizer {
     background-color: #1e1e1e;
     padding: 20px;
@@ -253,6 +253,7 @@ button:disabled {
     border-color: rgba(231, 76, 60, 0.5);
 }
 
+/* Volume meter basic styles (enhanced in other CSS files) */
 .volume-meter {
     height: 12px;
     background-color: rgba(44, 44, 44, 0.5);
@@ -284,6 +285,7 @@ button:disabled {
                 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
+/* Audio status enhanced styling */
 #audioStatus {
     font-size: 16px;
     color: #a0a0a0;
@@ -476,13 +478,13 @@ footer {
 
 /* Microphone Test */
 .mic-test {
-    margin-top: 18px;
-    padding-top: 12px;
-    border-top: 1px solid #2c2c2c;
+    margin: 0;
+    padding: 0;
+    border-top: none;
 }
 
 .mic-test p {
-    margin-bottom: 12px;
+    margin: 0;
     font-size: 0.9rem;
     color: #a0a0a0;
     line-height: 1.5;
@@ -526,9 +528,10 @@ footer {
         flex-direction: row;
     }
     
-    .audio-visualizer {
+    /* Remove conflicting audio-visualizer flex style for desktop */
+    /* .audio-visualizer {
         flex: 1;
-    }
+    } */
     
     #animationCanvas, #backgroundCanvas {
         flex: 2;

@@ -35,6 +35,9 @@ class ModeManager {
         // Update settings for the loaded mode
         this.updateSettingsForMode(this.currentMode);
         
+        // Add language change listener to update test button text
+        this.setupLanguageCallback();
+        
         // Notify animation controller of the initial mode
         if (this.animationController && this.animationController.switchMode) {
             this.animationController.switchMode(this.currentMode);
@@ -143,6 +146,42 @@ class ModeManager {
                     this.switchMode(newMode);
                 }
             });
+        }
+    }
+    
+    /**
+     * Setup language change callback to update test button text
+     */
+    setupLanguageCallback() {
+        if (window.i18n) {
+            window.i18n.onLanguageChange(() => {
+                this.updateTestButtonText();
+            });
+        } else {
+            // Wait for i18n to be available and then set up the callback
+            const checkI18n = setInterval(() => {
+                if (window.i18n) {
+                    clearInterval(checkI18n);
+                    window.i18n.onLanguageChange(() => {
+                        this.updateTestButtonText();
+                    });
+                    // Update button text once i18n is available
+                    this.updateTestButtonText();
+                }
+            }, 100);
+        }
+    }
+    
+    /**
+     * Update test button text with current translation
+     */
+    updateTestButtonText() {
+        const testButton = document.getElementById('testFirework');
+        if (testButton) {
+            const textSpan = testButton.querySelector('.text');
+            if (textSpan && window.i18n) {
+                textSpan.textContent = window.i18n.t('ui.buttons.test');
+            }
         }
     }
     
@@ -282,11 +321,11 @@ class ModeManager {
             }
         }
         
-        // Update mode toggle dropdown (if it exists)
-        if (window.modeToggleDropdown && typeof window.modeToggleDropdown.updateModeDisplay === 'function') {
-            // Only update if the dropdown's mode is different to avoid loops
-            if (window.modeToggleDropdown.getCurrentMode() !== activeMode) {
-                window.modeToggleDropdown.updateModeDisplay(activeMode);
+        // Update mode toggle button (if it exists)
+        if (window.modeToggleButton && typeof window.modeToggleButton.updateModeDisplay === 'function') {
+            // Only update if the button's mode is different to avoid loops
+            if (window.modeToggleButton.getCurrentMode() !== activeMode) {
+                window.modeToggleButton.updateModeDisplay(activeMode);
             }
         }
         
@@ -296,12 +335,14 @@ class ModeManager {
             const textSpan = testButton.querySelector('.text');
             const iconSpan = testButton.querySelector('.icon');
             
-            if (activeMode === 'bubble') {
-                if (textSpan) textSpan.textContent = 'Test';
-                if (iconSpan) iconSpan.textContent = '🫧';
-            } else {
-                if (textSpan) textSpan.textContent = 'Test';
-                if (iconSpan) iconSpan.textContent = '🎆';
+            // Keep test button icon consistent regardless of mode
+            if (textSpan) {
+                // Use translation system instead of hardcoded text
+                textSpan.textContent = window.i18n ? window.i18n.t('ui.buttons.test') : 'Test';
+            }
+            if (iconSpan) {
+                // Always use lightning bolt for test button to distinguish from mode toggle
+                iconSpan.textContent = '⚡';
             }
         }
         

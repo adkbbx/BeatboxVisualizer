@@ -35,6 +35,7 @@
 /* Preset interface styles */
 .preset-container {
     width: 100%;
+    max-width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -44,14 +45,18 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .preset-actions {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
     align-items: center;
     margin-bottom: 10px;
+    justify-content: center;
+    max-width: 100%;
 }
 
 .preset-actions .button {
@@ -64,10 +69,20 @@
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s ease;
-    min-width: 140px;
+    min-width: 120px;
+    max-width: 200px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+    flex: 0 1 auto;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+    min-height: 44px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .preset-actions .button:hover {
@@ -102,9 +117,11 @@
 
 .presets-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 15px;
     margin-top: 10px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .preset-card {
@@ -287,15 +304,49 @@
 @media (max-width: 768px) {
     .presets-grid {
         grid-template-columns: 1fr;
+        max-width: 100%;
     }
     
     .preset-actions {
         flex-direction: column;
         align-items: stretch;
+        gap: 12px;
     }
     
     .preset-actions .button {
         min-width: auto;
+        max-width: none;
+        width: 100%;
+        flex: none;
         justify-content: center;
+        white-space: normal;
+        line-height: 1.4;
+        padding: 14px 16px;
+        min-height: 48px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .preset-actions .button {
+        font-size: 13px;
+        padding: 12px 12px;
+        min-height: 46px;
+        line-height: 1.3;
+    }
+    
+    .presets-grid {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 360px) {
+    .preset-actions .button {
+        font-size: 12px;
+        padding: 10px 10px;
+        min-height: 44px;
+        line-height: 1.2;
     }
 }

@@ -575,7 +575,14 @@ export class PresetManager {
     showMessage(message, type = 'info') {
         const messageDiv = document.createElement('div');
         messageDiv.className = `preset-message preset-message-${type}`;
-        messageDiv.textContent = message;
+        
+        // Check if message is a translation key or direct text
+        if (window.i18n && message.includes('.')) {
+            // Assume it's a translation key if it contains dots
+            messageDiv.textContent = window.i18n.t(message) || message;
+        } else {
+            messageDiv.textContent = message;
+        }
         
         const container = document.querySelector('.preset-container') || document.body;
         container.appendChild(messageDiv);

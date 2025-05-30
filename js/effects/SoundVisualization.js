@@ -2,9 +2,9 @@
  * SoundVisualization handles volume UI and sound detection indicators
  */
 class SoundVisualization {
-    constructor(volumeLevel, micDetection, audioManager) {
+    constructor(volumeLevel, audioStatusDetection, audioManager) {
         this.volumeLevel = volumeLevel;
-        this.micDetection = micDetection;
+        this.audioStatusDetection = audioStatusDetection; // Unified element
         this.audioManager = audioManager;
         
         // Timers for UI messages
@@ -58,34 +58,34 @@ class SoundVisualization {
     }
     
     /**
-     * Show sustained sound detection in the mic test indicator
+     * Show sustained sound detection in the unified status indicator
      */
     showSustainedDetection(message, fireworksActive) {
         clearTimeout(this.sustainedIndicatorTimer);
         
-        this.micDetection.textContent = message;
-        this.micDetection.className = 'mic-detection detected-sustained';
+        this.audioStatusDetection.textContent = message;
+        this.audioStatusDetection.className = 'audio-status-detection detected-sustained';
         
         this.sustainedIndicatorTimer = setTimeout(() => {
-            this.micDetection.textContent = fireworksActive ? 
+            this.audioStatusDetection.textContent = fireworksActive ? 
                 this.activeMessage : this.defaultMessage;
-            this.micDetection.className = 'mic-detection';
+            this.audioStatusDetection.className = 'audio-status-detection';
         }, 2000);
     }
     
     /**
-     * Show loud sound detection in the mic test indicator
+     * Show loud sound detection in the unified status indicator
      */
     showLoudDetection(message, fireworksActive) {
         clearTimeout(this.loudIndicatorTimer);
         
-        this.micDetection.textContent = message;
-        this.micDetection.className = 'mic-detection detected-loud';
+        this.audioStatusDetection.textContent = message;
+        this.audioStatusDetection.className = 'audio-status-detection detected-loud';
         
         this.loudIndicatorTimer = setTimeout(() => {
-            this.micDetection.textContent = fireworksActive ? 
+            this.audioStatusDetection.textContent = fireworksActive ? 
                 this.activeMessage : this.defaultMessage;
-            this.micDetection.className = 'mic-detection';
+            this.audioStatusDetection.className = 'audio-status-detection';
         }, 2000);
     }
     
@@ -95,7 +95,6 @@ class SoundVisualization {
     updateMicrophoneState(isActive) {
         const micButton = document.getElementById('startMicrophone');
         const audioVisualizer = document.querySelector('.audio-visualizer');
-        const audioStatus = document.getElementById('audioStatus');
         
         if (isActive) {
             // Activate state
@@ -107,12 +106,9 @@ class SoundVisualization {
             audioVisualizer.classList.add('active');
             audioVisualizer.classList.add('mic-active');
             
-            audioStatus.textContent = 'Audio status: active';
-            audioStatus.classList.remove('inactive');
-            audioStatus.classList.add('active');
-            
-            // Reset to default message
-            this.micDetection.textContent = this.defaultMessage;
+            // Set active status message and class
+            this.audioStatusDetection.textContent = this.defaultMessage;
+            this.audioStatusDetection.className = 'audio-status-detection active';
         } else {
             // Deactivate state
             micButton.classList.remove('active');
@@ -123,12 +119,9 @@ class SoundVisualization {
             audioVisualizer.classList.add('inactive');
             audioVisualizer.classList.add('mic-inactive');
             
-            audioStatus.textContent = 'Audio status: inactive';
-            audioStatus.classList.remove('active');
-            audioStatus.classList.add('inactive');
-            
-            // Set inactive message
-            this.micDetection.textContent = 'Microphone inactive - no sound detected';
+            // Set inactive status message and class
+            this.audioStatusDetection.textContent = 'Microphone inactive - no sound detected';
+            this.audioStatusDetection.className = 'audio-status-detection inactive';
         }
     }
 }

@@ -842,29 +842,34 @@ function checkBrowserCompatibility() {
     
     // Check for AudioContext support
     if (!window.AudioContext && !window.webkitAudioContext) {
-        warnings.push('Web Audio API is not supported in your browser.');
+        warnings.push(window.i18n ? window.i18n.t('errors.microphone.unsupported') : 'Web Audio API is not supported in your browser.');
     }
     
     // Check for getUserMedia support
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        warnings.push('Media Devices API is not supported in your browser.');
+        warnings.push(window.i18n ? window.i18n.t('errors.microphone.failed') : 'Media Devices API is not supported in your browser.');
     }
     
     // Check for Canvas support
     const canvas = document.createElement('canvas');
     if (!canvas.getContext || !canvas.getContext('2d')) {
-        warnings.push('Canvas is not supported in your browser.');
+        warnings.push(window.i18n ? window.i18n.t('errors.generic.unknown') : 'Canvas is not supported in your browser.');
     }
     
     // Display warnings if any
     if (warnings.length > 0) {
         const warningElement = document.createElement('div');
         warningElement.className = 'browser-warning';
+        
+        const title = window.i18n ? window.i18n.t('errors.browser.compatibility') : 'Browser Compatibility Warning';
+        const description = window.i18n ? window.i18n.t('errors.browser.unsupportedFeatures') : 'The following features are not supported in your browser:';
+        const suggestion = window.i18n ? window.i18n.t('errors.browser.modernBrowser') : 'Please try using a modern browser like Chrome, Firefox, Safari, or Edge.';
+        
         warningElement.innerHTML = `
-            <h3>Browser Compatibility Warning</h3>
-            <p>The following features are not supported in your browser:</p>
+            <h3>${title}</h3>
+            <p>${description}</p>
             <ul>${warnings.map(warning => `<li>${warning}</li>`).join('')}</ul>
-            <p>Please try using a modern browser like Chrome, Firefox, Safari, or Edge.</p>
+            <p>${suggestion}</p>
         `;
         
         document.body.insertBefore(warningElement, document.body.firstChild);

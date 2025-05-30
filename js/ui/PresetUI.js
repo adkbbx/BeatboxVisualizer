@@ -69,7 +69,7 @@ export class PresetUI {
         const discoverBtn = document.getElementById('discoverPresets');
         if (discoverBtn) {
             discoverBtn.disabled = true;
-            discoverBtn.textContent = '🔍 Discovering...';
+            discoverBtn.textContent = window.i18n ? window.i18n.t('ui.status.discovering') : '🔍 Discovering...';
         }
 
         try {
@@ -95,7 +95,9 @@ export class PresetUI {
         } finally {
             if (discoverBtn) {
                 discoverBtn.disabled = false;
-                discoverBtn.textContent = this.hasDiscovered ? '🔄 Re-discover Presets' : '🔍 Discover Presets';
+                discoverBtn.textContent = this.hasDiscovered ? 
+                    (window.i18n ? window.i18n.t('presets.actions.discover').replace('🔍 Discover', '🔄 Re-discover') : '🔄 Re-discover Presets') : 
+                    (window.i18n ? window.i18n.t('presets.actions.discover') : '🔍 Discover Presets');
             }
         }
     }
@@ -160,7 +162,7 @@ export class PresetUI {
         
         if (loadBtn) {
             loadBtn.disabled = true;
-            loadBtn.textContent = 'Loading...';
+            loadBtn.textContent = window.i18n ? window.i18n.t('ui.status.loading') : 'Loading...';
         }
 
         try {
@@ -176,7 +178,7 @@ export class PresetUI {
         } finally {
             if (loadBtn) {
                 loadBtn.disabled = false;
-                loadBtn.textContent = 'Load';
+                loadBtn.textContent = window.i18n ? window.i18n.t('presets.actions.load') : 'Load';
             }
         }
     }
@@ -187,11 +189,11 @@ export class PresetUI {
         
         if (previewDiv.style.display === 'none') {
             previewDiv.style.display = 'block';
-            previewBtn.textContent = 'Hide';
+            previewBtn.textContent = window.i18n ? window.i18n.t('ui.buttons.hide') : 'Hide';
             this.loadPresetPreview(previewDiv, preset);
         } else {
             previewDiv.style.display = 'none';
-            previewBtn.textContent = 'Preview';
+            previewBtn.textContent = window.i18n ? window.i18n.t('presets.actions.preview') : 'Preview';
         }
     }
 
@@ -241,7 +243,7 @@ export class PresetUI {
         const loadBtn = document.getElementById('loadExternalPreset');
         if (loadBtn) {
             loadBtn.disabled = true;
-            loadBtn.textContent = '📁 Opening...';
+            loadBtn.textContent = window.i18n ? window.i18n.t('ui.status.loading') : '📁 Opening...';
         }
 
         try {
@@ -253,7 +255,7 @@ export class PresetUI {
         } finally {
             if (loadBtn) {
                 loadBtn.disabled = false;
-                loadBtn.textContent = '📁 Load Preset Folder';
+                loadBtn.textContent = window.i18n ? window.i18n.t('presets.actions.loadFolder') : '📁 Load Preset Folder';
             }
         }
     }
@@ -262,7 +264,7 @@ export class PresetUI {
         const clearBtn = document.getElementById('clearAllImages');
         if (clearBtn) {
             clearBtn.disabled = true;
-            clearBtn.textContent = '🗑️ Clearing...';
+            clearBtn.textContent = window.i18n ? window.i18n.t('ui.status.clearing') : '🗑️ Clearing...';
         }
 
         try {
@@ -292,7 +294,7 @@ export class PresetUI {
         } finally {
             if (clearBtn) {
                 clearBtn.disabled = false;
-                clearBtn.textContent = '🗑️ Clear All';
+                clearBtn.textContent = window.i18n ? window.i18n.t('presets.actions.clearAll') : '🗑️ Clear All';
             }
         }
     }
@@ -300,7 +302,14 @@ export class PresetUI {
     showMessage(message, type = 'info') {
         const messageDiv = document.createElement('div');
         messageDiv.className = `preset-message preset-message-${type}`;
-        messageDiv.textContent = message;
+        
+        // Check if message is a translation key or direct text
+        if (window.i18n && message.includes('.')) {
+            // Assume it's a translation key if it contains dots
+            messageDiv.textContent = window.i18n.t(message) || message;
+        } else {
+            messageDiv.textContent = message;
+        }
         
         const container = document.querySelector('.preset-container') || document.body;
         container.appendChild(messageDiv);
