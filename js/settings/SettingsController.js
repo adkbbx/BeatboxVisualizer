@@ -334,6 +334,15 @@ class SettingsController {
       this.updateBackgroundSettings({ displayTime: value });
     });
     
+    // Video-specific settings
+    this.setupToggleControl('videoLoop', value => {
+      this.updateBackgroundSettings({ videoLoop: value });
+    });
+    
+    this.setupRangeControl('videoVolume', 'videoVolumeValue', value => {
+      this.updateBackgroundSettings({ videoVolume: value });
+    });
+    
     this.setupRangeControl('globalSpeed', 'globalSpeedValue', value => {
       this.updateAnimationSettings({ globalSpeed: value });
     });
@@ -569,6 +578,20 @@ class SettingsController {
         window.backgroundSystem.backgroundManager.updateSettings({ displayDuration: settings.displayTime * 1000 });
       }
     }
+    if (settings.videoLoop !== undefined) {
+      this.updateToggleControl('videoLoop', settings.videoLoop);
+      // Update background manager
+      if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+        window.backgroundSystem.backgroundManager.updateSettings({ videoLoop: settings.videoLoop });
+      }
+    }
+    if (settings.videoVolume !== undefined) {
+      this.updateRangeControl('videoVolume', 'videoVolumeValue', settings.videoVolume);
+      // Update background manager
+      if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+        window.backgroundSystem.backgroundManager.updateSettings({ videoVolume: settings.videoVolume });
+      }
+    }
   }
   
   // Add a custom color to the palette
@@ -743,6 +766,11 @@ class SettingsController {
       case 'images':
         this.updateEffectSettings(DEFAULT_SETTINGS.effects);
         this.updateBackgroundSettings(DEFAULT_SETTINGS.background);
+        // Reset video settings to defaults
+        this.updateBackgroundSettings({ 
+          videoLoop: true, 
+          videoVolume: 0 
+        });
         break;
     }
 
@@ -834,6 +862,10 @@ class SettingsController {
     this.updateRangeControl('bgOpacity', 'bgOpacityValue', DEFAULT_SETTINGS.background.opacity);
     this.updateRangeControl('bgTransitionTime', 'bgTransitionValue', DEFAULT_SETTINGS.background.transitionTime);
     this.updateRangeControl('bgDisplayTime', 'bgDisplayValue', DEFAULT_SETTINGS.background.displayTime);
+    
+    // Update video controls with defaults
+    this.updateToggleControl('videoLoop', true); // Default to loop enabled
+    this.updateRangeControl('videoVolume', 'videoVolumeValue', 0); // Default to muted
     
     this.updateRangeControl('colorIntensity', 'colorIntensityValue', colorSettings.intensity);
     

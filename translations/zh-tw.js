@@ -31,7 +31,7 @@ export const translations = {
         },
         tabs: {
             animationImages: "動畫圖像",
-            backgroundImages: "背景圖像",
+            background: "背景",
             presets: "預設"
         },
         status: {
@@ -337,12 +337,20 @@ export const translations = {
             spinningImagesDesc: "在煙火爆炸期間讓上傳的圖像旋轉。",
             imageGravity: "圖像重力",
             imageGravityDesc: "爆炸後圖像下落的速度（0=永遠浮動，高=快速下落）。",
-            backgroundImageOpacity: "背景圖像不透明度",
-            backgroundImageOpacityDesc: "背景幻燈片圖像的透明程度（0=不可見，1=實心）。",
+            backgroundSection: "📺 背景圖像與視頻",
+            backgroundImageOpacity: "背景不透明度",
+            backgroundImageOpacityDesc: "背景圖像和視頻的透明程度（0=不可見，1=實心）。",
             backgroundTransition: "背景切換",
-            backgroundTransitionDesc: "背景圖像從一個淡入下一個所需的時間。",
+            backgroundTransitionDesc: "背景媒體從一個淡入下一個所需的時間。",
             backgroundDuration: "背景持續時間",
-            backgroundDurationDesc: "每個背景圖像在切換到下一個之前顯示的時間。",
+            backgroundDurationDesc: "每個背景圖像或視頻在切換到下一個之前顯示的時間。",
+            videoSettings: "🎬 視頻設置",
+            videoLoop: "循環播放視頻",
+            videoLoopDesc: "視頻結束時自動重新開始。",
+            videoVolume: "視頻音量",
+            videoVolumeDesc: "背景視頻的音量級別（保持為0以避免與麥克風衝突）。",
+            videoFullDuration: "播放完整視頻時長",
+            videoFullDurationDesc: "允許視頻播放完整時長再切換到下一個背景。",
             customImages: "自訂圖像",
             customImagesDesc: "在動畫中使用上傳的自訂圖像。"
         },
@@ -434,10 +442,12 @@ export const translations = {
     upload: {
         instructions: {
             dragDrop: "將自訂圖像拖放到此處",
+            dragDropMedia: "將背景圖像和影片拖放到此處",
             or: "或",
             selectFiles: "選擇檔案",
             selectBgFiles: "選擇背景檔案",
-            fileTypes: "支援：JPG、PNG、GIF（每個最大5MB）",
+            fileTypes: "支援：JPG、PNG、WebP（每個最大5MB）",
+            mediaTypes: "支援：圖像（JPG、PNG、GIF、WebP）和影片（MP4、WebM）• 最大100MB",
             imageDescription: "圖像將在煙火爆炸和氣泡破裂時顯示",
             backgroundDescription: "背景圖像將顯示在動畫後面"
         },

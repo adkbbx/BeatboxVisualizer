@@ -530,42 +530,41 @@
 }
 
 /* ===== DARK MODE SUPPORT ===== */
-@media (prefers-color-scheme: light) {
-    .control-panel {
-        background-color: #f5f5f5;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .control-panel button {
-        background-color: #ffffff;
-        color: #333333;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    
-    .control-panel button:hover:not(:disabled) {
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-    
-    /* Adjust button colors for light mode */
-    #startMicrophone {
-        background-color: #2ecc71;
-        color: white;
-    }
-    
-    #testFirework {
-        background-color: #9b59b6;
-        color: white;
-    }
-    
-    #toggleSettings {
-        background-color: #3498db;
-        color: white;
-    }
-    
-    #togglePanels {
-        background-color: #95a5a6;
-        color: white;
-    }
+/* Force dark mode - ignore system preferences */
+.control-panel {
+    background-color: #1e1e1e !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.control-panel button {
+    background-color: #2c2c2c !important;
+    color: white !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+.control-panel button:hover:not(:disabled) {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Ensure button colors remain consistent */
+#startMicrophone {
+    background-color: #2ecc71 !important;
+    color: white !important;
+}
+
+#testFirework {
+    background-color: #3498db !important;
+    color: white !important;
+}
+
+#toggleSettings {
+    background-color: #3498db !important;
+    color: white !important;
+}
+
+#togglePanels {
+    background-color: #95a5a6 !important;
+    color: white !important;
 }
 
 /* ===== FONT SIZE CONSISTENCY FIXES ===== */

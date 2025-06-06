@@ -38,7 +38,6 @@ class I18nManager {
             this.applyTranslations();
             
             this.initialized = true;
-            console.log(`🌍 I18n initialized with language: ${this.currentLanguage}`);
             
             // Notify callbacks
             this.notifyCallbacks();
@@ -104,7 +103,6 @@ class I18nManager {
             
             // Fallback to English if not already trying English
             if (language !== this.defaultLanguage) {
-                console.log(`🔄 Falling back to ${this.defaultLanguage}`);
                 const fallbackModule = await import(`./${this.defaultLanguage}.js`);
                 this.translations = fallbackModule.translations || fallbackModule.default;
                 this.currentLanguage = this.defaultLanguage;
@@ -172,8 +170,6 @@ class I18nManager {
             await this.loadTranslations(language);
             this.applyTranslations();
             this.notifyCallbacks();
-            
-            console.log(`🌍 Language switched to: ${language}`);
             
         } catch (error) {
             console.error(`🚨 Failed to switch language to ${language}:`, error);

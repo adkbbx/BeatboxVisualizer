@@ -86,7 +86,9 @@ export const DEFAULT_SETTINGS = {
   background: {
     opacity: 0.8,
     transitionTime: 2,
-    displayTime: 5
+    displayTime: 5,
+    videoLoop: true,
+    videoVolume: 0.0 // Keep videos muted by default to avoid audio conflicts
   },
 
   animation: {

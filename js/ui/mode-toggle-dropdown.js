@@ -71,7 +71,6 @@ class ModeToggleButton {
         
         // Initialize with current mode
         this.updateDisplay();
-        console.log('[ModeToggleButton] Initialized with mode:', this.currentMode);
     }
     
     /**
@@ -189,7 +188,6 @@ class ModeToggleButton {
                 if (managerMode && managerMode !== this.currentMode) {
                     this.currentMode = managerMode;
                     this.updateDisplay();
-                    console.log('[ModeToggleButton] Synced with ModeManager:', managerMode);
                 }
             } else {
                 // Keep checking until ModeManager is available

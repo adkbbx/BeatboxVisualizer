@@ -31,7 +31,7 @@ export const translations = {
         },
         tabs: {
             animationImages: "アニメーション画像",
-            backgroundImages: "背景画像",
+            background: "背景",
             presets: "プリセット"
         },
         status: {
@@ -337,12 +337,20 @@ export const translations = {
             spinningImagesDesc: "花火の爆発中にアップロードされた画像を回転させる。",
             imageGravity: "画像重力",
             imageGravityDesc: "爆発後に画像がどれだけ速く落下するか（0＝永遠に浮遊、高い＝速く落下）。",
-            backgroundImageOpacity: "背景画像不透明度",
-            backgroundImageOpacityDesc: "背景スライドショー画像がどれほど透明か（0＝見えない、1＝不透明）。",
+            backgroundSection: "📺 背景画像・動画",
+            backgroundImageOpacity: "背景不透明度",
+            backgroundImageOpacityDesc: "背景画像と動画がどれほど透明か（0＝見えない、1＝不透明）。",
             backgroundTransition: "背景切り替え",
-            backgroundTransitionDesc: "背景画像が次の画像にフェードするのにかかる時間。",
+            backgroundTransitionDesc: "背景メディアが次のメディアにフェードするのにかかる時間。",
             backgroundDuration: "背景表示時間",
-            backgroundDurationDesc: "各背景画像が次に変更されるまでの表示時間。",
+            backgroundDurationDesc: "各背景画像または動画が次に変更されるまでの表示時間。",
+            videoSettings: "🎬 動画設定",
+            videoLoop: "動画をループ",
+            videoLoopDesc: "動画が終了したときに自動的に再開する。",
+            videoVolume: "動画音量",
+            videoVolumeDesc: "背景動画の音量レベル（マイクとの競合を避けるため0に保たれます）。",
+            videoFullDuration: "動画の全長再生",
+            videoFullDurationDesc: "次の背景に切り替わる前に動画の全長を再生できるようにする。",
             customImages: "カスタム画像",
             customImagesDesc: "アニメーションでアップロードされたカスタム画像を使用する。"
         },
@@ -434,10 +442,12 @@ export const translations = {
     upload: {
         instructions: {
             dragDrop: "カスタム画像をここにドラッグ&ドロップ",
+            dragDropMedia: "背景画像・動画をここにドラッグ&ドロップ",
             or: "または",
             selectFiles: "ファイル選択",
             selectBgFiles: "背景ファイル選択",
-            fileTypes: "対応形式: JPG、PNG、GIF（各5MB以下）",
+            fileTypes: "対応形式: JPG、PNG、WebP（各5MB以下）",
+            mediaTypes: "対応形式: 画像（JPG、PNG、GIF、WebP）・動画（MP4、WebM）• 最大100MB",
             imageDescription: "画像は花火の爆発とバブルのポップ時に表示されます",
             backgroundDescription: "背景画像はアニメーションの背後に表示されます"
         },

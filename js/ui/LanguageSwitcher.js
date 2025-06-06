@@ -46,13 +46,11 @@ class LanguageSwitcher {
             this.updateActiveOption();
         } else {
             // Wait for i18n system to initialize
-            console.log('Waiting for i18n system to initialize...');
             const checkI18n = () => {
                 if (window.i18n && window.i18n.initialized) {
                     this.currentLanguage = window.i18n.getCurrentLanguage();
                     this.updateButtonDisplay();
                     this.updateActiveOption();
-                    console.log('Language switcher synced with i18n system');
                 } else {
                     // Keep checking until i18n is ready
                     setTimeout(checkI18n, 100);
@@ -62,8 +60,6 @@ class LanguageSwitcher {
         }
 
         this.attachEventListeners();
-        
-        console.log('Language switcher initialized with language:', this.currentLanguage);
     }
 
     attachEventListeners() {
@@ -121,7 +117,6 @@ class LanguageSwitcher {
                     this.currentLanguage = newLanguage;
                     this.updateButtonDisplay();
                     this.updateActiveOption();
-                    console.log('Language switcher updated to:', newLanguage);
                 }
             });
         } else {
@@ -133,7 +128,6 @@ class LanguageSwitcher {
                             this.currentLanguage = newLanguage;
                             this.updateButtonDisplay();
                             this.updateActiveOption();
-                            console.log('Language switcher updated to:', newLanguage);
                         }
                     });
                 } else {
@@ -181,8 +175,6 @@ class LanguageSwitcher {
             console.warn('Unknown language code:', languageCode);
             return;
         }
-
-        console.log('Switching to language:', languageCode);
         
         // Update internal state
         this.currentLanguage = languageCode;
@@ -192,7 +184,6 @@ class LanguageSwitcher {
             window.i18n.switchLanguage(languageCode).then(() => {
                 // Force a DOM refresh to ensure all translations are updated
                 setTimeout(() => {
-                    console.log('Forcing DOM translation refresh...');
                     window.i18n.refresh();
                 }, 100);
             }).catch(error => {

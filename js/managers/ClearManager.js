@@ -1,6 +1,6 @@
 /**
- * ClearManager - Standalone system for clearing all images and backgrounds
- * No dependencies on preset discovery or manifest systems
+ * ClearManager - Stamages and backgrounds
+ * No dependencies on preset discovery or manifest systemsndalone system for clearing all i
  */
 export class ClearManager {
     constructor() {
@@ -84,8 +84,38 @@ export class ClearManager {
     }
 
     clearBackgroundManager(backgroundManager) {
-        // Clear images array
-        backgroundManager.backgroundImages = [];
+        // Use the new clearBackgroundMedia method if available
+        if (typeof backgroundManager.clearBackgroundMedia === 'function') {
+            backgroundManager.clearBackgroundMedia();
+        } else if (typeof backgroundManager.clearBackgroundImages === 'function') {
+            // Fallback to old method for compatibility
+            backgroundManager.clearBackgroundImages();
+        } else {
+            // Manual cleanup for older versions
+            this.manualBackgroundCleanup(backgroundManager);
+        }
+    }
+
+    manualBackgroundCleanup(backgroundManager) {
+        // Clear media arrays (new structure)
+        if (backgroundManager.backgroundMedia) {
+            // Stop all videos before clearing
+            backgroundManager.backgroundMedia.forEach(mediaItem => {
+                if (mediaItem.type === 'video' && mediaItem.element) {
+                    const video = mediaItem.element;
+                    video.pause();
+                    if (mediaItem.url) {
+                        URL.revokeObjectURL(mediaItem.url);
+                    }
+                }
+            });
+            backgroundManager.backgroundMedia = [];
+        }
+        
+        // Clear legacy images array
+        if (backgroundManager.backgroundImages) {
+            backgroundManager.backgroundImages = [];
+        }
         
         // Reset state
         backgroundManager.currentIndex = 0;
@@ -93,6 +123,8 @@ export class ClearManager {
         backgroundManager.isTransitioning = false;
         backgroundManager.transitionProgress = 0;
         backgroundManager.timeSinceLastTransition = 0;
+        backgroundManager.currentVideo = null;
+        backgroundManager.nextVideo = null;
         
         // Stop animation
         backgroundManager.isActive = false;

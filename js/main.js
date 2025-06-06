@@ -198,6 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 animationController.backgroundManager.startIndependentLoop();
             } else {
             }
+            
+            // Set up video test button
+            setupVideoTestButton();
         }
 
         // Now that uploaders are initialized, set up global drag prevention
@@ -310,6 +313,47 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
                 // Convert seconds to milliseconds for BackgroundManager
                 window.backgroundSystem.backgroundManager.updateSettings({ displayDuration: parseFloat(bgDisplayTimeSlider.value) * 1000 });
+            }
+        });
+    }
+
+    // Setup video settings listeners
+    const videoFullDurationToggle = document.getElementById('videoFullDuration');
+    const videoLoopToggle = document.getElementById('videoLoop');
+    const videoVolumeSlider = document.getElementById('videoVolume');
+    const videoVolumeValue = document.getElementById('videoVolumeValue');
+
+    if (videoFullDurationToggle) {
+        // Initialize to checked (default)
+        videoFullDurationToggle.checked = true;
+        
+        videoFullDurationToggle.addEventListener('change', () => {
+            if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+                window.backgroundSystem.backgroundManager.updateSettings({ videoFullDuration: videoFullDurationToggle.checked });
+            }
+        });
+    }
+
+    if (videoLoopToggle) {
+        // Initialize to checked (default)
+        videoLoopToggle.checked = true;
+        
+        videoLoopToggle.addEventListener('change', () => {
+            if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+                window.backgroundSystem.backgroundManager.updateSettings({ videoLoop: videoLoopToggle.checked });
+            }
+        });
+    }
+
+    if (videoVolumeSlider && videoVolumeValue) {
+        // Initialize to 0 (default - videos muted)
+        videoVolumeSlider.value = '0';
+        videoVolumeValue.textContent = '0.0';
+        
+        videoVolumeSlider.addEventListener('input', () => {
+            videoVolumeValue.textContent = parseFloat(videoVolumeSlider.value).toFixed(1);
+            if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+                window.backgroundSystem.backgroundManager.updateSettings({ videoVolume: parseFloat(videoVolumeSlider.value) });
             }
         });
     }
@@ -914,4 +958,59 @@ function initializeUploaderTabs() {
             document.getElementById(`${tabName}-tab`).classList.add('active');
         });
     });
+}
+
+/**
+ * Setup video test button functionality
+ */
+function setupVideoTestButton() {
+    const testVideoButton = document.getElementById('testVideo');
+    
+    if (!testVideoButton) return;
+    
+    // Function to check if we have videos and show/hide button
+    const updateVideoButtonVisibility = () => {
+        if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+            const hasVideos = window.backgroundSystem.backgroundManager.backgroundMedia.some(media => media.type === 'video');
+            testVideoButton.style.display = hasVideos ? 'inline-flex' : 'none';
+        }
+    };
+    
+    // Button click handler
+    testVideoButton.addEventListener('click', () => {
+        if (window.backgroundSystem && window.backgroundSystem.backgroundManager) {
+            const bgManager = window.backgroundSystem.backgroundManager;
+            
+            // Enable user interaction
+            bgManager.userInteracted = true;
+            
+            // Try to force play current video
+            bgManager.forcePlayCurrentVideo().then(() => {
+                
+                // Check status after a short delay
+                setTimeout(() => {
+                    const isPlaying = bgManager.isVideoPlaying();
+                    if (isPlaying) {
+                        testVideoButton.innerHTML = '<span class="icon">▶️</span><span class="text">Video Playing</span>';
+                        testVideoButton.style.background = '#4CAF50';
+                    } else {
+                        testVideoButton.innerHTML = '<span class="icon">⚠️</span><span class="text">Check Console</span>';
+                        testVideoButton.style.background = '#FF6B6B';
+                    }
+                    
+                    // Reset button after 3 seconds
+                    setTimeout(() => {
+                        testVideoButton.innerHTML = '<span class="icon">🎬</span><span class="text">Play Video</span>';
+                        testVideoButton.style.background = '';
+                    }, 3000);
+                }, 500);
+            });
+        }
+    });
+    
+    // Check for videos periodically
+    setInterval(updateVideoButtonVisibility, 1000);
+    
+    // Initial check
+    updateVideoButtonVisibility();
 }

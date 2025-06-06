@@ -524,7 +524,12 @@ export class PresetManager {
         
         if (window.backgroundSystem) {
             if (window.backgroundSystem.backgroundManager) {
-                window.backgroundSystem.backgroundManager.clearBackgroundImages();
+                // Use new method if available, fallback to old method for compatibility
+                if (typeof window.backgroundSystem.backgroundManager.clearBackgroundMedia === 'function') {
+                    window.backgroundSystem.backgroundManager.clearBackgroundMedia();
+                } else if (typeof window.backgroundSystem.backgroundManager.clearBackgroundImages === 'function') {
+                    window.backgroundSystem.backgroundManager.clearBackgroundImages();
+                }
             }
             const bgPreviewContainer = document.getElementById('bgPreviewContainer');
             if (bgPreviewContainer) {

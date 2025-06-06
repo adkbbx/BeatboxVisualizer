@@ -5,16 +5,18 @@ export class CustomImage {
         if (forcedColor === undefined) forcedColor = null;
         if (sizeMultiplier === undefined) sizeMultiplier = 1.0;
         
+        console.log(`🖼️ Creating CustomImage at (${x}, ${y}) with size ${sizeMultiplier}`); // Debug log
+        
         this.x = x;
         this.y = y;
         this.image = image;
         this.sizeMultiplier = sizeMultiplier; // Store size multiplier
         
-        // Physics properties for gravity effect
-        this.velocityX = (Math.random() - 0.5) * 0.5; // Small horizontal velocity for natural movement
-        this.velocityY = -1 + Math.random() * 0.5; // Initial upward velocity (negative Y is up)
-        this.baseGravity = 0.02; // Base gravity acceleration
-        this.airResistance = 0.999; // Air resistance factor
+        // Physics properties for gravity effect - FIXED: More natural movement
+        this.velocityX = (Math.random() - 0.5) * 0.1; // Much smaller horizontal drift for natural look
+        this.velocityY = -0.2 + Math.random() * 0.1; // Gentler initial upward velocity
+        this.baseGravity = 0.015; // Slightly reduced gravity for smoother fall
+        this.airResistance = 0.998; // Slightly more air resistance
         
         // Set color based on priority: forced color > pre-computed > extracted
         if (forcedColor) {
@@ -30,12 +32,13 @@ export class CustomImage {
         this.lastUpdateTime = this.startTime;
         this.lifeTime = 2000; // 2 seconds lifetime
         
-        // Visual properties - apply size multiplier to scale
-        this.scale = 0.1 * sizeMultiplier; // Start small but respect size
-        this.targetScale = (0.8 + Math.random() * 0.2) * sizeMultiplier; // Apply size to target
+        // Visual properties - FIXED: Restored proper visibility while keeping smooth movement
+        this.scale = 0.2 * sizeMultiplier; // Start visible but small
+        this.targetScale = (0.8 + Math.random() * 0.3) * sizeMultiplier; // Good size range
+        this.currentScale = this.scale; // Track actual current scale separately
         this.rotation = 0; // Start with no rotation
         this.rotationSpeed = 0; // No rotation by default
-        this.opacity = 0.1;
+        this.opacity = 0.3; // Start clearly visible
         
         // Check if rotation is enabled in settings
         const rotationEnabled = document.getElementById('imageRotation')?.checked || false;
@@ -56,7 +59,7 @@ export class CustomImage {
             this.particles.push({
                 angle: angle,
                 distance: 0,
-                opacity: 0.05,
+                opacity: 0.15, // Start with some visibility
                 speed: 0.3 + Math.random() * 0.3
             });
         }
@@ -129,17 +132,17 @@ export class CustomImage {
 
     update() {
         const now = Date.now();
-        const deltaTime = now - this.lastUpdateTime;
+        const deltaTime = Math.min(32, now - this.lastUpdateTime); // Cap delta time to prevent large jumps
         this.lastUpdateTime = now;
         
-        // Skip problematic deltas
-        if (deltaTime > 100 || deltaTime <= 0) return;
+        // Skip frame if delta time is invalid
+        if (deltaTime <= 0) return;
 
         const age = now - this.startTime;
         const lifeProgress = Math.min(1, age / this.lifeTime);
-        const timeScale = deltaTime / 16; // Normalize to 60fps
+        const timeScale = Math.min(2, deltaTime / 16); // Cap time scale and normalize to 60fps
 
-        // Apply gravity physics - update position based on velocity
+        // Apply gravity physics - update position based on velocity - FIXED: Smoother movement
         this.x += this.velocityX * timeScale;
         this.y += this.velocityY * timeScale;
         
@@ -147,65 +150,75 @@ export class CustomImage {
         const gravityMultiplier = window.imageGravityMultiplier || 1.0;
         this.velocityY += this.baseGravity * gravityMultiplier * timeScale;
         
-        // Apply air resistance to both velocities
+        // Apply air resistance to both velocities - reduce horizontal drift over time
         this.velocityX *= Math.pow(this.airResistance, timeScale);
         this.velocityY *= Math.pow(this.airResistance, timeScale);
+        
+        // Gradually reduce horizontal movement for more natural fall
+        this.velocityX *= Math.pow(0.995, timeScale);
 
-        // Animation phases
-        if (lifeProgress < 0.3) {
-            // Opening phase
-            const bloomProgress = this.ease(lifeProgress / 0.3);
-            this.scale = 0.1 + bloomProgress * (this.targetScale - 0.1);
-            this.opacity = 0.1 + bloomProgress * 0.9;
-        } else if (lifeProgress > 0.7) {
-            // Fade out phase
-            const fadeProgress = (lifeProgress - 0.7) / 0.3;
-            this.opacity = Math.max(0.1, 1.0 - fadeProgress);
-            this.scale = this.targetScale * (1 - fadeProgress * 0.2);
+        // FIXED: Proper animation phases with good visibility
+        if (lifeProgress < 0.25) {
+            // Opening phase - smooth bloom from visible to full
+            const bloomProgress = this.easeOutCubic(lifeProgress / 0.25);
+            this.currentScale = this.scale + bloomProgress * (this.targetScale - this.scale);
+            this.opacity = 0.3 + bloomProgress * 0.6; // Start visible (0.3), go to full (0.9)
+        } else if (lifeProgress > 0.75) {
+            // Fade out phase - smooth fade with slight shrink
+            const fadeProgress = (lifeProgress - 0.75) / 0.25;
+            const fadeEase = this.easeInCubic(fadeProgress);
+            this.opacity = Math.max(0, 0.9 * (1 - fadeEase));
+            this.currentScale = this.targetScale * (1 - fadeEase * 0.15); // Slightly more shrink for clean exit
         } else {
-            // Full bloom phase
-            const pulseAmount = Math.sin(age * 0.003) * 0.02;
-            this.scale = this.targetScale * (1 + pulseAmount);
-            this.opacity = 1.0;
+            // Stable phase - full visibility, no pulse
+            this.currentScale = this.targetScale;
+            this.opacity = 0.9;
         }
+
+        // Store the scale for rendering
+        this.scale = this.currentScale;
 
         // Only update rotation if rotation speed is non-zero
         if (this.rotationSpeed !== 0) {
             this.rotation += this.rotationSpeed * timeScale;
         }
 
-        // Update particles
+        // Update particles with simpler, less distracting movement
         this.particles.forEach((particle, index) => {
-            if (lifeProgress < 0.3) {
+            if (lifeProgress < 0.25) {
                 // Expanding phase
-                particle.distance = this.ease(lifeProgress / 0.3) * this.image.width * 0.5;
-                particle.opacity = 0.1 + this.ease(lifeProgress / 0.3) * 0.4;
-            } else if (lifeProgress > 0.7) {
+                particle.distance = this.easeOutCubic(lifeProgress / 0.25) * this.image.width * 0.4;
+                particle.opacity = this.easeOutCubic(lifeProgress / 0.25) * 0.3;
+            } else if (lifeProgress > 0.75) {
                 // Fade out phase
-                const fadeProgress = (lifeProgress - 0.7) / 0.3;
-                particle.opacity = Math.max(0.1, 0.5 - fadeProgress);
-                particle.distance *= 1.005;
-                particle.angle += 0.01 * timeScale;
+                const fadeProgress = (lifeProgress - 0.75) / 0.25;
+                particle.opacity = Math.max(0, 0.3 * (1 - fadeProgress));
+                particle.distance *= 1.002; // Much slower expansion
             } else {
-                // Full bloom phase
-                const pulsePhase = (age + index * 200) * 0.002;
-                particle.opacity = 0.3 + Math.sin(pulsePhase) * 0.2;
-                particle.distance = this.image.width * (0.5 + Math.sin(pulsePhase) * 0.05);
+                // Stable phase - gentle subtle movement
+                const pulsePhase = (age + index * 300) * 0.001; // Slower pulse
+                particle.opacity = 0.2 + Math.sin(pulsePhase) * 0.05; // Very subtle opacity change
+                particle.distance = this.image.width * (0.4 + Math.sin(pulsePhase) * 0.02); // Very subtle size change
             }
         });
     }
 
     render(ctx) {
-        if (this.opacity < 0.1) return;
+        if (this.opacity < 0.02) return; // Very low threshold so images render
+
+        // Debug log for first few frames
+        if (Date.now() - this.startTime < 500) {
+            console.log(`🎨 Rendering image at (${this.x.toFixed(1)}, ${this.y.toFixed(1)}) opacity: ${this.opacity.toFixed(2)} scale: ${this.scale.toFixed(2)}`);
+        }
 
         ctx.save();
         
         // Draw particles
         const { r, g, b } = this.dominantColor.rgb;
-        ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.05)`;
+        ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.1)`;
         ctx.shadowBlur = 3;
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 1)`;
-        ctx.globalAlpha = this.opacity * 0.1;
+        ctx.globalAlpha = this.opacity * 0.2; // More visible particles
         
         this.particles.forEach(particle => {
             const x = this.x + Math.cos(particle.angle) * particle.distance;
@@ -215,8 +228,8 @@ export class CustomImage {
             ctx.fill();
         });
 
-        // Draw the main image
-        ctx.globalAlpha = Math.min(0.85, this.opacity);
+        // Draw the main image with full opacity
+        ctx.globalAlpha = Math.min(1.0, this.opacity); // Full opacity for images
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rotation);
         ctx.scale(this.scale, this.scale);
@@ -263,11 +276,21 @@ export class CustomImage {
 
     isDead() {
         const age = Date.now() - this.startTime;
-        return age >= this.lifeTime || this.opacity < 0.1;
+        return age >= this.lifeTime || this.opacity < 0.02; // Lower threshold for death
     }
 
-    // Easing function for smooth animation
+    // Easing functions for smooth animation - FIXED: Better easing functions
     ease(t) {
         return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    }
+    
+    // Smooth ease out cubic for natural blooming
+    easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
+    
+    // Smooth ease in cubic for natural fading
+    easeInCubic(t) {
+        return t * t * t;
     }
 } 

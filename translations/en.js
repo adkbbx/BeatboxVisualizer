@@ -31,7 +31,7 @@ export const translations = {
         },
         tabs: {
             animationImages: "Animation Images",
-            backgroundImages: "Background Images",
+            background: "Background",
             presets: "Presets"
         },
         status: {
@@ -334,19 +334,27 @@ export const translations = {
             blurDesc: "Enable motion blur effects for fast-moving particles."
         },
         images: {
-            title: "🖼️ Image Settings",
+            title: "🖼️ Image & Video Settings",
             autoRemoveBackgrounds: "Auto Remove Backgrounds",
             autoRemoveBackgroundsDesc: "Automatically remove white/solid backgrounds from uploaded firework images.",
             spinningImages: "Spinning Images",
             spinningImagesDesc: "Make uploaded images spin and rotate during firework explosions.",
             imageGravity: "Image Gravity",
             imageGravityDesc: "How fast images fall after exploding (0 = float forever, higher = fall faster).",
-            backgroundImageOpacity: "Background Image Opacity",
-            backgroundImageOpacityDesc: "How see-through the background slideshow images are (0 = invisible, 1 = solid).",
+            backgroundSection: "📺 Background Images & Videos",
+            backgroundImageOpacity: "Background Opacity",
+            backgroundImageOpacityDesc: "How see-through the background images and videos are (0 = invisible, 1 = solid).",
             backgroundTransition: "Background Transition",
-            backgroundTransitionDesc: "How long it takes for background images to fade from one to the next.",
+            backgroundTransitionDesc: "How long it takes for background media to fade from one to the next.",
             backgroundDuration: "Background Duration",
-            backgroundDurationDesc: "How long each background image is shown before changing to the next.",
+            backgroundDurationDesc: "How long each background image or video is shown before changing to the next.",
+            videoSettings: "🎬 Video Settings",
+            videoLoop: "Loop Videos",
+            videoLoopDesc: "Automatically restart videos when they reach the end.",
+            videoVolume: "Video Volume",
+            videoVolumeDesc: "Volume level for background videos (kept at 0 to avoid conflicts with microphone).",
+            videoFullDuration: "Play Full Video Duration",
+            videoFullDurationDesc: "Allow videos to play their entire duration before cycling to the next background.",
             customImages: "Custom Images",
             customImagesDesc: "Use uploaded custom images in animations.",
             imageSize: "Image Size",
@@ -455,12 +463,14 @@ export const translations = {
     upload: {
         instructions: {
             dragDrop: "Drag and drop custom images here",
+            dragDropMedia: "Drag and drop background images & videos here",
             or: "or",
             selectFiles: "Select Files",
             selectBgFiles: "Select Background Files",
-            fileTypes: "Supported: JPG, PNG, GIF (max 5MB each)",
+            fileTypes: "Supported: JPG, PNG, WebP (max 5MB each)",
+            mediaTypes: "Supported: Images (JPG, PNG, GIF, WebP) & Videos (MP4, WebM) • Max 100MB",
             imageDescription: "Images will appear during firework explosions and bubble pops",
-            backgroundDescription: "Background images will be displayed behind animations"
+            backgroundDescription: "Media will cycle as animated backgrounds behind your animations"
         },
         buttons: {
             selectFiles: "Select Files",

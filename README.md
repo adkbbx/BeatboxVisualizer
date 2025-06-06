@@ -29,7 +29,10 @@ A powerful web application that transforms sound into stunning visual experience
 
 ### 🎨 **Comprehensive Visual Customization**
 - **Custom Image System**: Upload and manage your own images for animations
-- **Background Manager**: Independent slideshow system with transition controls
+- **🎥 Video & GIF Backgrounds** (NEW!): Support for MP4, WebM video files and animated GIFs as backgrounds
+- **Mixed Media Slideshows**: Combine static images, animated GIFs, and videos in dynamic background presentations
+- **Background Manager**: Independent slideshow system with smooth transitions between all media types
+- **Video Controls**: Loop settings, volume control, and auto-play management for background videos
 - **Color Theme Engine**: 6 built-in themes plus custom color creation
 - **Particle Effects**: Configurable explosion intensity, size, and behavior
 - **Visual Effects**: Glow effects, smoke trails, and transparency controls
@@ -85,7 +88,8 @@ A powerful web application that transforms sound into stunning visual experience
 
 4. **Upload Custom Content** (Optional)
    - **Animation Images**: Upload images that appear during explosions/pops
-   - **Background Images**: Add ambient background visuals with slideshow
+   - **🎥 Background Media**: Add images, videos (MP4, WebM), and animated GIFs as dynamic backgrounds
+   - **Mixed Slideshows**: Combine different media types for rich visual experiences
    - **Presets**: Load entire collections from the `/presets/` folder
 
 5. **Test Your Setup**
